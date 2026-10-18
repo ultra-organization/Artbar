@@ -1,0 +1,37 @@
+app/globals.css
+  s_45ddb084d8753f::t_c4843391fac919 388-394
+app/locations/[slug]/page.tsx
+  s_45ddb084d8753f::t_da973db013a15f 18,26-29,35,48,52,55,78-79,144,150-151,153-155,162,183,186-187,204-211
+components/Footer.tsx
+  s_45ddb084d8753f::t_2b7bcaaf50760c 6,11,14,48-49,55-56,69-70,158
+components/Navbar.tsx
+  s_45ddb084d8753f::t_9b86c5c90455a9 11-12,29,95
+components/ScrollToTop.tsx
+  s_45ddb084d8753f::t_fca140a0331873 10-22
+constants.ts
+  s_45ddb084d8753f::t_f9b85d35a9be76 519-520,529,531-532,543-544,555-556,567-568,578-581,591-594
+lib/copy/resolve.ts
+  s_45ddb084d8753f::t_dc948775cfbdca 27-86,197,263
+lib/location-booking.ts
+  s_45ddb084d8753f::t_c87a83286e949e 1-37
+scripts/copy-system-smoke-check.ts
+  s_45ddb084d8753f::t_d5cd0a8ef00a58 24-63
+views/Locations.tsx
+  s_45ddb084d8753f::t_6c3ed550308f06 11,90,123,125,128-130,136,153
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "91416fde7accf40fa715d149a2addd5c149c41a3",
+  "prompts": {},
+  "sessions": {
+    "s_45ddb084d8753f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a14da1-cf5b-7090-97a0-87e2e3273fb1",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "UltraIntelligence <ryan@ultra.com.ai>"
+    }
+  }
+}
