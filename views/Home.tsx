@@ -478,8 +478,8 @@ export const Home: React.FC = () => {
           and upcoming rails via the painta embed. The desktop shell shares the same 1400px grid
           as Popular Themes; the event cards retain their compact fixed width so the added room
           reveals more choices instead of stretching transaction cards into feature tiles.
-          The section bg matches the embed body (#F3F3ED) so the iframe edges disappear.
-          painta.co/embed.js resizes the iframe to its content via postMessage; the h-* fallback
+          Transparent embed canvases let the section background show through the iframe edges.
+          The booking host embed.js resizes the iframe to its content via postMessage; the h-* fallback
           keeps the rails visible if the script never runs. */}
       <section id="upcoming-sessions" className="scroll-mt-28 bg-[#F3F3ED] pt-14 pb-6 md:scroll-mt-32 md:pt-20 md:pb-10">
         <div className="mx-auto max-w-[1400px] px-6 md:px-10">
@@ -516,7 +516,7 @@ export const Home: React.FC = () => {
                 do not lose evening classes from this website's schedule. */}
             <iframe
               data-painta-embed
-              src={`${PAINTA_EMBED_ORIGIN}/embed/artbar-tokyo/today-tomorrow?locale=${embedLocale}&cta=hide&limit=24`}
+              src={`${PAINTA_EMBED_ORIGIN}/embed/artbar-tokyo/today-tomorrow?locale=${embedLocale}&cta=hide&background=transparent&limit=24`}
               title={stripJpSentinel(upcomingSessions.iframeTitle)}
               loading="lazy"
               className="block h-[800px] w-full border-0 sm:h-[520px]"
@@ -531,7 +531,7 @@ export const Home: React.FC = () => {
             {hasMounted && (
               <iframe
                 data-painta-embed
-                src={`${PAINTA_EMBED_ORIGIN}/embed/artbar-tokyo/upcoming?locale=${embedLocale}&cta=hide&layout=rail&from=${upcomingFromDate}&limit=8`}
+                src={`${PAINTA_EMBED_ORIGIN}/embed/artbar-tokyo/upcoming?locale=${embedLocale}&cta=hide&background=transparent&layout=rail&from=${upcomingFromDate}&limit=8`}
                 title={stripJpSentinel(upcomingSessions.laterIframeTitle)}
                 loading="lazy"
                 className="block h-[420px] w-full border-0"

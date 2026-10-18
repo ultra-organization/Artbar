@@ -6,7 +6,7 @@ import type { SiteLanguage } from './language';
 export const STUDIO_CLASSES_ANCHOR = 'studio-classes';
 const ARTBAR_OSAKA_SCHEDULE_URL = 'https://tickets.artbar.co.jp';
 
-/** Public storefronts do not apply location query parameters. */
+/** These full-schedule destinations intentionally show every studio in the region. */
 export function getLocationFullScheduleUrl(locationId: string, lang: SiteLanguage): string {
   const locale = lang === 'jp' ? 'ja' : 'en';
   return locationId.startsWith('osaka_')

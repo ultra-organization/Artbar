@@ -181,8 +181,7 @@ export default async function LocationDetailPage({ params }: Props) {
 
       {scheduleEmbedUrl && (
         <section id={STUDIO_CLASSES_ANCHOR} className="mx-auto mt-16 scroll-mt-28 max-w-[1180px] px-4 sm:px-6 md:mt-20 md:px-10">
-          {/* Card bg matches the Painta embed body (#F3F3ED), not white, so the
-              iframe blends into the panel instead of showing a seam. */}
+          {/* The transparent embed canvas lets this studio panel supply its background. */}
           <div className="overflow-hidden rounded-[2.5rem] bg-[#F3F3ED] py-10 shadow-sm sm:px-4 md:px-10 md:py-14">
             <div className="mx-4 mb-8 text-center sm:mx-0">
               <p className="mb-3 font-heading text-xs font-bold uppercase tracking-widest text-artbar-taupe">
