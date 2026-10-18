@@ -7,10 +7,8 @@ import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useContent } from '../context/ContentContext';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { ARTBAR_OSAKA_URL } from '../constants';
 import { studioDisplayName } from '../lib/jp-display';
-import { locationPath } from '../lib/location-pages';
-import { localizeHrefForLanguage } from '../lib/locale-routing';
+import { getLocationBookingDestination } from '../lib/location-booking';
 import { trackBookingClick } from '../lib/analytics';
 import type { Location } from '../types';
 import type { JapaneseUiCopy } from '@/lib/copy/types';
@@ -89,7 +87,7 @@ function LocationCard({
   const directionsUrl = loc.mapUrl?.trim()
     ? loc.mapUrl
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.addressJp)}`;
-  const bookingUrl = loc.id.startsWith('osaka_') ? ARTBAR_OSAKA_URL : localizeHrefForLanguage(locationPath(loc.id), lang);
+  const bookingDestination = getLocationBookingDestination(loc.id, lang);
   return (
             <div
               id={`studio-${loc.id}`}
@@ -122,20 +120,20 @@ function LocationCard({
 
                  <div className="flex flex-col gap-2 mb-8 sm:flex-row sm:flex-wrap md:gap-3">
                     <a
-                      href={bookingUrl}
-                      target="_blank"
-                      rel="noreferrer"
+                      href={bookingDestination.href}
                       onClick={() => trackBookingClick(`location_${loc.id}`)}
-                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-artbar-taupe px-5 pt-3 pb-2 text-xs font-bold uppercase tracking-wide text-artbar-navy shadow-sm transition-transform active:scale-[0.98] md:text-sm"
+                      className="inline-flex min-h-[44px] max-w-full items-center justify-center gap-2 rounded-full bg-artbar-taupe px-5 pt-3 pb-2 text-center text-xs font-bold uppercase tracking-wide text-artbar-navy shadow-sm transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 md:text-sm"
                     >
                       <CalendarDays size={14} className="shrink-0 md:w-4 md:h-4" aria-hidden />
-                      <JpText>{lang === 'en' ? 'View studio and classes' : 'スタジオ・開催日程を見る'}</JpText>
+                      <JpText>{bookingDestination.hasStudioClasses
+                        ? (lang === 'en' ? 'View Studio Classes' : 'このスタジオのクラスを見る')
+                        : (lang === 'en' ? 'View Osaka Schedule' : '大阪のスケジュールを見る')}</JpText>
                     </a>
                     <a
                       href={directionsUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-artbar-light-taupe bg-white px-5 pt-3 pb-2 text-xs font-bold uppercase tracking-wide text-artbar-navy transition-colors hover:bg-gray-50 md:text-sm"
+                      className="inline-flex min-h-[44px] max-w-full items-center justify-center gap-2 rounded-full border border-artbar-light-taupe bg-white px-5 pt-3 pb-2 text-center text-xs font-bold uppercase tracking-wide text-artbar-navy transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 md:text-sm"
                     >
                       <Navigation size={14} className="shrink-0 md:w-4 md:h-4" aria-hidden />
                       <JpText>{locationCopy.directions}</JpText>
@@ -152,7 +150,7 @@ function LocationCard({
                     </div>
                     <div>
                         <span className="text-[9px] font-bold tracking-[0.2em] text-artbar-taupe uppercase block mb-2"><JpText>{locationCopy.transitAccessLabel}</JpText></span>
-                        <p className="font-medium text-artbar-gray leading-relaxed text-sm whitespace-pre-line">
+                        <p className="location-access-copy font-medium text-artbar-gray leading-relaxed text-sm whitespace-pre-line">
                            <JpText>{lang === 'en' ? loc.accessEn : loc.accessJp}</JpText>
                         </p>
                     </div>

@@ -385,6 +385,13 @@ html:lang(ja) li {
   text-wrap: pretty;
 }
 
+/* Long station directions need normal Japanese breaks, including after Latin
+   station prefixes such as JR, without changing display-copy typography. */
+html:lang(ja) .location-access-copy,
+html:lang(ja) .location-access-copy span {
+  word-break: normal;
+}
+
 /* Explicit per-element nowrap intent must win over the JP defaults above
    (`white-space: pre-line`) and the heading `text-wrap: balance` below.
    Without this, Tailwind's `.whitespace-nowrap` is silently overridden by

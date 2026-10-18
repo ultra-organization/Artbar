@@ -3,13 +3,15 @@
 import React from 'react';
 import { Instagram, Facebook, Youtube, Mail, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Logo } from './Logo';
 import { JpText } from './JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useContent } from '../context/ContentContext';
-import { ARTBAR_BOOKING_URL, LOCATIONS, SOCIAL_PROFILES } from '../constants';
+import { LOCATIONS, SOCIAL_PROFILES } from '../constants';
 import { localizeHrefForLanguage } from '../lib/locale-routing';
 import { locationPath } from '../lib/location-pages';
+import { getScheduleUrlForPathname } from '../lib/location-booking';
 import { trackBookingClick } from '../lib/analytics';
 
 // lucide-react has no TikTok icon (brand icons are deprecated upstream); inline SVG keeps the row consistent.
@@ -43,15 +45,15 @@ const FOOTER_STUDIOS = [
     id: 'harajuku',
     nameEn: 'Cat Street Harajuku',
     nameJp: 'キャットストリート原宿',
-    metaEn: 'Shibuya, Tokyo · JR Harajuku / Metro Meiji-jingumae Station',
-    metaJp: '渋谷区・JR「原宿駅」／東京メトロ「明治神宮前駅」',
+    metaEn: 'Shibuya, Tokyo · Meiji-jingumae / Shibuya Station',
+    metaJp: '渋谷区・「明治神宮前駅」／「渋谷駅」',
   },
   {
     id: 'ginza',
     nameEn: 'Ginza',
     nameJp: '銀座',
-    metaEn: 'Chuo, Tokyo · Tokyo Metro Ginza Station',
-    metaJp: '中央区・東京メトロ「銀座駅」',
+    metaEn: 'Chuo, Tokyo · Metro Ginza-itchome / JR Yurakucho Station',
+    metaJp: '中央区・東京メトロ「銀座一丁目駅」／JR「有楽町駅」',
   },
   {
     id: 'yokohama',
@@ -64,6 +66,8 @@ const FOOTER_STUDIOS = [
 
 export const Footer: React.FC = () => {
   const { site, lang, localizedCopy } = useContent();
+  const pathname = usePathname();
+  const scheduleUrl = getScheduleUrlForPathname(pathname, lang);
   const currentYear = new Date().getFullYear();
   const socialIconClass = 'flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white shadow-sm transition-all hover:bg-artbar-taupe';
   const footerLinkClass = 'inline-flex min-h-[44px] min-w-[44px] items-center py-2 hover:text-white hover:translate-x-1 transition-all';
@@ -151,7 +155,7 @@ export const Footer: React.FC = () => {
             <div className="md:col-span-3">
               <h4 className="font-heading font-bold text-white text-lg mb-6"><JpText>{site.footer.explore}</JpText></h4>
               <ul className="space-y-3 text-artbar-light-taupe">
-                <li><a href={ARTBAR_BOOKING_URL} onClick={() => trackBookingClick('footer')} className={footerLinkClass}><JpText>{site.nav.schedule}</JpText></a></li>
+                <li><a href={scheduleUrl} onClick={() => trackBookingClick('footer')} className={footerLinkClass}><JpText>{site.nav.schedule}</JpText></a></li>
                 <li><Link href={href('/team-building')} className={footerLinkClass}><JpText>{site.nav.teamBuilding}</JpText></Link></li>
                 <li><Link href={href('/private-parties')} className={footerLinkClass}><JpText>{site.nav.privateParties}</JpText></Link></li>
                 <li><Link href={href('/instructors')} className={footerLinkClass}><JpText>{site.nav.instructors}</JpText></Link></li>

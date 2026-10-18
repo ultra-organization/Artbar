@@ -21,6 +21,46 @@ for (const locale of COPY_LOCALES) {
   assert.equal(data.jpCopy.ui.footer.faq, `${locale} FAQ label`, 'Compatibility alias must use the active language');
 }
 
+for (const locale of COPY_LOCALES) {
+  const payload = DEFAULT_COPY_PAYLOADS[locale];
+  const legacyLocationPayload = structuredClone(payload);
+  const legacyHirakata = legacyLocationPayload.locations.find((item) => item.id === 'osaka_hirakata')!;
+  legacyHirakata.address = locale === 'en'
+    ? 'Hirakata Mall 2F, 1-9-1, Hirakata-shi, Osaka 573-0032'
+    : '〒573-0032 大阪府枚方市岡東町1-9-1 枚方モール 2F';
+  legacyHirakata.access = locale === 'en' ? "Inside TULLY'S COFFEE" : 'タリーズコーヒー併設';
+  const correctedLocationPayload = normalizeCopyPayload(locale, legacyLocationPayload);
+  const correctedHirakata = correctedLocationPayload.locations.find((item) => item.id === 'osaka_hirakata')!;
+  assert.equal(
+    correctedHirakata.address,
+    payload.locations.find((item) => item.id === 'osaka_hirakata')!.address,
+    `${locale} published Hirakata address typo is corrected`,
+  );
+  assert.match(
+    correctedHirakata.access,
+    locale === 'en' ? /East Ticket Gate/ : /東改札口/,
+    `${locale} published Hirakata directions include the station connection`,
+  );
+  assert.notEqual(
+    legacyHirakata.address,
+    correctedHirakata.address,
+    `${locale} location migration does not mutate the stored payload`,
+  );
+
+  const customLocationPayload = structuredClone(payload);
+  for (const location of customLocationPayload.locations) {
+    location.address = `${locale} staff address for ${location.id}`;
+    location.access = `${locale} staff directions for ${location.id}`;
+  }
+  customLocationPayload.locations.reverse();
+  assert.deepEqual(
+    normalizeCopyPayload(locale, customLocationPayload).locations,
+    customLocationPayload.locations,
+    `${locale} staff directions and addresses survive normalization in any order`,
+  );
+
+}
+
 // Narrow display repairs must not change studio prices or overwrite newer copy.
 const oldLayoutCopy = structuredClone(DEFAULT_COPY_PAYLOADS.jp);
 oldLayoutCopy.site.privateParties.pricing.adult.price = '¥12,345';
