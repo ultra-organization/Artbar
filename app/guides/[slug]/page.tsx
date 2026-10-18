@@ -14,7 +14,7 @@ import {
 } from '@/data/seo-guides';
 import { buildOpenGraph, buildLocalizedAlternates, getRequestLang } from '@/lib/request-lang';
 import { localizeHrefForLanguage, publicUrlForPath, siteLanguageToRouteLocale } from '@/lib/locale-routing';
-import { buildServiceJsonLd, safeJsonLd, SITE_NAME, SITE_URL } from '@/lib/jsonld';
+import { buildServiceJsonLd, safeJsonLd, ORGANIZATION_ID, absoluteUrl } from '@/lib/jsonld';
 import { nextImageSrcSet } from '@/lib/image-preload';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -73,9 +73,9 @@ export default async function GuideDetailPage({ params }: Props) {
         '@id': `${url}#article`,
         headline: copy.title,
         description: copy.description,
-        image: `${SITE_URL}${guide.image}`,
-        author: { '@type': 'Organization', name: SITE_NAME },
-        publisher: { '@type': 'Organization', name: SITE_NAME },
+        image: absoluteUrl(guide.image),
+        author: { '@id': ORGANIZATION_ID },
+        publisher: { '@id': ORGANIZATION_ID },
         mainEntityOfPage: url,
         inLanguage: schemaLang,
         keywords: primaryIntent,

@@ -1,10 +1,9 @@
 import Image from 'next/image';
+import { LocationExperience } from '@/components/LocationExperience';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   getArtbarLocationScheduleEmbedUrl,
-  LOCATION_DEFAULT_OPENING_HOURS,
-  LOCATION_DEFAULT_PRICE_RANGE,
 } from '@/constants';
 import { PageJsonLd } from '@/components/PageJsonLd';
 import { buildOpenGraph, buildLocalizedAlternates, getRequestLang } from '@/lib/request-lang';
@@ -15,7 +14,7 @@ import { nextImageSrcSet } from '@/lib/image-preload';
 import { getPublishedMediaMap } from '@/lib/media/published';
 import { mediaAssetUrl } from '@/lib/media/resolve';
 import { PaintaScheduleEmbed } from '@/components/PaintaScheduleEmbed';
-import { getLocationBookingDestination, getLocationFullScheduleUrl, STUDIO_CLASSES_ANCHOR } from '@/lib/location-booking';
+import { getLocationBookingDestination, getLocationStudioScheduleUrl, STUDIO_CLASSES_ANCHOR } from '@/lib/location-booking';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -82,10 +81,7 @@ export default async function LocationDetailPage({ params }: Props) {
     '@graph': [
       buildLocalBusinessJsonLd({
         location: locationWithMedia,
-        pageUrl: url,
         lang: schemaLang,
-        openingHours: location.openingHours ?? LOCATION_DEFAULT_OPENING_HOURS,
-        priceRange: location.priceRange ?? LOCATION_DEFAULT_PRICE_RANGE,
       }),
       {
         '@type': 'BreadcrumbList',
@@ -150,9 +146,7 @@ export default async function LocationDetailPage({ params }: Props) {
               href={scheduleEmbedUrl ? `#${STUDIO_CLASSES_ANCHOR}` : bookingDestination.href}
               className="inline-flex min-h-[2.75rem] max-w-full items-center justify-center rounded-full bg-artbar-taupe px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy shadow-sm transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:px-8 sm:text-base"
             >
-              {bookingDestination.hasStudioClasses
-                ? (lang === 'jp' ? 'このスタジオのクラスを見る' : 'View Studio Classes')
-                : (lang === 'jp' ? '大阪のスケジュールを見る' : 'View Osaka Schedule')}
+              {lang === 'jp' ? `${name}のクラスを見る` : `View ${name} classes`}
             </a>
             {location.mapUrl && (
               <a
@@ -179,6 +173,8 @@ export default async function LocationDetailPage({ params }: Props) {
         </div>
       </div>
 
+      <LocationExperience locationId={location.id} lang={lang} />
+
       {scheduleEmbedUrl && (
         <section id={STUDIO_CLASSES_ANCHOR} className="mx-auto mt-16 scroll-mt-28 max-w-[1180px] px-4 sm:px-6 md:mt-20 md:px-10">
           {/* The transparent embed canvas lets this studio panel supply its background. */}
@@ -202,10 +198,10 @@ export default async function LocationDetailPage({ params }: Props) {
             />
             <div className="mx-4 mt-8 text-center sm:mx-0">
               <a
-                href={getLocationFullScheduleUrl(location.id, lang)}
+                href={getLocationStudioScheduleUrl(location.id, lang)}
                 className="inline-flex min-h-[2.75rem] w-full max-w-full items-center justify-center rounded-full bg-artbar-taupe px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy shadow-sm transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:w-auto sm:px-8 sm:text-base"
               >
-                {lang === 'jp' ? '東京・横浜の全クラスを見る' : 'View all Tokyo & Yokohama classes'}
+                {lang === 'jp' ? `${name}のすべてのクラスを見る` : `All classes at ${name}`}
               </a>
             </div>
           </div>

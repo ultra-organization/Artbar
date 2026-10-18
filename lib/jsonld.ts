@@ -1,6 +1,9 @@
 import 'server-only';
 import { ARTBAR_BOOKING_URL, ARTBAR_TOKYO_EMAIL, SOCIAL_PROFILE_URLS } from '@/constants';
 import type { Location } from '@/types';
+import { studioDisplayName } from '@/lib/jp-display';
+import { locationPath } from '@/lib/location-pages';
+import { publicUrlForPath } from '@/lib/locale-routing';
 
 /**
  * JSON.stringify with `</` escaped to `<\/` to prevent the JSON payload
@@ -36,7 +39,6 @@ export function buildOrganizationJsonLd() {
     areaServed: [
       { '@type': 'City', name: 'Tokyo' },
       { '@type': 'City', name: 'Yokohama' },
-      { '@type': 'City', name: 'Osaka' },
     ],
     knowsAbout: [
       'Paint and sip classes',
@@ -111,7 +113,6 @@ export function buildServiceJsonLd({
     areaServed: [
       { '@type': 'City', name: 'Tokyo' },
       { '@type': 'City', name: 'Yokohama' },
-      { '@type': 'City', name: 'Osaka' },
     ],
     ...(description && { description }),
   };
@@ -119,32 +120,35 @@ export function buildServiceJsonLd({
 
 export function buildLocalBusinessJsonLd({
   location,
-  pageUrl,
   lang,
-  openingHours,
-  priceRange,
 }: {
   location: Location;
-  pageUrl: string;
   lang: 'ja' | 'en';
-  openingHours: string[];
-  priceRange: string;
 }) {
-  const name = lang === 'ja' ? location.nameJp : location.nameEn;
+  const name = studioDisplayName(lang === 'ja' ? location.nameJp : location.nameEn);
   const address = lang === 'ja' ? location.addressJp : location.addressEn;
+  const path = locationPath(location.id);
+  // A studio remains one physical entity across translations and listing/detail pages.
+  const studioSite = location.id.startsWith('osaka_') ? 'https://osaka.artbar.co.jp' : SITE_URL;
+  const studioId = `${studioSite}${path}#localbusiness`;
+  const url = publicUrlForPath(path, lang);
+  const postalCode = location.addressJp.match(/\d{3}-\d{4}/)?.[0];
 
   return {
     '@type': 'LocalBusiness',
-    '@id': `${pageUrl}#${location.id}`,
+    '@id': studioId,
     name,
     image: absoluteUrl(location.image),
-    url: `${pageUrl}#${location.id}`,
-    parentOrganization: { '@id': ORGANIZATION_ID },
-    email: ARTBAR_TOKYO_EMAIL,
+    url,
+    parentOrganization: location.id.startsWith('osaka_')
+      ? { '@type': 'Organization', '@id': `${studioSite}/#organization`, name: 'Artbar Osaka' }
+      : { '@id': ORGANIZATION_ID },
+    email: location.id.startsWith('osaka_') ? 'osaka@artbar.co.jp' : ARTBAR_TOKYO_EMAIL,
     address: {
       '@type': 'PostalAddress',
       streetAddress: address,
       addressCountry: 'JP',
+      ...(postalCode && { postalCode }),
     },
     ...(location.geo && {
       geo: {
@@ -153,8 +157,9 @@ export function buildLocalBusinessJsonLd({
         longitude: location.geo.longitude,
       },
     }),
-    openingHours,
-    priceRange,
+    // Publish only verified, studio-specific values; class times are not opening hours.
+    ...(location.openingHours?.length && { openingHours: location.openingHours }),
+    ...(location.priceRange && { priceRange: location.priceRange }),
     ...(location.mapUrl && { hasMap: location.mapUrl }),
   };
 }

@@ -20,7 +20,7 @@ const CSP = [
   `connect-src 'self' https://vitals.vercel-insights.com https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://ad.doubleclick.net https://googleads.g.doubleclick.net https://www.googleadservices.com https://www.google.com https://www.google.co.jp`,
   // Google Maps embeds on /locations and booking widgets served from Artbar's Painta tenant.
   // Keep painta.co temporarily for any older embed URLs still present in published content.
-  `frame-src https://www.google.com https://maps.google.com https://www.googletagmanager.com https://booking.artbar.co.jp https://painta.co`,
+  `frame-src https://www.google.com https://maps.google.com https://www.googletagmanager.com https://booking.artbar.co.jp https://tickets.artbar.co.jp https://painta.co`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
   `form-action 'self'`,

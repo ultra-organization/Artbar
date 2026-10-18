@@ -74,11 +74,14 @@ export const getArtbarThemeScheduleEmbedUrl = (
   return `${PAINTA_EMBED_ORIGIN}/embed/artbar-tokyo/upcoming?${params.toString()}`;
 };
 
-/** Painta studio IDs for the Tokyo/Yokohama locations represented on this site. */
-const ARTBAR_BOOKING_LOCATION_IDS: Record<string, string[]> = {
+/** Painta studio IDs for every Tokyo, Yokohama and Osaka studio on this site. */
+export const ARTBAR_BOOKING_LOCATION_IDS: Record<string, string[]> = {
   daikanyama: ['18244ebb-1fb3-4cb0-9479-fa8ebd32d380'],
   harajuku: ['7b324032-63e9-4675-aa67-6fdb7773615e'],
   ginza: ['04f186c0-7603-4d89-ab02-4ec22066df2b'],
+  osaka_namba: ['2fd6cb8b-a5aa-4a86-93b3-e5448aa8a43a'],
+  osaka_umeda: ['46a6071f-a389-4a9d-9e5f-fbaa1993a20d'],
+  osaka_hirakata: ['1574c96e-cf2b-4877-b87b-fc56204d0ec8'],
   yokohama: [
     '76752feb-31ed-4505-a068-8363bbeb576c',
     'a08ed9ba-04d3-4e21-8ce5-e625c544df5c',
@@ -104,7 +107,12 @@ export const getArtbarLocationScheduleEmbedUrl = (
     background: 'transparent',
   });
 
-  return `${PAINTA_EMBED_ORIGIN}/embed/artbar-tokyo/upcoming?${params.toString()}`;
+  const isOsaka = locationSlug.startsWith('osaka_');
+  const origin = isOsaka
+    ? (process.env.NEXT_PUBLIC_PAINTA_EMBED_ORIGIN?.replace(/\/$/, '') || 'https://tickets.artbar.co.jp')
+    : PAINTA_EMBED_ORIGIN;
+  const businessSlug = isOsaka ? 'artbar-osaka' : 'artbar-tokyo';
+  return `${origin}/embed/${businessSlug}/upcoming?${params.toString()}`;
 };
 export const ARTBAR_OSAKA_URL = 'https://osaka.artbar.co.jp';
 export const PRIVATE_PARTY_INQUIRY_URL = `${ARTBAR_BOOKING_URL}/inquiries?type=private_party`;
@@ -498,13 +506,6 @@ export const PRIVATE_PARTY_CAPACITY_ROWS: {
     highlight: true,
   },
 ];
-
-/**
- * Default LocalBusiness fields applied to every studio in JSON-LD unless overridden
- * on the location entry. Hours are uniform across studios; price tier is stable.
- */
-export const LOCATION_DEFAULT_OPENING_HOURS = ["Mo-Su 09:00-21:00"];
-export const LOCATION_DEFAULT_PRICE_RANGE = "¥¥";
 
 /**
  * Per-studio coordinates are approximate (~50m), derived from the registered

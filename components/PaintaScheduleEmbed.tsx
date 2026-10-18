@@ -1,17 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { PAINTA_EMBED_ORIGIN } from '../constants';
+import { getTrustedPaintaEmbedOrigin } from '../lib/painta-embed-origin';
 
-const getPaintaOrigin = () => {
-  try {
-    return new URL(PAINTA_EMBED_ORIGIN).origin;
-  } catch {
-    return 'https://booking.artbar.co.jp';
-  }
-};
-
-const PAINTA_ORIGIN = getPaintaOrigin();
 const MIN_EMBED_HEIGHT = 200;
 const MAX_EMBED_HEIGHT = 800;
 
@@ -35,8 +26,9 @@ export const PaintaScheduleEmbed: React.FC<PaintaScheduleEmbedProps> = ({
   }, [onEmptyChange]);
 
   useEffect(() => {
+    const expectedOrigin = getTrustedPaintaEmbedOrigin(src);
     const handleEmbedMessage = (event: MessageEvent) => {
-      if (event.origin !== PAINTA_ORIGIN || event.source !== iframeRef.current?.contentWindow) {
+      if (!expectedOrigin || event.origin !== expectedOrigin || event.source !== iframeRef.current?.contentWindow) {
         return;
       }
 
@@ -58,7 +50,7 @@ export const PaintaScheduleEmbed: React.FC<PaintaScheduleEmbedProps> = ({
 
     window.addEventListener('message', handleEmbedMessage);
     return () => window.removeEventListener('message', handleEmbedMessage);
-  }, []);
+  }, [src]);
 
   return (
     <iframe
