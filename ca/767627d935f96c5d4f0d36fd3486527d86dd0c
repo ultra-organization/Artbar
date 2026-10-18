@@ -1,0 +1,25 @@
+app/locations/[slug]/page.tsx
+  s_45ddb084d8753f::t_42264c9f0a956f 184
+constants.ts
+  s_45ddb084d8753f::t_f9d2e16f4c0915 69,104
+lib/location-booking.ts
+  s_45ddb084d8753f::t_a7456ee1da357c 9
+views/Home.tsx
+  s_45ddb084d8753f::t_d2b5f3cb6c6331 481-482,519,534
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ca767627d935f96c5d4f0d36fd3486527d86dd0c",
+  "prompts": {},
+  "sessions": {
+    "s_45ddb084d8753f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a14da1-cf5b-7090-97a0-87e2e3273fb1",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    }
+  }
+}
