@@ -2,7 +2,6 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
-  ARTBAR_BOOKING_URL,
   getArtbarLocationScheduleEmbedUrl,
   LOCATION_DEFAULT_OPENING_HOURS,
   LOCATION_DEFAULT_PRICE_RANGE,
@@ -16,6 +15,7 @@ import { nextImageSrcSet } from '@/lib/image-preload';
 import { getPublishedMediaMap } from '@/lib/media/published';
 import { mediaAssetUrl } from '@/lib/media/resolve';
 import { PaintaScheduleEmbed } from '@/components/PaintaScheduleEmbed';
+import { getLocationBookingDestination, getLocationFullScheduleUrl, STUDIO_CLASSES_ANCHOR } from '@/lib/location-booking';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -23,12 +23,16 @@ function locationCopy(location: NonNullable<ReturnType<typeof getLocationBySlug>
   const name = lang === 'jp' ? location.nameJp : location.nameEn;
   const address = lang === 'jp' ? location.addressJp : location.addressEn;
   const access = lang === 'jp' ? location.accessJp : location.accessEn;
+  const title =
+    lang === 'jp'
+      ? `${name}｜アート体験・アクセス`
+      : `${name} | Paint & Sip Classes & Access`;
   const description =
     lang === 'jp'
       ? `${name}へのアクセス、住所、最寄り駅案内。Artbarのペイント＆シップ体験を予約できます。`
       : `Find ${name}, including address, transit access, and booking links for Artbar paint and sip sessions.`;
 
-  return { name, address, access, description };
+  return { name, address, access, title, description };
 }
 
 export function generateStaticParams() {
@@ -41,14 +45,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!location) notFound();
 
   const lang = await getRequestLang();
-  const { name, description } = locationCopy(location, lang);
+  const { title, description } = locationCopy(location, lang);
   const path = locationPath(location.id);
 
   return {
-    title: lang === 'jp' ? `${name} アクセス` : `${name} Location`,
+    title: { absolute: title },
     description,
     alternates: buildLocalizedAlternates(path, lang),
-    openGraph: buildOpenGraph({ lang, title: name, description }),
+    openGraph: buildOpenGraph({ lang, title, description }),
   };
 }
 
@@ -70,6 +74,8 @@ export default async function LocationDetailPage({ params }: Props) {
     location.id,
     lang === 'jp' ? 'ja' : 'en',
   );
+
+  const bookingDestination = getLocationBookingDestination(location.id, lang);
 
   const locationJsonLd = {
     '@context': 'https://schema.org',
@@ -135,23 +141,25 @@ export default async function LocationDetailPage({ params }: Props) {
               <h2 className="mb-2 font-heading text-lg font-bold text-artbar-navy">
                 {lang === 'jp' ? 'アクセス' : 'Transit Access'}
               </h2>
-              <p className="whitespace-pre-line text-artbar-gray">{access}</p>
+              <p className="location-access-copy whitespace-pre-line text-artbar-gray">{access}</p>
             </section>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <a
-              href={ARTBAR_BOOKING_URL}
-              className="inline-flex min-h-[48px] items-center rounded-full bg-artbar-taupe px-7 pt-3 pb-2 font-heading font-bold text-artbar-navy shadow-sm transition hover:scale-[1.02]"
+              href={scheduleEmbedUrl ? `#${STUDIO_CLASSES_ANCHOR}` : bookingDestination.href}
+              className="inline-flex min-h-[2.75rem] max-w-full items-center justify-center rounded-full bg-artbar-taupe px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy shadow-sm transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:px-8 sm:text-base"
             >
-              {lang === 'jp' ? 'スケジュールを見る' : 'View Schedule'}
+              {bookingDestination.hasStudioClasses
+                ? (lang === 'jp' ? 'このスタジオのクラスを見る' : 'View Studio Classes')
+                : (lang === 'jp' ? '大阪のスケジュールを見る' : 'View Osaka Schedule')}
             </a>
             {location.mapUrl && (
               <a
                 href={location.mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-[48px] items-center rounded-full border border-artbar-navy px-7 pt-3 pb-2 font-heading font-bold text-artbar-navy transition hover:bg-artbar-navy hover:text-white"
+                className="inline-flex min-h-[2.75rem] max-w-full items-center justify-center rounded-full border border-artbar-navy px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy transition hover:bg-artbar-navy hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:px-8 sm:text-base"
               >
                 {lang === 'jp' ? 'Google Map' : 'Open Map'}
               </a>
@@ -172,11 +180,11 @@ export default async function LocationDetailPage({ params }: Props) {
       </div>
 
       {scheduleEmbedUrl && (
-        <section className="mx-auto mt-16 max-w-[1180px] px-6 md:mt-20 md:px-10">
+        <section id={STUDIO_CLASSES_ANCHOR} className="mx-auto mt-16 scroll-mt-28 max-w-[1180px] px-4 sm:px-6 md:mt-20 md:px-10">
           {/* Card bg matches the Painta embed body (#F3F3ED), not white, so the
               iframe blends into the panel instead of showing a seam. */}
-          <div className="overflow-hidden rounded-[2.5rem] bg-[#F3F3ED] px-4 py-10 shadow-sm md:px-10 md:py-14">
-            <div className="mb-8 text-center">
+          <div className="overflow-hidden rounded-[2.5rem] bg-[#F3F3ED] py-10 shadow-sm sm:px-4 md:px-10 md:py-14">
+            <div className="mx-4 mb-8 text-center sm:mx-0">
               <p className="mb-3 font-heading text-xs font-bold uppercase tracking-widest text-artbar-taupe">
                 {lang === 'jp' ? 'このスタジオで予約する' : 'Book this studio'}
               </p>
@@ -193,6 +201,14 @@ export default async function LocationDetailPage({ params }: Props) {
               src={scheduleEmbedUrl}
               title={lang === 'jp' ? `${name}のクラススケジュール` : `${name} class schedule`}
             />
+            <div className="mx-4 mt-8 text-center sm:mx-0">
+              <a
+                href={getLocationFullScheduleUrl(location.id, lang)}
+                className="inline-flex min-h-[2.75rem] w-full max-w-full items-center justify-center rounded-full bg-artbar-taupe px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy shadow-sm transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:w-auto sm:px-8 sm:text-base"
+              >
+                {lang === 'jp' ? '東京・横浜の全クラスを見る' : 'View all Tokyo & Yokohama classes'}
+              </a>
+            </div>
           </div>
         </section>
       )}

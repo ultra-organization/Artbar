@@ -8,7 +8,8 @@ import { usePathname } from 'next/navigation';
 import { CalendarDays, MessageCircle, Globe, Menu, X } from 'lucide-react';
 import { Logo } from './Logo';
 import { useContent } from '../context/ContentContext';
-import { ARTBAR_BOOKING_URL, PRIVATE_PARTY_INQUIRY_URL, TEAM_BUILDING_INQUIRY_URL } from '../constants';
+import { PRIVATE_PARTY_INQUIRY_URL, TEAM_BUILDING_INQUIRY_URL } from '../constants';
+import { getScheduleUrlForPathname } from '../lib/location-booking';
 import { localizeHrefForLanguage, stripLocalePrefix } from '../lib/locale-routing';
 import { trackBookingClick, trackInquiryClick, type BookingClickLocation } from '../lib/analytics';
 
@@ -25,6 +26,7 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { site, lang, toggleLang, jpCopy } = useContent();
   const barePathname = stripLocalePrefix(pathname);
+  const scheduleUrl = getScheduleUrlForPathname(pathname, lang);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -90,7 +92,7 @@ export const Navbar: React.FC = () => {
         window.location.href = withBrowserAcquisition(inquiryType === 'private_party' ? PRIVATE_PARTY_INQUIRY_URL : TEAM_BUILDING_INQUIRY_URL);
       } else {
         trackBookingClick(source);
-        window.location.href = withBrowserAcquisition(ARTBAR_BOOKING_URL);
+        window.location.href = withBrowserAcquisition(scheduleUrl);
       }
       setIsOpen(false);
   };
