@@ -66,6 +66,7 @@ export const getArtbarThemeScheduleEmbedUrl = (
     fallback: 'strict',
     headings: 'hide',
     cta: 'hide',
+    background: 'transparent',
   });
 
   if (query) params.set('query', query);
@@ -100,6 +101,7 @@ export const getArtbarLocationScheduleEmbedUrl = (
     fallback: 'strict',
     headings: 'hide',
     cta: 'hide',
+    background: 'transparent',
   });
 
   return `${PAINTA_EMBED_ORIGIN}/embed/artbar-tokyo/upcoming?${params.toString()}`;
