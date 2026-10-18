@@ -1,0 +1,49 @@
+app/blog/[slug]/page.tsx
+  s_45ddb084d8753f::t_453438746cbf57 1-2,9,68-69,71-72,88-91,93,96-102,119-124
+app/blog/page.tsx
+  s_45ddb084d8753f::t_f54effd04e81b2 1-2,9,33,42,47,52-54
+app/contact/page.tsx
+  s_45ddb084d8753f::t_9aefcba02c18a0 5-6,9,35,40-41
+app/guides/[slug]/page.tsx
+  s_45ddb084d8753f::t_5ebc7e96413fdf 17,76-78
+app/locations/[slug]/page.tsx
+  s_45ddb084d8753f::t_429f3a57434189 2,17,149,176-177,201,204
+app/locations/page.tsx
+  s_45ddb084d8753f::t_2f4187c8aa57f9 1-2,14,36,46
+components/Footer.tsx
+  s_45ddb084d8753f::t_ea80e13a6bcbb8 34,64-84
+components/LocationExperience.tsx
+  s_45ddb084d8753f::t_d8303e1871863f 1-95
+components/PaintaScheduleEmbed.tsx
+  s_45ddb084d8753f::t_9bf3a810f15a8c 4,29,31,53
+constants.ts
+  s_45ddb084d8753f::t_6ded10dbd79fdc 77-78,82-84,110-115
+lib/jsonld.ts
+  s_45ddb084d8753f::t_a1cdeb0f8f253f 4-6,128,130-135,139,142-146,151,160-162
+lib/location-booking.ts
+  s_45ddb084d8753f::t_48f7fb4b309d7e 1,17-25,33
+lib/painta-embed-origin.ts
+  s_45ddb084d8753f::t_76ee3468339828 1-14
+next.config.ts
+  s_45ddb084d8753f::t_4241194c57a215 23
+package.json
+  s_45ddb084d8753f::t_26ccb1d57d3020 12-13
+scripts/location-booking-smoke-check.ts
+  s_45ddb084d8753f::t_e5d1fff351a63c 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2fa5bd83666d0a7220d572c44136b1d8893c3361",
+  "prompts": {},
+  "sessions": {
+    "s_45ddb084d8753f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a14da1-cf5b-7090-97a0-87e2e3273fb1",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    }
+  }
+}
