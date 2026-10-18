@@ -1,0 +1,27 @@
+scripts/location-booking-smoke-check.ts
+  s_45ddb084d8753f::t_03cb887aa70417 11,15
+app/blog/[slug]/page.tsx
+  s_45ddb084d8753f::t_481d7e6c82e1bf 30-31,33-34
+app/locations/[slug]/page.tsx
+  s_45ddb084d8753f::t_5738d7ccf5fa2d 1-2,23-29,53-54,69-70
+package.json
+  s_45ddb084d8753f::t_2c14fbc00f1e6a 14
+scripts/published-seo-smoke-check.ts
+  s_45ddb084d8753f::t_ab6e1b13609077 1-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ebba153c310e966df65b16e123d93f935ce5d75a",
+  "prompts": {},
+  "sessions": {
+    "s_45ddb084d8753f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a14da1-cf5b-7090-97a0-87e2e3273fb1",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    }
+  }
+}
