@@ -1,3 +1,5 @@
+import { getPublishedCopyPayload } from '@/lib/copy/published';
+import { mergePublishedLocaleIntoContent } from '@/lib/copy/resolve';
 import Image from 'next/image';
 import { LocationExperience } from '@/components/LocationExperience';
 import type { Metadata } from 'next';
@@ -17,6 +19,13 @@ import { PaintaScheduleEmbed } from '@/components/PaintaScheduleEmbed';
 import { getLocationBookingDestination, getLocationStudioScheduleUrl, STUDIO_CLASSES_ANCHOR } from '@/lib/location-booking';
 
 type Props = { params: Promise<{ slug: string }> };
+
+async function getPublishedLocationBySlug(slug: string, lang: 'en' | 'jp') {
+  const sourceLocation = getLocationBySlug(slug);
+  if (!sourceLocation) return null;
+  const publishedContent = mergePublishedLocaleIntoContent(lang, await getPublishedCopyPayload(lang));
+  return publishedContent.locations.find((location) => location.id === sourceLocation.id) ?? sourceLocation;
+}
 
 function locationCopy(location: NonNullable<ReturnType<typeof getLocationBySlug>>, lang: 'en' | 'jp') {
   const name = lang === 'jp' ? location.nameJp : location.nameEn;
@@ -40,10 +49,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const location = getLocationBySlug(slug);
-  if (!location) notFound();
-
   const lang = await getRequestLang();
+  const location = await getPublishedLocationBySlug(slug, lang);
+  if (!location) notFound();
   const { title, description } = locationCopy(location, lang);
   const path = locationPath(location.id);
 
@@ -57,10 +65,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LocationDetailPage({ params }: Props) {
   const { slug } = await params;
-  const location = getLocationBySlug(slug);
-  if (!location) notFound();
-
   const lang = await getRequestLang();
+  const location = await getPublishedLocationBySlug(slug, lang);
+  if (!location) notFound();
   const routeLocale = siteLanguageToRouteLocale(lang);
   const schemaLang = routeLocale === 'ja' ? 'ja' : 'en';
   const path = locationPath(location.id);

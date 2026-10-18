@@ -8,10 +8,11 @@ for (const location of LOCATIONS) {
     const locale = lang === 'jp' ? 'ja' : 'en';
     const isOsaka = location.id.startsWith('osaka_');
     const origin = isOsaka ? 'https://tickets.artbar.co.jp' : 'https://booking.artbar.co.jp';
+    const expectedEmbedOrigin = new URL(process.env.NEXT_PUBLIC_PAINTA_EMBED_ORIGIN?.replace(/\/$/, '') || origin).origin;
     const embed = new URL(getArtbarLocationScheduleEmbedUrl(location.id, locale)!);
     const fullSchedule = new URL(getLocationStudioScheduleUrl(location.id, lang));
     const fullLocationId = fullSchedule.searchParams.get('locationId');
-    assert.equal(embed.origin, origin, `${location.id}: embed must use the regional booking host`);
+    assert.equal(embed.origin, expectedEmbedOrigin, `${location.id}: embed must use the configured or regional booking host`);
     assert.equal(fullSchedule.origin, origin, `${location.id}: full schedule must use the regional booking host`);
     assert.equal(embed.pathname, `/embed/${isOsaka ? 'artbar-osaka' : 'artbar-tokyo'}/upcoming`);
     assert.equal(embed.searchParams.get('locale'), locale);

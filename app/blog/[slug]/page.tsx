@@ -27,9 +27,11 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
-  if (!post) return { title: 'Blog | Artbar Tokyo' };
+  const sourcePost = getPostBySlug(slug);
+  if (!sourcePost) return { title: 'Blog | Artbar Tokyo' };
   const lang = await getRequestLang();
+  const publishedContent = mergePublishedLocaleIntoContent(lang, await getPublishedCopyPayload(lang));
+  const post = publishedContent.blog.find((item) => item.slug === slug) ?? sourcePost;
   const publishedMedia = await getPublishedMediaMap();
   const postImage = mediaAssetUrl(publishedMedia, `blog.${post.slug}.cover`, post.image);
   const title = lang === 'jp' ? post.titleJp : post.titleEn;
