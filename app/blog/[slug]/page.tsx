@@ -1,10 +1,12 @@
+import { getPublishedCopyPayload } from '@/lib/copy/published';
+import { mergePublishedLocaleIntoContent } from '@/lib/copy/resolve';
 import { defaultContent } from '@/data/content';
 import { BlogPost } from '@/views/BlogPost';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { nextImageSrcSet } from '@/lib/image-preload';
 import { getRequestLang, buildOpenGraph, buildLocalizedAlternates } from '@/lib/request-lang';
-import { safeJsonLd, SITE_URL } from '@/lib/jsonld';
+import { absoluteUrl, ORGANIZATION_ID, WEBSITE_ID, safeJsonLd } from '@/lib/jsonld';
 import { publicUrlForPath, siteLanguageToRouteLocale } from '@/lib/locale-routing';
 import { isBlogPostAvailableForLanguage } from '@/lib/blog-language';
 import { metaDescription } from '@/lib/seo-text';
@@ -25,9 +27,11 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
-  if (!post) return { title: 'Blog | Artbar Tokyo' };
+  const sourcePost = getPostBySlug(slug);
+  if (!sourcePost) return { title: 'Blog | Artbar Tokyo' };
   const lang = await getRequestLang();
+  const publishedContent = mergePublishedLocaleIntoContent(lang, await getPublishedCopyPayload(lang));
+  const post = publishedContent.blog.find((item) => item.slug === slug) ?? sourcePost;
   const publishedMedia = await getPublishedMediaMap();
   const postImage = mediaAssetUrl(publishedMedia, `blog.${post.slug}.cover`, post.image);
   const title = lang === 'jp' ? post.titleJp : post.titleEn;
@@ -63,9 +67,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
-  if (!post) notFound();
+  const sourcePost = getPostBySlug(slug);
+  if (!sourcePost) notFound();
   const lang = await getRequestLang();
+  const publishedContent = mergePublishedLocaleIntoContent(lang, await getPublishedCopyPayload(lang));
+  const post = publishedContent.blog.find((item) => item.slug === slug) ?? sourcePost;
   const publishedMedia = await getPublishedMediaMap();
   const postImage = mediaAssetUrl(publishedMedia, `blog.${post.slug}.cover`, post.image);
   const headline = lang === 'jp' ? post.titleJp : post.titleEn;
@@ -81,17 +87,22 @@ export default async function BlogPostPage({ params }: Props) {
   const blogJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
+    '@id': `${postUrl}#article`,
+    url: postUrl,
+    inLanguage: routeLocale,
+    isPartOf: { '@id': `${blogUrl}#blog` },
     headline,
-    ...(postImage && { image: postImage.startsWith('http') ? postImage : `${SITE_URL}${postImage}` }),
+    ...(postImage && { image: absoluteUrl(postImage) }),
     datePublished: isoDate,
-    dateModified: isoDate,
     author: { '@type': 'Person', name: authorName },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Artbar Tokyo',
-      logo: { '@type': 'ImageObject', url: `${SITE_URL}/brand/artbar-logo-dark.png` },
+    publisher: { '@id': ORGANIZATION_ID },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${postUrl}#webpage`,
+      url: postUrl,
+      inLanguage: routeLocale,
+      isPartOf: { '@id': WEBSITE_ID },
     },
-    mainEntityOfPage: postUrl,
     ...(post.tags?.length ? { keywords: post.tags.join(', ') } : {}),
   };
 
@@ -107,10 +118,12 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(blogJsonLd) }}
-      />
+      {isBlogPostAvailableForLanguage(post, lang) && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(blogJsonLd) }}
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }}

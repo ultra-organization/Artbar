@@ -2,9 +2,11 @@ import { defaultContent } from '@/data/content';
 import { PageJsonLd } from '@/components/PageJsonLd';
 import { Contact } from '@/views/Contact';
 import type { Metadata } from 'next';
-import { FAQS, FAQS_JP } from '@/constants';
+import { getPublishedCopyPayload } from '@/lib/copy/published';
+import { buildResolvedCopy } from '@/lib/copy/resolve';
 import { getRequestLang, buildOpenGraph, buildLocalizedAlternates } from '@/lib/request-lang';
 import { safeJsonLd } from '@/lib/jsonld';
+import { publicUrlForPath, siteLanguageToRouteLocale } from '@/lib/locale-routing';
 
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getRequestLang();
@@ -30,11 +32,13 @@ export default async function ContactPage() {
     lang === 'jp'
       ? 'Artbar Tokyoへのお問い合わせはこちらから。通常24時間以内にご返信いたします。ご予約・キャンセル・各種お問い合わせを承ります。'
       : 'Get in touch with Artbar Tokyo. We reply within 24 hours. Use the form for bookings, cancellations, or general enquiries.';
-  const faqs = lang === 'jp' ? FAQS_JP : FAQS;
+  const faqs = buildResolvedCopy(lang, await getPublishedCopyPayload(lang)).faqs;
 
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
+    '@id': `${publicUrlForPath('/contact', siteLanguageToRouteLocale(lang))}#webpage`,
+    inLanguage: lang === 'jp' ? 'ja' : 'en',
     mainEntity: faqs.map((f) => ({
       '@type': 'Question',
       name: f.question,

@@ -31,8 +31,7 @@ const TikTokIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
 // Plain-text studio directory for the footer — name + ward + nearest station.
 // The ward/station strings are curated here (LOCATIONS.access* is multi-line and
 // too verbose for a compact two-line entry) to boost relevance for location-based
-// search (渋谷 / 銀座 / 横浜 アート体験). Scoped to the four corporate Tokyo studios;
-// the Osaka entries in LOCATIONS are franchises. Each entry links to /locations.
+// search. Include every listed studio, with the same nearest stations as its access page.
 const FOOTER_STUDIOS = [
   {
     id: 'daikanyama',
@@ -61,6 +60,27 @@ const FOOTER_STUDIOS = [
     nameJp: '横浜元町',
     metaEn: 'Naka, Yokohama · Minatomirai Line, Motomachi-Chukagai Station',
     metaJp: '横浜市中区・みなとみらい線「元町・中華街駅」',
+  },
+  {
+    id: 'osaka_namba',
+    nameEn: 'Osaka Namba SkyO',
+    nameJp: '大阪 なんばスカイオ',
+    metaEn: 'Chuo, Osaka · Nankai Namba / Metro Namba Station',
+    metaJp: '大阪市中央区・南海「なんば駅」／大阪メトロ「なんば駅」',
+  },
+  {
+    id: 'osaka_umeda',
+    nameEn: 'Osaka Umeda',
+    nameJp: '大阪 梅田',
+    metaEn: 'Kita, Osaka · JR Osaka Station',
+    metaJp: '大阪市北区・JR「大阪駅」',
+  },
+  {
+    id: 'osaka_hirakata',
+    nameEn: 'Lab Hirakata',
+    nameJp: 'Lab 枚方',
+    metaEn: 'Hirakata, Osaka · Keihan Hirakatashi Station',
+    metaJp: '大阪府枚方市・京阪「枚方市駅」',
   },
 ] as const;
 
