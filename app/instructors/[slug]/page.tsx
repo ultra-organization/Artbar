@@ -35,7 +35,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const instructor = await getInstructor(slug, lang);
   if (!instructor) notFound();
   const name = stripJpSentinel(instructor.name);
-  const title = lang === 'jp' ? `${name}｜Artbar Tokyo インストラクター` : `${name} | Artbar Tokyo Instructor`;
+  const title = instructor.id === 'glicinapeony'
+    ? `${name} | Artbar Tokyo`
+    : lang === 'jp' ? `${name}｜Artbar Tokyo インストラクター` : `${name} | Artbar Tokyo Instructor`;
   const description = stripJpSentinel(lang === 'jp' ? instructor.descJp : instructor.descEn);
   return {
     title: { absolute: title },
@@ -65,16 +67,15 @@ export default async function InstructorProfilePage({ params }: Props) {
     inLanguage: locale,
     isPartOf: { '@id': WEBSITE_ID },
     mainEntity: {
-      '@type': 'Person',
+      '@type': instructor.id === 'glicinapeony' ? 'Organization' : 'Person',
       name,
-      jobTitle: role,
       description: bio,
       image: absoluteUrl(instructor.profileImage),
-      worksFor: { '@id': ORGANIZATION_ID },
+      ...(instructor.id !== 'glicinapeony' && { jobTitle: role, worksFor: { '@id': ORGANIZATION_ID } }),
     },
   };
   return (
-    <main className="grain min-h-screen bg-artbar-bg pt-32 pb-20">
+    <div className="grain min-h-screen bg-artbar-bg pt-32 pb-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       <div className="mx-auto max-w-[1180px] px-6 md:px-10">
         <Link href={localizePath('/instructors', locale)} className="inline-flex min-h-11 items-center text-sm font-bold text-artbar-navy underline underline-offset-4">
@@ -98,6 +99,6 @@ export default async function InstructorProfilePage({ params }: Props) {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

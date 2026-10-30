@@ -44,10 +44,10 @@ export default async function InstructorsPage() {
       '@type': 'ListItem',
       position: index + 1,
       item: {
-        '@type': 'Person',
+        '@type': instructor.id === 'glicinapeony' ? 'Organization' : 'Person',
         name: stripJpSentinel(instructor.name),
         url: publicUrlForPath(`/instructors/${instructor.id}`, siteLanguageToRouteLocale(lang)),
-        jobTitle: stripJpSentinel(lang === 'jp' ? instructor.roleJp : instructor.roleEn),
+        ...(instructor.id !== 'glicinapeony' && { jobTitle: stripJpSentinel(lang === 'jp' ? instructor.roleJp : instructor.roleEn) }),
         description: stripJpSentinel(lang === 'jp' ? instructor.descJp : instructor.descEn),
         image: absoluteUrl(instructor.profileImage),
       },

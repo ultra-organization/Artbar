@@ -99,6 +99,13 @@ async function main() {
     const meta = await profile.generateMetadata(props);
     assert.equal(meta.description, instructor.desc);
     await assert.rejects(profile.default({ params: Promise.resolve({ slug: 'does-not-exist' }) }), /NOT_FOUND/);
+    const partner = readTree(await profile.default({ params: Promise.resolve({ slug: 'glicinapeony' }) })).graphs.find((item) => item['@type'] === 'ProfilePage')!;
+    const partnerEntity = partner.mainEntity as JsonLd;
+    assert.equal(partnerEntity['@type'], 'Organization');
+    assert.equal(partnerEntity.worksFor, undefined);
+    assert.equal(partnerEntity.jobTitle, undefined);
+    const indexPartner = (index.itemListElement as JsonLd[]).map((entry) => entry.item as JsonLd).find((item) => item.url === partner.url)!;
+    assert.equal(indexPartner['@type'], 'Organization');
 
     const blogDetail = loadRoute('app/blog/[slug]/page.tsx', lang, payload);
     const blogProps = { params: Promise.resolve({ slug: sourcePost.slug }) };
