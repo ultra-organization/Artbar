@@ -78,6 +78,28 @@ async function main() {
     Object.assign(location, { name: `${lang} published studio name`, address: `${lang} published street address`, access: `${lang} published transit instructions` });
     payload.locations.reverse();
 
+    const instructor = payload.instructors[0];
+    instructor.desc = `${lang} published instructor bio`;
+    instructor.role = `${lang} published instructor role`;
+    const profilePath = `/instructors/${instructor.id}`;
+    const profile = loadRoute('app/instructors/[slug]/page.tsx', lang, payload);
+    const props = { params: Promise.resolve({ slug: instructor.id }) };
+    const graph = readTree(await profile.default(props)).graphs.find((item) => item['@type'] === 'ProfilePage')!;
+    assert(graph, `${lang}: profile structured data must be present`);
+    const person = graph.mainEntity as JsonLd;
+    assert.equal(person['@type'], 'Person');
+    assert.equal(person.description, instructor.desc);
+    assert.equal(person.jobTitle, instructor.role);
+    const index = readTree(await loadRoute('app/instructors/page.tsx', lang, payload).default()).graphs.find((item) => item['@type'] === 'ItemList')!;
+    const matchingPerson = (index.itemListElement as JsonLd[]).map((entry) => entry.item as JsonLd).find((item) => item.url === graph.url)!;
+    assert(matchingPerson, `${lang}: profile and directory identity must match`);
+    assert.equal(matchingPerson.name, person.name);
+    assert.equal(matchingPerson.description, person.description);
+    assert.equal(graph.url, `https://artbar.co.jp${lang === 'en' ? '/en' : ''}${profilePath}`);
+    const meta = await profile.generateMetadata(props);
+    assert.equal(meta.description, instructor.desc);
+    await assert.rejects(profile.default({ params: Promise.resolve({ slug: 'does-not-exist' }) }), /NOT_FOUND/);
+
     const blogDetail = loadRoute('app/blog/[slug]/page.tsx', lang, payload);
     const blogProps = { params: Promise.resolve({ slug: sourcePost.slug }) };
     const blogMetadata = await blogDetail.generateMetadata(blogProps);
