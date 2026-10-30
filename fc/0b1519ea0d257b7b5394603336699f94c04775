@@ -1,0 +1,23 @@
+app/instructors/[slug]/page.tsx
+  s_b53a3993bb2e63::t_cb752b187dec71 38-40,70,74,78,102
+app/instructors/page.tsx
+  s_b53a3993bb2e63::t_faefb307f1986f 47,50
+scripts/published-seo-smoke-check.ts
+  s_b53a3993bb2e63::t_e998a92676a4db 102-108
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc0b1519ea0d257b7b5394603336699f94c04775",
+  "prompts": {},
+  "sessions": {
+    "s_b53a3993bb2e63": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a18664-160b-7963-a53f-173dac0deeaf",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    }
+  }
+}
