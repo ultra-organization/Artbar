@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ChevronDown } from 'lucide-react';
 import { localizePath, siteLanguageToRouteLocale } from '../lib/locale-routing';
 import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
@@ -25,15 +26,20 @@ export const Instructors: React.FC = () => {
           </p>
         </div>
 
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <label className="flex flex-wrap items-center gap-3 font-bold">
-            {lang === 'jp' ? '対応言語' : 'Language'}
-            <select value={language} onChange={(event) => setLanguage(event.target.value)} className="min-h-12 rounded-xl border border-artbar-taupe bg-white px-4 focus-visible:outline-2 focus-visible:outline-artbar-navy">
-              <option value="all">{lang === 'jp' ? 'すべての言語' : 'All languages'}</option>
-              {languages.map((value) => <option key={value} value={value}>{value}</option>)}
-            </select>
-          </label>
-          <p role="status" className="text-sm text-artbar-gray">{lang === 'jp' ? `${instructors.length}名の講師` : `${instructors.length} instructors`}</p>
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+          <div className="flex min-h-12 w-full items-center rounded-full border border-artbar-taupe/40 bg-white px-4 text-artbar-navy transition-colors focus-within:border-artbar-navy focus-within:ring-2 focus-within:ring-artbar-navy/20 sm:w-auto">
+            <label htmlFor="instructor-language" className="shrink-0 pr-4 text-sm font-bold text-artbar-gray">
+              {lang === 'jp' ? '対応言語' : 'Language'}
+            </label>
+            <div className="relative min-w-0 flex-1 border-l border-artbar-taupe/30 sm:flex-none">
+              <select id="instructor-language" value={language} onChange={(event) => setLanguage(event.target.value)} className="min-h-12 w-full min-w-[9.5rem] cursor-pointer appearance-none bg-transparent pl-4 pr-9 text-sm font-bold text-artbar-navy outline-none">
+                <option value="all">{lang === 'jp' ? 'すべての言語' : 'All languages'}</option>
+                {languages.map((value) => <option key={value} value={value}>{value}</option>)}
+              </select>
+              <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-artbar-taupe" />
+            </div>
+          </div>
+          <p role="status" className="text-sm text-artbar-gray">{lang === 'jp' ? `${instructors.length}名の講師` : `${instructors.length} ${instructors.length === 1 ? 'instructor' : 'instructors'}`}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8 md:gap-y-12">
           {instructors.map((instructor) => (
