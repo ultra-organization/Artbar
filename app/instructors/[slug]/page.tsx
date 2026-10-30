@@ -83,7 +83,7 @@ export default async function InstructorProfilePage({ params }: Props) {
         </Link>
         <div className="mt-6 overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white shadow-sm">
           <div className="relative h-64 bg-artbar-bg sm:h-80">
-            <Image src={instructor.artworkImage} alt={`${name}'s Art`} fill priority className="object-cover" sizes="100vw" />
+            <Image src={instructor.artworkImage} alt={lang === 'jp' ? `${name}の作品` : `${name}'s Art`} fill priority className="object-cover" sizes="100vw" />
           </div>
           <div className="relative px-6 pb-10 sm:px-10">
             <div className="relative -mt-16 mb-6 h-32 w-32 overflow-hidden rounded-full border-[6px] border-white bg-white shadow-md">
