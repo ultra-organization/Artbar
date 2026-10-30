@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { defaultContent } from '@/data/content';
+import { INSTRUCTORS } from '@/constants';
 import { THEME_PAGE_SLUGS } from '@/data/generated-image-paths';
 import { getCanonicalThemeSlug } from '@/data/theme-details';
 import { SEO_GUIDE_SLUGS, guidePath } from '@/data/seo-guides';
@@ -55,6 +56,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   ];
 
+  const instructorRoutes: MetadataRoute.Sitemap = INSTRUCTORS.flatMap((instructor) =>
+    localizedEntries(`/instructors/${instructor.id}`, { priority: 0.6, changeFrequency: 'monthly' as const })
+  );
+
   const themeRoutes: MetadataRoute.Sitemap = THEME_PAGE_SLUGS.flatMap((slug) =>
     localizedEntries(`/themes/${getCanonicalThemeSlug(slug)}`, {
       priority: 0.7,
@@ -90,5 +95,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  return [...staticRoutes, ...locationRoutes, ...themeRoutes, ...guideRoutes, ...blogRoutes];
+  return [...staticRoutes, ...instructorRoutes, ...locationRoutes, ...themeRoutes, ...guideRoutes, ...blogRoutes];
 }

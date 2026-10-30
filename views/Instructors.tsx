@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { localizePath, siteLanguageToRouteLocale } from '../lib/locale-routing';
 import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useContent } from '../context/ContentContext';
@@ -74,6 +76,10 @@ export const Instructors: React.FC = () => {
                     <p className="text-artbar-gray leading-relaxed text-base md:text-lg">
                       <JpText>{lang === 'en' ? instructor.descEn : instructor.descJp}</JpText>
                     </p>
+                    <Link href={localizePath(`/instructors/${instructor.id}`, siteLanguageToRouteLocale(lang))} className="mt-6 inline-flex min-h-11 items-center font-bold text-artbar-navy underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-artbar-navy">
+                      {lang === 'jp' ? 'プロフィールを見る' : 'View profile'}
+                      <span className="sr-only">: {stripJpSentinel(instructor.name)}</span>
+                    </Link>
                  </div>
               </div>
             </div>
