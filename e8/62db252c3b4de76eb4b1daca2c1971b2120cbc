@@ -1,0 +1,20 @@
+views/Instructors.tsx
+  s_b53a3993bb2e63::t_21c2ebd7f9715f 6,29-41
+  s_b53a3993bb2e63::t_24f4f7a240d5c2 42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e862db252c3b4de76eb4b1daca2c1971b2120cbc",
+  "prompts": {},
+  "sessions": {
+    "s_b53a3993bb2e63": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a18664-160b-7963-a53f-173dac0deeaf",
+        "model": "gpt-6.1-terra"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    }
+  }
+}
