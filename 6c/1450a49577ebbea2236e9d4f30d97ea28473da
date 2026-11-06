@@ -1,0 +1,26 @@
+views/TeamBuilding.tsx
+  s_f98ba0c23a8d8b::t_3ea7b1fe2e924a 53
+  s_f98ba0c23a8d8b::t_57311a79778655 48
+lib/year-end-season.ts
+  s_f98ba0c23a8d8b::t_3ea7b1fe2e924a 11-12,14,16,38
+components/YearEndPartySection.tsx
+  s_f98ba0c23a8d8b::t_3ea7b1fe2e924a 22-24,63-66
+data/year-end-parties.ts
+  s_f98ba0c23a8d8b::t_3ea7b1fe2e924a 14,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6c1450a49577ebbea2236e9d4f30d97ea28473da",
+  "prompts": {},
+  "sessions": {
+    "s_f98ba0c23a8d8b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ec4c6afd-bcda-4b7c-8f45-c98b166b15b4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    }
+  }
+}
