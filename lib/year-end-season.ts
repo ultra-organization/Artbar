@@ -8,12 +8,12 @@ import { useEffect, useState } from 'react';
  */
 export const YEAR_END_SEASON = { start: { month: 9, day: 1 }, end: { month: 1, day: 7 } } as const;
 
-/** Season shown in the static HTML; the client re-checks the real date after hydration. */
-const BUILD_SEASON = { active: true, year: 2026 };
+/** Static HTML shows the promotion without a year; the client fills in the real season after hydration. */
+const STATIC_SEASON = { active: true, year: null };
 
-export type YearEndSeason = { active: boolean; year: number };
+export type YearEndSeason = { active: boolean; year: number | null };
 
-export function yearEndSeasonAt(date: Date): YearEndSeason {
+export function yearEndSeasonAt(date: Date): { active: boolean; year: number } {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Tokyo',
     year: 'numeric',
@@ -35,7 +35,7 @@ export function yearEndSeasonAt(date: Date): YearEndSeason {
 
 /** Whether the year-end promotion should show today, and which year's parties it is for. */
 export function useYearEndSeason(): YearEndSeason {
-  const [season, setSeason] = useState<YearEndSeason>(BUILD_SEASON);
+  const [season, setSeason] = useState<YearEndSeason>(STATIC_SEASON);
   useEffect(() => {
     setSeason(yearEndSeasonAt(new Date()));
   }, []);

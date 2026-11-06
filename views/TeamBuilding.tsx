@@ -45,12 +45,12 @@ export const TeamBuilding: React.FC = () => {
   const previousTestimonialLabel = stripJpSentinel(localizedCopy.ui.teamBuilding.previousTestimonial);
   const nextTestimonialLabel = stripJpSentinel(localizedCopy.ui.teamBuilding.nextTestimonial);
   const yearEndCopy = YEAR_END_PARTY_COPY[lang].team;
-  const { pricing, logistics } = site.teamBuilding;
+  const { pricing } = site.teamBuilding;
   const offsiteRow = logisticsRows[logisticsRows.length - 1];
   const yearEndFacts = [
     { value: pricing.price, label: pricing.priceNote },
     { value: pricing.packageSubtitle, label: yearEndCopy.materialsLabel },
-    { value: yearEndCopy.drinksValue, label: logistics.included.items[4] ?? '' },
+    { value: yearEndCopy.drinksValue, label: yearEndCopy.drinksLabel },
     { value: offsiteRow?.cap[lang] ?? '', label: yearEndCopy.offsiteLabel },
   ];
 

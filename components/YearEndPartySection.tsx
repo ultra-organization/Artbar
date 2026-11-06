@@ -19,7 +19,9 @@ type Kind = 'team' | 'private';
 
 export type YearEndFact = { value: string; label: string };
 
-const withYear = (text: string, year: number) => text.replace('{year}', String(year));
+/** Fills the season year into a badge; before the client knows the date, the year is left out. */
+const withYear = (text: string, year: number | null) =>
+  year === null ? text.replace(/\s*\{year\}年?(<wbr>)?/, '').trim() : text.replace('{year}', String(year));
 
 /** Small seasonal link for page heroes that jumps to the year-end feature. */
 export function YearEndHeroLink({ kind, tone }: { kind: Kind; tone: 'light' | 'dark' }) {
@@ -58,7 +60,10 @@ export function YearEndPartySection({
   const copy = YEAR_END_PARTY_COPY[lang][kind];
   if (!season.active) return null;
   const inquiryUrl = kind === 'team' ? TEAM_BUILDING_INQUIRY_URL : PRIVATE_PARTY_INQUIRY_URL;
-  const goToInquiry = () => { window.location.href = withBrowserAcquisition(inquiryUrl); };
+  const goToInquiry = () => {
+    trackInquiryClick(kind === 'team' ? 'team_building' : 'private_party', `year_end_${kind}`);
+    window.location.href = withBrowserAcquisition(inquiryUrl);
+  };
 
   return (
     <section
