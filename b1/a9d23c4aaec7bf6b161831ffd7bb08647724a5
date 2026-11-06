@@ -1,0 +1,57 @@
+components/YearEndPartySection.tsx
+  s_edc64262779d62::t_f9d5e5b773f232 1-2,5-7,9-10,15,56,58,60,62-63,202-205
+  s_f98ba0c23a8d8b::t_1d587586e682bb 3,11,16-21,24-26,28,30-36,38-55,61,64-68,70-72,75-82,92-97,110-113,115-119,121-123,125-135,137-147
+  s_f98ba0c23a8d8b::t_c48ff6ba200545 4,73,83-91,101,136,181,193,197
+  s_f98ba0c23a8d8b::t_b160170270dc0f 37
+  s_f98ba0c23a8d8b::t_35c6a13e8123e1 114,124
+  s_f98ba0c23a8d8b::t_a75ce927e9cbc3 120
+  s_f98ba0c23a8d8b::t_b7d9c3d41fe2db 8,12-14,22-23,27,29,57,59,74,98-100,102-109,148-180,182-192,194-196,198-201
+  s_f98ba0c23a8d8b::t_66c69bcc2421e5 69
+views/Home.tsx
+  s_f98ba0c23a8d8b::t_b7d9c3d41fe2db 64,548-549
+  s_f98ba0c23a8d8b::t_65bd6a2b005a5e 792
+  s_f98ba0c23a8d8b::t_22bc08c55e23a3 550
+constants.ts
+  s_f98ba0c23a8d8b::t_65bd6a2b005a5e 144-145
+views/PrivateParties.tsx
+  s_f98ba0c23a8d8b::t_89bb7260f2a5ef 15,34-41,77-79,82-86
+  s_f98ba0c23a8d8b::t_6464602f88f51c 87
+lib/year-end-season.ts
+  s_f98ba0c23a8d8b::t_a9f4e84f613072 1-43
+data/year-end-parties.ts
+  s_f98ba0c23a8d8b::t_dff7ca9d3e325c 2,8-12,14-23,31-32,34,36-43,55-59,61,63-70,78-79,81,83-90
+  s_edc64262779d62::t_32be573f97581c 1,62,82
+  s_f98ba0c23a8d8b::t_35c6a13e8123e1 3,24-27,46-49,71-74,93-96
+  s_f98ba0c23a8d8b::t_9ac5912388534a 7,30,33,44-45,54,77,80,91-92,98-127
+  s_f98ba0c23a8d8b::t_3747d72d417717 13,60
+  s_edc64262779d62::t_f9d5e5b773f232 4-6,28-29,35,50-53,75-76,97,128-129
+views/TeamBuilding.tsx
+  s_f98ba0c23a8d8b::t_65bd6a2b005a5e 48
+  s_f98ba0c23a8d8b::t_89bb7260f2a5ef 15-16,47,49-52,54-56,106-108,133-137
+  s_f98ba0c23a8d8b::t_5f064d88f9d9b4 53
+  s_f98ba0c23a8d8b::t_6e3d0b0cfe36e6 138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b1a9d23c4aaec7bf6b161831ffd7bb08647724a5",
+  "prompts": {},
+  "sessions": {
+    "s_edc64262779d62": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1a4b4-10ef-7cf0-9faf-5e5963822a44",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    },
+    "s_f98ba0c23a8d8b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ec4c6afd-bcda-4b7c-8f45-c98b166b15b4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "ultra-organization <ryan@ultra.com.ai>"
+    }
+  }
+}
