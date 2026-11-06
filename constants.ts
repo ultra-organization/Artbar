@@ -141,7 +141,8 @@ export const SOCIAL_PROFILES = {
 export const SOCIAL_PROFILE_URLS: readonly string[] = Object.values(SOCIAL_PROFILES);
 
 /** AI-generated illustrative company group, based on the booking studio reference. */
-export const GROUP_EVENT_IMAGE = '/media/generated/home-company-party.png';
+/** Real Artbar Tokyo group session (replaces the earlier generated illustration). */
+export const GROUP_EVENT_IMAGE = '/media/year-end/team-easels.webp';
 
 export const SITE_IMAGES = {
   hero: {
