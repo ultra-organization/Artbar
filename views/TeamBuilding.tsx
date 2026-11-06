@@ -12,6 +12,8 @@ import { PartnerLogo } from '../components/PartnerLogo';
 import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { YearEndHeroLink, YearEndPartySection } from '../components/YearEndPartySection';
+import { YEAR_END_PARTY_COPY } from '../data/year-end-parties';
 
 export const TeamBuilding: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -42,6 +44,16 @@ export const TeamBuilding: React.FC = () => {
   const heroImageAlt = stripJpSentinel(localizedCopy.ui.teamBuilding.heroImageAlt);
   const previousTestimonialLabel = stripJpSentinel(localizedCopy.ui.teamBuilding.previousTestimonial);
   const nextTestimonialLabel = stripJpSentinel(localizedCopy.ui.teamBuilding.nextTestimonial);
+  const yearEndCopy = YEAR_END_PARTY_COPY[lang].team;
+  const { pricing } = site.teamBuilding;
+  const offsiteRow = logisticsRows[logisticsRows.length - 1];
+  const yearEndFacts = [
+    { value: pricing.price, label: pricing.priceNote },
+    { value: pricing.packageSubtitle, label: yearEndCopy.materialsLabel },
+    { value: yearEndCopy.drinksValue, label: yearEndCopy.drinksLabel },
+    { value: offsiteRow?.cap[lang] ?? '', label: yearEndCopy.offsiteLabel },
+  ];
+
   const formatEnglishActivityTitle = (title: string) => {
     if (lang !== 'en') return title;
 
@@ -91,6 +103,9 @@ export const TeamBuilding: React.FC = () => {
                <JpText>{site.teamBuilding.hero.cta}</JpText>
             </Button>
           </div>
+          <div className="mt-6 flex justify-center">
+            <YearEndHeroLink kind="team" tone="dark" />
+          </div>
         </div>
       </div>
 
@@ -114,6 +129,12 @@ export const TeamBuilding: React.FC = () => {
             ))}
           </div>
         </div>
+
+        <YearEndPartySection
+          kind="team"
+          facts={yearEndFacts}
+          feeNote={`+ ${pricing.feeLabel} ${pricing.feePrice}`}
+        />
 
         <div
           ref={valueReveal.ref}

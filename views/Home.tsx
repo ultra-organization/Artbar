@@ -61,6 +61,7 @@ const HOW_IT_WORKS_IMAGES = [
 import { useNearViewport } from '../hooks/useNearViewport';
 import { PrefetchHeroes } from '../components/PrefetchHeroes';
 import { localizeHrefForLanguage } from '../lib/locale-routing';
+import { HomeYearEndFeature } from '../components/YearEndPartySection';
 
 /** Compact emblems need a small optical lift beside wide wordmarks, but stay in
  *  the same wall and the same-size frame as every other partner. */
@@ -544,6 +545,9 @@ export const Home: React.FC = () => {
         <Script src={`${PAINTA_EMBED_ORIGIN}/embed.js`} strategy="afterInteractive" />
       </section>
 
+      {/* Year-end parties: seasonal (1 Sep to 7 Jan), pushing company parties first. */}
+      <HomeYearEndFeature />
+
       {/* Popular sessions: make the bookable inspiration visible before longer proof sections. */}
       <section
         id="popular-themes"
@@ -785,7 +789,7 @@ export const Home: React.FC = () => {
             <div className="relative aspect-[3/2] overflow-hidden rounded-[1.5rem] md:aspect-[6/5] md:rounded-[2rem]">
               <Image
                 src={mediaAssetUrl(media, 'home.groupEvents', GROUP_EVENT_IMAGE)}
-                alt={lang === 'jp' ? 'Artbarのスタジオをもとにした企業グループのアート体験イメージ' : 'Illustration of a company group enjoying art in an Artbar-inspired studio'}
+                alt={lang === 'jp' ? 'Artbarのスタジオでキャンバスを掲げて楽しむ参加者たち' : 'Guests holding up their canvases during an Artbar group session'}
                 fill sizes="(max-width: 767px) 100vw, 45vw" className="object-cover"
               />
             </div>

@@ -12,6 +12,7 @@ import { stripJpSentinel } from '../lib/jp-attr';
 import { useContent } from '../context/ContentContext';
 import { HERO_BLUR_DATA_URL, PRIVATE_PARTY_INQUIRY_URL } from '../constants';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { YearEndHeroLink, YearEndPartySection } from '../components/YearEndPartySection';
 import { Check, Clock, Wine, Palette, Utensils, Sparkles } from 'lucide-react';
 
 export const PrivateParties: React.FC = () => {
@@ -29,6 +30,14 @@ export const PrivateParties: React.FC = () => {
   const specialtyInquiry = privateParties.specialtyInquiry;
 
   const topHeroSrc = privateParties.occasions[0]?.image ?? '';
+
+  const { adult, common } = privateParties.pricing;
+  const yearEndFacts = [
+    { value: adult.price, label: priceSuffix },
+    { value: adult.subtitle, label: adult.items[0]?.title ?? '' },
+    { value: adult.items[2]?.title ?? '', label: adult.items[2]?.desc ?? '' },
+    { value: common.minGuests, label: common.minGuestsLabel },
+  ];
 
   return (
     <div className="grain relative pt-28 md:pt-40 pb-20 bg-artbar-bg min-h-screen">
@@ -65,7 +74,16 @@ export const PrivateParties: React.FC = () => {
           >
             <JpText>{privateParties.specialtyInquiry.cta}</JpText>
           </Button>
+          <div className="mt-6 flex justify-center">
+            <YearEndHeroLink kind="private" tone="light" />
+          </div>
         </div>
+
+        <YearEndPartySection
+          kind="private"
+          facts={yearEndFacts}
+          feeNote={`+ ${common.venueFeeLabel} ${common.venueFeePrice}`}
+        />
 
         <div
           ref={occasionsReveal.ref}
