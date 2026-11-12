@@ -471,20 +471,20 @@ html:lang(ja) h4 span {
   --notch: 14px;
   border-radius: 1.25rem;
   -webkit-mask:
-    radial-gradient(circle var(--notch) at 0 13rem, #0000 98%, #000) left top / 51% 100% no-repeat,
-    radial-gradient(circle var(--notch) at 100% 13rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+    radial-gradient(circle var(--notch) at 0 15rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 15rem, #0000 98%, #000) right top / 51% 100% no-repeat;
   mask:
-    radial-gradient(circle var(--notch) at 0 13rem, #0000 98%, #000) left top / 51% 100% no-repeat,
-    radial-gradient(circle var(--notch) at 100% 13rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+    radial-gradient(circle var(--notch) at 0 15rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 15rem, #0000 98%, #000) right top / 51% 100% no-repeat;
 }
 @media (min-width: 640px) {
   .holiday-ticket {
     -webkit-mask:
-      radial-gradient(circle var(--notch) at 0 16rem, #0000 98%, #000) left top / 51% 100% no-repeat,
-      radial-gradient(circle var(--notch) at 100% 16rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+      radial-gradient(circle var(--notch) at 0 18rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% 18rem, #0000 98%, #000) right top / 51% 100% no-repeat;
     mask:
-      radial-gradient(circle var(--notch) at 0 16rem, #0000 98%, #000) left top / 51% 100% no-repeat,
-      radial-gradient(circle var(--notch) at 100% 16rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+      radial-gradient(circle var(--notch) at 0 18rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% 18rem, #0000 98%, #000) right top / 51% 100% no-repeat;
   }
 }
 @media (min-width: 768px) {
