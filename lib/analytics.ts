@@ -27,3 +27,7 @@ export function trackBookingClick(
 export function trackInquiryClick(type: 'private_party' | 'team_building', source: string): void {
   track('inquiry_cta_clicked', { type, source });
 }
+
+export function trackGiftCertificateClick(source: string): void {
+  track('gift_certificate_clicked', { source });
+}

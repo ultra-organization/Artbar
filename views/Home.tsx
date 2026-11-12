@@ -62,6 +62,9 @@ import { useNearViewport } from '../hooks/useNearViewport';
 import { PrefetchHeroes } from '../components/PrefetchHeroes';
 import { localizeHrefForLanguage } from '../lib/locale-routing';
 import { HomeYearEndFeature } from '../components/YearEndPartySection';
+import { HolidayLights } from '../components/HolidayDecor';
+import { HolidayGiftBanner } from '../components/HolidayGiftBanner';
+import { useHolidayTheme } from '../lib/holiday-season';
 
 /** Compact emblems need a small optical lift beside wide wordmarks, but stay in
  *  the same wall and the same-size frame as every other partner. */
@@ -90,6 +93,7 @@ export const Home: React.FC = () => {
   const router = useRouter();
   const [hasMounted, setHasMounted] = useState(false);
   const [showAllThemes, setShowAllThemes] = useState(false);
+  const holiday = useHolidayTheme();
   const priorityThemes = ['paint-pouring', 'paint-your-pet', 'texture-painting'];
   const orderedThemes = [...site.home.themes.items].sort((a, b) => {
     const rank = (item: typeof a) => { const index = priorityThemes.indexOf(themeSlugFromItem(item)); return index < 0 ? priorityThemes.length : index; };
@@ -320,6 +324,7 @@ export const Home: React.FC = () => {
             className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-artbar-taupe/80 from-0% to-transparent to-[52%]"
             aria-hidden
           />
+          {holiday && <HolidayLights />}
 
           <div
             className="absolute inset-0 z-[3] flex min-h-full flex-col items-center justify-end pb-16 px-5 pt-[calc(env(safe-area-inset-top,0px)+5.5rem)] text-center md:justify-start md:pb-20 md:min-h-[100svh] md:px-16 lg:px-20 md:pt-[6.75rem] max-w-[1400px] mx-auto"
@@ -432,6 +437,8 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {holiday && <HolidayGiftBanner />}
 
       {/* First-visit details (HB 4-2): a light, price-forward card answering the five first-visit questions. */}
       <section className="relative z-[4] bg-artbar-bg px-4 pt-14 pb-2 md:px-10 md:pt-20 md:pb-4">
