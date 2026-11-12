@@ -437,3 +437,64 @@ html:lang(ja) h4 span {
 /* Font weight utilities matching old Tailwind config */
 .font-bold  { font-weight: 600; }
 .font-heavy { font-weight: 700; }
+
+/* Holiday theme (home hero lights + gift banner). Switch and dates live in lib/holiday-season.ts. */
+.holiday-bulb {
+  border-radius: 50% 50% 50% 50% / 42% 42% 58% 58%;
+  background: radial-gradient(circle at 40% 30%, #fff 0 12%, var(--bulb) 45%);
+  box-shadow: 0 0 6px 2px var(--bulb), 0 0 16px 4px color-mix(in srgb, var(--bulb) 55%, transparent);
+  animation: holiday-twinkle 3.3s ease-in-out infinite;
+}
+@keyframes holiday-twinkle {
+  0%, 30%, 100% {
+    opacity: 1;
+    filter: none;
+    box-shadow: 0 0 6px 2px var(--bulb), 0 0 16px 4px color-mix(in srgb, var(--bulb) 55%, transparent);
+  }
+  42%, 62% {
+    opacity: 0.45;
+    filter: saturate(0.6) brightness(0.7);
+    box-shadow: none;
+  }
+}
+.holiday-fade-in {
+  animation: fade-in 0.8s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .holiday-bulb,
+  .holiday-fade-in {
+    animation: none;
+  }
+}
+/* Gift certificate card: rounded corners plus two punched notches where the perforation meets each edge. */
+.holiday-ticket {
+  --notch: 14px;
+  border-radius: 1.25rem;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 13rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 13rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 0 13rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% 13rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+}
+@media (min-width: 640px) {
+  .holiday-ticket {
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at 0 16rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% 16rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+    mask:
+      radial-gradient(circle var(--notch) at 0 16rem, #0000 98%, #000) left top / 51% 100% no-repeat,
+      radial-gradient(circle var(--notch) at 100% 16rem, #0000 98%, #000) right top / 51% 100% no-repeat;
+  }
+}
+@media (min-width: 768px) {
+  .holiday-ticket {
+    --notch: 16px;
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at 41.666% 0, #0000 98%, #000) left top / 100% 51% no-repeat,
+      radial-gradient(circle var(--notch) at 41.666% 100%, #0000 98%, #000) left bottom / 100% 51% no-repeat;
+    mask:
+      radial-gradient(circle var(--notch) at 41.666% 0, #0000 98%, #000) left top / 100% 51% no-repeat,
+      radial-gradient(circle var(--notch) at 41.666% 100%, #0000 98%, #000) left bottom / 100% 51% no-repeat;
+  }
+}

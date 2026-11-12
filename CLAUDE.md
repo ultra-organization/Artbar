@@ -83,6 +83,8 @@ Batch image generation (`npm run generate:images`, `npm run generate:images:them
 
 **Hero media:** Theme detail, team building, blog post, and private parties heroes fade in after load. The **home MP4** hero shows a neutral `bg-artbar-bg` plate with an **indeterminate progress bar** until `onPlaying` / `onLoadedData` / `onCanPlay` (then video, gradients, and copy fade in); **`15s` timeout** still reveals everything if events misfire. Hero `<video>` stays **opaque**—do not gate with `opacity-0` or Chromium may never autoplay or fire those events; the **overlay** hides the clip until ready. No still image, poster, or navy band before the video. **Home still/GIF** heroes use `bg-artbar-navy` under the media immediately. Over ready hero media, a **two-layer** wash: navy vignette from below plus a strong **taupe** gradient from the top for legibility—hero headline copy does not rely on `text-shadow`.
 
+**Holiday theme:** `lib/holiday-season.ts` (`HOLIDAY_THEME.enabled` switch + 1 Nov–31 Dec Tokyo window) controls the home hero string lights (`components/HolidayDecor.tsx`) and the gift certificate banner (`components/HolidayGiftBanner.tsx`, copy in `data/holiday-theme.ts`). It renders client-side only, so cached HTML never shows it out of season. Preview any time with `?holiday=on` / `?holiday=off`.
+
 ## Design Tokens
 
 - **Navy:** `#053761` (primary brand color)
