@@ -443,17 +443,19 @@ html:lang(ja) h4 span {
   border-radius: 50% 50% 50% 50% / 42% 42% 58% 58%;
   background: radial-gradient(circle at 40% 30%, #fff 0 12%, var(--bulb) 45%);
   box-shadow: 0 0 6px 2px var(--bulb), 0 0 16px 4px color-mix(in srgb, var(--bulb) 55%, transparent);
-  animation: holiday-twinkle 3.3s ease-in-out infinite;
+  animation: holiday-twinkle 1.8s ease-in-out infinite;
 }
+/* On for half the cycle, quick switch, properly dark, quick switch back. Three groups take turns,
+   so each bulb blinks well under three times a second (WCAG flash limit). */
 @keyframes holiday-twinkle {
-  0%, 30%, 100% {
+  0%, 44%, 96%, 100% {
     opacity: 1;
     filter: none;
-    box-shadow: 0 0 6px 2px var(--bulb), 0 0 16px 4px color-mix(in srgb, var(--bulb) 55%, transparent);
+    box-shadow: 0 0 7px 2px var(--bulb), 0 0 20px 6px color-mix(in srgb, var(--bulb) 60%, transparent);
   }
-  42%, 62% {
-    opacity: 0.45;
-    filter: saturate(0.6) brightness(0.7);
+  52%, 88% {
+    opacity: 0.18;
+    filter: saturate(0.3) brightness(0.45);
     box-shadow: none;
   }
 }

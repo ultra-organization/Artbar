@@ -34,7 +34,7 @@ function buildString() {
         tilt: Math.max(-28, Math.min(28, -dy * 0.35)),
         color: BULB_COLORS[i % BULB_COLORS.length],
         // Three interleaved groups blink in turn, with a little drift so it never looks mechanical.
-        delay: -((i % 3) * 1.1 + ((i * 7) % 5) * 0.13),
+        delay: -((i % 3) * 0.6 + ((i * 7) % 5) * 0.05),
       });
     }
   }
