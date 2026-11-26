@@ -14,6 +14,8 @@ import type { Location } from '../types';
 import type { JapaneseUiCopy } from '@/lib/copy/types';
 import { Hairline, PILL_TAUPE, Seal, TextLink, WRAP, h2Class } from '../components/premium/Kit';
 import { DecoSplat, PAINT, Tilt } from '../components/premium/Paint';
+import { MomentsWall } from '../components/premium/MomentsWall';
+import { REAL_PHOTOS } from '../data/real-photos';
 
 export const Locations: React.FC = () => {
   const { lang, content, site, localizedCopy } = useContent();
@@ -58,6 +60,18 @@ export const Locations: React.FC = () => {
           <LocationCard key={loc.id} loc={loc} lang={lang} locationCopy={locationCopy} index={i} />
         ))}
       </div>
+
+      <MomentsWall
+        lang={lang}
+        title={jp ? 'どのスタジオでも、同じ楽しさを' : 'The same good evening at every studio'}
+        photos={[
+          { src: REAL_PHOTOS.studioWide, alt: jp ? 'クラス中のスタジオ' : 'A studio during a class' },
+          { src: REAL_PHOTOS.classBrush, alt: jp ? '筆を動かす手元' : 'A brush at work on a canvas' },
+          { src: REAL_PHOTOS.groupTeam, alt: jp ? '作品を持つグループ' : 'A group with their paintings' },
+          { src: REAL_PHOTOS.friendsWine, alt: jp ? '笑顔の参加者' : 'A smiling guest' },
+          { src: REAL_PHOTOS.classSmile, alt: jp ? '描く参加者たち' : 'Guests painting' },
+        ]}
+      />
 
       {/* ── Colophon: operating company ────────────────────────────────── */}
       <section className="py-20 md:py-28">

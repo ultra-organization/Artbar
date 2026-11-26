@@ -73,9 +73,13 @@ export const ThemeDetail: React.FC = () => {
   const pageImages = THEME_PAGE_IMAGES[resolvedSlug as keyof typeof THEME_PAGE_IMAGES];
   const themeImages = {
     hero: mediaAssetUrl(media, `themes.${resolvedSlug}.hero`, pageImages?.hero ?? ''),
-    examples: (pageImages?.examples ?? []).map((image, index) =>
-      mediaAssetUrl(media, `themes.${resolvedSlug}.example.${index + 1}`, image)
-    ),
+    examples: (pageImages?.examples ?? []).map((ex, index) => ({
+      src: mediaAssetUrl(media, `themes.${resolvedSlug}.example.${index + 1}`, ex.src),
+      caption: (lang === 'jp' ? ex.ja : ex.en) ?? '',
+    })),
+    heroMobile: pageImages?.heroMobile,
+    heroPortrait: pageImages?.heroPortrait ?? false,
+    heroPosition: pageImages?.heroPosition,
     experience: mediaAssetUrl(
       media,
       `themes.${resolvedSlug}.experience`,
@@ -148,6 +152,9 @@ export const ThemeDetail: React.FC = () => {
         key={heroSrc}
         lang={lang}
         image={heroSrc}
+        mobileImage={themeImages.heroMobile}
+        objectPosition={themeImages.heroPosition}
+        portrait={themeImages.heroPortrait}
         alt={`${titleAsText} paint and sip class at Artbar Tokyo`}
         eyebrow={<JpText>{localizedTheme.heroBadge}</JpText>}
         title={<JpText>{localizedTheme.title}</JpText>}
@@ -278,14 +285,14 @@ export const ThemeDetail: React.FC = () => {
             <p className="mt-5 text-[15px] leading-[1.95] text-white/70 md:text-base"><JpText>{ui.exampleBlurb(stripTitleForGallery(localizedTheme.title))}</JpText></p>
           </div>
           <div className={`mt-14 grid grid-cols-2 gap-x-5 gap-y-12 md:mt-20 lg:grid-cols-4 lg:gap-x-10 reveal-stagger ${gallery.isVisible ? 'visible' : ''}`}>
-            {localizedTheme.examples.map((ex, i) => (
-              <figure key={i} className={`group ${i % 2 ? 'mt-10 lg:mt-16' : ''}`}>
+            {themeImages.examples.map((ex, i, all) => (
+              <figure key={ex.src + i} className={`group ${i % 2 ? 'mt-10 lg:mt-16' : ''}`}>
                 <Tilt max={6}>
                   <div className="bg-white p-2.5 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)] md:p-3.5">
                     <div className="relative aspect-square overflow-hidden bg-artbar-light-taupe/40">
                       <Image
-                        src={themeImages.examples[i] || ex.image || getPh(400, 400, stripJpSentinel(ex.title))}
-                        alt={stripJpSentinel(ex.title)}
+                        src={ex.src}
+                        alt={ex.caption || `${titleAsText}: ${jp ? '参加者の作品' : 'a guest painting'}`}
                         fill
                         className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.05]"
                         sizes="(max-width: 1024px) 50vw, 25vw"
@@ -293,10 +300,12 @@ export const ThemeDetail: React.FC = () => {
                     </div>
                   </div>
                 </Tilt>
-                <figcaption className="mt-4 flex items-start gap-3 text-[13px] font-semibold leading-snug tracking-[0.04em] text-white/90 md:text-[15px]">
-                  <span className="mt-[0.55em] h-px w-5 shrink-0 bg-artbar-taupe" aria-hidden />
-                  <JpText>{ex.title}</JpText>
-                </figcaption>
+                {ex.caption && ex.caption !== all.slice(0, i).reverse().find((p) => p.caption)?.caption && (
+                  <figcaption className="mt-4 flex items-start gap-3 text-[13px] font-semibold leading-snug tracking-[0.04em] text-white/90 md:text-[15px]">
+                    <span className="mt-[0.55em] h-px w-5 shrink-0 bg-artbar-taupe" aria-hidden />
+                    <JpText>{ex.caption}</JpText>
+                  </figcaption>
+                )}
               </figure>
             ))}
           </div>

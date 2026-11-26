@@ -15,6 +15,8 @@ import { DecoSplat, PAINT, Splat, Tilt } from '../components/premium/Paint';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { YearEndHeroLink, YearEndPartySection } from '../components/YearEndPartySection';
 import { Check, Clock, Utensils } from 'lucide-react';
+import { MomentsWall } from '../components/premium/MomentsWall';
+import { REAL_PHOTOS } from '../data/real-photos';
 
 export const PrivateParties: React.FC = () => {
   const { site, lang, localizedCopy } = useContent();
@@ -96,6 +98,20 @@ export const PrivateParties: React.FC = () => {
           ))}
         </div>
       </section>
+
+      {/* ── Real parties at the studio ─────────────────────────────────── */}
+      <MomentsWall
+        lang={lang}
+        tone="white"
+        title={jp ? '貸切パーティーの一場面' : 'Moments from private parties'}
+        photos={[
+          { src: REAL_PHOTOS.friendsWine, alt: jp ? '描きながら笑顔を見せる参加者' : 'A guest smiling at her easel' },
+          { src: REAL_PHOTOS.coupleDate, alt: jp ? 'ワインを手に作品と並ぶ二人' : 'Two guests with wine and their paintings' },
+          { src: REAL_PHOTOS.classLaugh, alt: jp ? '作品を見せて笑い合う参加者' : 'Guests laughing over their paintings' },
+          { src: REAL_PHOTOS.groupPicasso, alt: jp ? '作品を持つグループ' : 'A group holding their paintings' },
+          { src: REAL_PHOTOS.classSmile, alt: jp ? '集中して描く参加者' : 'Guests painting together' },
+        ]}
+      />
 
       {/* ── Plans: two priced tickets and a custom-request note ────────── */}
       <section className="relative bg-white py-20 md:py-28">

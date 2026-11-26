@@ -16,6 +16,8 @@ import { stripJpSentinel } from '../lib/jp-attr';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { YearEndHeroLink, YearEndPartySection } from '../components/YearEndPartySection';
 import { YEAR_END_PARTY_COPY } from '../data/year-end-parties';
+import { MomentsWall } from '../components/premium/MomentsWall';
+import { REAL_PHOTOS } from '../data/real-photos';
 
 export const TeamBuilding: React.FC = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -185,6 +187,20 @@ export const TeamBuilding: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* ── Real team events at the studio ─────────────────────────────── */}
+      <MomentsWall
+        lang={lang}
+        tone="white"
+        title={jp ? 'チームで描いた、本物の一日' : 'Real teams, real paintings'}
+        photos={[
+          { src: REAL_PHOTOS.groupTeam, alt: jp ? '完成した作品を持つチームの集合写真' : 'A team holding their finished paintings' },
+          { src: REAL_PHOTOS.classSmile, alt: jp ? '笑顔で描く参加者' : 'A guest smiling as she paints' },
+          { src: REAL_PHOTOS.groupPicasso, alt: jp ? 'ピカソ風の自画像を見せ合うグループ' : 'A group showing their Picasso-style portraits' },
+          { src: REAL_PHOTOS.groupSunflowers, alt: jp ? 'たらし込みアートを仕上げたグループ' : 'A group with their paint-pouring pieces' },
+          { src: REAL_PHOTOS.studioWide, alt: jp ? 'イベント中のスタジオ' : 'The studio during an event' },
+        ]}
+      />
 
       {/* ── Testimonials: large quotes, horizontal ─────────────────────── */}
       <section className="relative overflow-hidden py-20 md:py-28">

@@ -1,3 +1,4 @@
+import { REAL_PHOTOS, REAL_THEME_PHOTOS, type RealExample } from './real-photos';
 /**
  * Public URLs for Gemini-generated assets under public/media/generated/.
  * Real instructor photos live under public/media/instructors/{id}-profile|banner.jpg.
@@ -62,14 +63,16 @@ export const THEME_PAGE_SLUGS = [
 export type ThemePageSlug = (typeof THEME_PAGE_SLUGS)[number];
 
 function themePageImageSet(slug: string) {
+  const real = REAL_THEME_PHOTOS[slug];
+  if (real) {
+    return { hero: real.hero, heroPortrait: real.heroPortrait, heroMobile: real.heroMobile, heroPosition: real.heroPosition, examples: real.examples, experience: real.experience };
+  }
   return {
     hero: g(`theme-${slug}-hero.jpg`),
-    examples: [1, 2, 3, 4].map((n) => g(`theme-${slug}-example-${n}.jpg`)) as [
-      string,
-      string,
-      string,
-      string,
-    ],
+    heroMobile: undefined as string | undefined,
+    heroPortrait: undefined as boolean | undefined,
+    heroPosition: undefined as string | undefined,
+    examples: [1, 2, 3, 4].map((n) => ({ src: g(`theme-${slug}-example-${n}.jpg`) })) as RealExample[],
     experience: g(`theme-${slug}-experience.jpg`),
   };
 }
@@ -95,14 +98,14 @@ export const GI = {
   teamBuildingActivities: {
     paintSip: g('team-building-paint-sip.jpg'),
     collaborativeMural: g('team-building-collaborative-mural.jpg'),
-    customWorkshop: g('team-building-custom-workshop.jpg'),
+    customWorkshop: REAL_PHOTOS.groupTeam,
   },
   conceptMain: g('concept-main.jpg'),
   conceptDetail: g('concept-detail.jpg'),
-  featureAllInclusive: g('feature-all-inclusive.jpg'),
+  featureAllInclusive: REAL_PHOTOS.materials,
   featureFreeFlowDrinks: g('feature-free-flow-drinks.jpg'),
   featureBilingual: g('feature-bilingual.jpg'),
-  ctaBanner: g('cta-banner.jpg'),
+  ctaBanner: REAL_PHOTOS.studioWide,
   themes: {
     japanInspired: g('theme-japan-inspired.jpg'),
     paintPouring: g('theme-paint-pouring.jpg'),
@@ -133,7 +136,7 @@ export const GI = {
     birthday: g('private-birthday.jpg'),
     bachelorette: g('private-bachelorette.jpg'),
     kidsParty: g('private-kids-party.jpg'),
-    anniversary: g('private-anniversary.jpg'),
+    anniversary: REAL_PHOTOS.coupleDate,
   },
   blog: {
     yokohamaCover: g('blog-yokohama-cover.jpg'),

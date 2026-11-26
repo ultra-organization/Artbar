@@ -13,7 +13,7 @@
 import React, { useCallback, useId, useRef, useState } from 'react';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
-import { BrushStroke, DecoSplat, Magnetic, PAINT, PaintCanvas, SplatterLayer } from './Paint';
+import { BrushStroke, DecoSplat, Magnetic, PAINT, PaintCanvas, SplatterLayer, Tilt } from './Paint';
 import { PILL_GHOST_DARK, PILL_GHOST_LIGHT, PILL_NAVY, PILL_TAUPE, WRAP, h2Class } from './styles';
 
 export { WRAP, WRAP_NARROW, h2Class, useH2, h3Class, PILL_BASE, PILL_TAUPE, PILL_NAVY, PILL_GHOST_LIGHT, PILL_GHOST_DARK } from './styles';
@@ -135,7 +135,7 @@ export function SectionHead({ lang, eyebrow, latin = false, title, intro, tone =
  * wash, copy bottom-left, and paint you can throw. Shorter than the home hero so
  * the page's first section peeks above the fold.
  */
-export function PageHero({ lang, image, mobileImage, alt, eyebrow, title, highlight, subtitle, actions, aside, footer, tall = false, objectPosition = 'center 40%' }: {
+export function PageHero({ lang, image, mobileImage, alt, eyebrow, title, highlight, subtitle, actions, aside, footer, tall = false, objectPosition = 'center 40%', portrait = false }: {
   lang: 'en' | 'jp';
   image: string;
   mobileImage?: string;
@@ -150,6 +150,8 @@ export function PageHero({ lang, image, mobileImage, alt, eyebrow, title, highli
   footer?: React.ReactNode;
   tall?: boolean;
   objectPosition?: string;
+  /** Portrait photo: on desktop it hangs as a mounted print over a soft blur of itself, instead of being cropped to a strip. */
+  portrait?: boolean;
 }) {
   const heroRef = useRef<HTMLElement>(null);
   const [thrown, setThrown] = useState(false);
@@ -160,7 +162,12 @@ export function PageHero({ lang, image, mobileImage, alt, eyebrow, title, highli
     : 'font-heading text-[clamp(2.3rem,9.4vw,3.2rem)] leading-[1] tracking-[-0.02em] md:text-[clamp(3.2rem,5.6vw,5.2rem)]';
   return (
     <section ref={heroRef} className={`relative z-[1] w-full cursor-crosshair overflow-hidden bg-artbar-navy ${tall ? 'h-[100svh] min-h-[640px]' : 'h-[86svh] min-h-[600px] md:h-[88svh]'}`}>
-      {mobileImage ? (
+      {portrait ? (
+        <>
+          <Image src={image} alt="" fill priority sizes="100vw" className="hidden scale-110 object-cover opacity-55 blur-2xl md:block" aria-hidden />
+          <Image src={mobileImage ?? image} alt={alt} fill priority sizes="100vw" className="hp-kb object-cover md:hidden" style={{ objectPosition }} />
+        </>
+      ) : mobileImage ? (
         <>
           <Image src={image} alt={alt} fill priority sizes="100vw" className="hp-kb hidden object-cover md:block" style={{ objectPosition }} />
           <Image src={mobileImage} alt={alt} fill priority sizes="100vw" className="hp-kb object-cover md:hidden" style={{ objectPosition }} />
@@ -173,10 +180,25 @@ export function PageHero({ lang, image, mobileImage, alt, eyebrow, title, highli
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[38%] bg-gradient-to-b from-artbar-taupe/50 to-transparent" aria-hidden />
       <SplatterLayer targetRef={heroRef} colors={THROW_COLORS} onFirst={onFirst} />
       <Hairline />
+      {portrait && (
+        <div className="hp-in absolute bottom-[12%] right-[6%] top-[17%] z-[2] hidden aspect-[3/4] md:block lg:right-[8%] xl:right-[10%]" style={{ animationDelay: '250ms' }}>
+          <Tilt className="h-full" max={4}>
+            <div className="h-full rotate-[1.6deg] bg-white p-2.5 shadow-[0_40px_80px_-30px_rgba(0,0,0,0.75)] lg:p-3.5">
+              <div className="relative h-full overflow-hidden bg-artbar-light-taupe/40">
+                <Image src={image} alt={alt} fill priority sizes="40vw" className="hp-kb object-cover" style={{ objectPosition }} />
+              </div>
+            </div>
+          </Tilt>
+          <div className="absolute -bottom-12 -left-16 hidden w-32 lg:block xl:w-36">
+            <DecoSplat seed={2016} color={PAINT.taupe} className="-inset-[38%]" delay={700} opacity={0.92} />
+            <Seal className="hp-in relative text-[13px]" />
+          </div>
+        </div>
+      )}
 
       <div className={`${WRAP} absolute inset-x-0 bottom-0 z-[3] pb-10 md:pb-14`}>
         <div className="flex items-end justify-between gap-10">
-          <div className="min-w-0 max-w-[48rem] text-white">
+          <div className={`min-w-0 text-white ${portrait ? 'max-w-[48rem] md:max-w-[48%] lg:max-w-[50%]' : 'max-w-[48rem]'}`}>
             {eyebrow && (
               <p className="hp-in flex items-center gap-3 text-[11px] tracking-[0.12em] text-artbar-light-taupe md:gap-4 md:text-[13px] md:tracking-[0.18em]" style={{ animationDelay: '150ms' }}>
                 <span className="h-px w-6 shrink-0 bg-artbar-taupe md:w-10" aria-hidden />
@@ -203,7 +225,7 @@ export function PageHero({ lang, image, mobileImage, alt, eyebrow, title, highli
               </div>
             )}
           </div>
-          <div className="relative mb-2 hidden w-36 shrink-0 lg:block xl:w-40">
+          <div className={`relative mb-2 hidden w-36 shrink-0 xl:w-40 ${portrait ? '' : 'lg:block'}`}>
             {aside ?? (
               <>
                 <DecoSplat seed={2016} color={PAINT.taupe} className="-inset-[38%]" delay={700} opacity={0.92} />

@@ -58,14 +58,14 @@ export function GiftTicket() {
             </p>
             <h2 id="hp-gift-title" className={`relative mt-5 pr-14 ${h2Class(lang)}`}><JpText>{copy.title}</JpText></h2>
             <p className="relative mt-4 max-w-[34rem] text-[15px] leading-[1.95] text-artbar-gray md:text-base"><JpText>{copy.body}</JpText></p>
-            <div className="relative mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-8">
+            <div className="relative mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-8 md:flex-col md:items-start md:gap-3">
               <Magnetic className="w-full sm:w-auto">
-                <button type="button" data-no-splat className={`${PILL_NAVY} w-full sm:w-auto`} onClick={goToGifts}>
+                <button type="button" data-no-splat className={`${PILL_NAVY} w-full whitespace-nowrap sm:w-auto`} onClick={goToGifts}>
                   <JpText>{copy.cta}</JpText>
                   <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                 </button>
               </Magnetic>
-              <TextLink href={localizeHrefForLanguage(HOLIDAY_GIFT_BLOG_PATH, lang)}><JpText>{copy.ideasLink}</JpText></TextLink>
+              <TextLink className="whitespace-nowrap" href={localizeHrefForLanguage(HOLIDAY_GIFT_BLOG_PATH, lang)}><JpText>{copy.ideasLink}</JpText></TextLink>
             </div>
           </div>
 
