@@ -256,7 +256,7 @@ export const TeamBuilding: React.FC = () => {
       </section>
 
       {/* ── Pricing: a priced ticket on navy ───────────────────────────── */}
-      <section className="relative overflow-hidden bg-artbar-navy py-20 text-white md:py-28">
+      <section className="relative mb-4 overflow-hidden bg-artbar-navy py-20 md:mb-6 text-white md:py-28">
         <Hairline className="inset-3 md:inset-6" />
         <DecoSplat seed={314} color={PAINT.taupe} className="-left-24 bottom-0 h-80 w-80" opacity={0.35} />
         <div ref={pricingReveal.ref} className={`${WRAP} relative grid items-center gap-14 lg:grid-cols-12 lg:gap-16 reveal ${pricingReveal.isVisible ? 'visible' : ''}`}>

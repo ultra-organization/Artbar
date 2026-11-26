@@ -337,23 +337,24 @@ ${text('Thank you!', copy.emailThanks)}`;
   };
 
   return (
-    <div className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl border border-gray-100 max-w-5xl mx-auto">
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-heading font-heavy text-artbar-navy mb-4 flex items-center justify-center gap-3">
-          <Sparkles className="text-artbar-taupe" size={32} /> <JpText>{text('Magic Sketch Preview', copy.sketchTitle)}</JpText>
+    <div className="relative mx-auto max-w-5xl bg-artbar-bg px-6 py-10 sm:px-8 md:p-14">
+      <div className="pointer-events-none absolute inset-2.5 border border-artbar-taupe/30 md:inset-3" aria-hidden />
+      <div className="relative mb-10 md:mb-12">
+        <h2 className="flex items-center gap-3 text-[clamp(1.4rem,5.4vw,2rem)] font-semibold leading-[1.45] tracking-[0.03em] text-artbar-navy">
+          <Sparkles className="shrink-0 text-artbar-taupe" size={24} /> <JpText>{text('Magic Sketch Preview', copy.sketchTitle)}</JpText>
         </h2>
-        <p className="text-artbar-gray max-w-lg mx-auto">
+        <p className="mt-4 max-w-xl text-[14px] leading-[1.9] text-artbar-gray md:text-[15px]">
           <JpText>{text('Upload a photo of your pet to see how our AI envisions a simple canvas sketch.', copy.sketchIntro)}</JpText>
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-12 items-start">
+      <div className="relative grid items-start gap-10 md:grid-cols-2 md:gap-12">
         <div className="flex flex-col gap-6">
           <div
             onClick={() => fileInputRef.current?.click()}
             className={`
-              min-h-[16rem] border-4 border-dashed rounded-[2rem] flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group
-              ${image ? 'border-artbar-taupe' : 'border-gray-200 hover:border-artbar-taupe/50 hover:bg-gray-50'}
+              min-h-[16rem] border border-dashed bg-white flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden group
+              ${image ? 'border-artbar-taupe' : 'border-artbar-navy/25 hover:border-artbar-taupe'}
             `}
           >
             {image ? (
@@ -363,9 +364,9 @@ ${text('Thank you!', copy.emailThanks)}`;
 	                className="block h-auto w-full max-h-[min(70vh,560px)] object-contain"
 	              />
             ) : (
-              <div className="text-center p-6 text-gray-400 group-hover:text-artbar-navy transition-colors">
-	                <Upload size={48} className="mx-auto mb-4" />
-	                <p className="font-heading font-bold uppercase tracking-wider text-sm">{text('Click to Upload Photo', copy.uploadCta)}</p>
+              <div className="text-center p-6 text-artbar-taupe group-hover:text-artbar-navy transition-colors">
+	                <Upload size={36} strokeWidth={1.5} className="mx-auto mb-4" />
+	                <p className="text-sm font-semibold tracking-[0.06em]">{text('Click to Upload Photo', copy.uploadCta)}</p>
 	                <p className="text-xs mt-2 opacity-60">{text('JPG, PNG, HEIC, AVIF', copy.uploadFormats)}</p>
 	              </div>
             )}
@@ -382,7 +383,7 @@ ${text('Thank you!', copy.emailThanks)}`;
           <Button
             onClick={generateSketch}
             disabled={!image || loading}
-            className="w-full bg-artbar-navy text-white hover:bg-artbar-taupe border-none py-4 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="min-h-14 w-full rounded-full border-none bg-artbar-navy py-4 text-white hover:bg-artbar-blue disabled:cursor-not-allowed disabled:opacity-50"
           >
 	            {loading ? (
 	              <span className="flex items-center gap-2"><Loader2 className="animate-spin" /> {text('Sketching...', copy.sketching)}</span>
@@ -392,19 +393,19 @@ ${text('Thank you!', copy.emailThanks)}`;
           </Button>
 
           {uploadNote && (
-            <p className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+            <p className="border-l-2 border-artbar-taupe bg-white px-4 py-3 text-sm text-green-800">
               {uploadNote}
             </p>
           )}
           {errorMessage && (
-            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <p className="border-l-2 border-red-400 bg-white px-4 py-3 text-sm text-red-700">
               {errorMessage}
             </p>
           )}
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className="min-h-[16rem] rounded-[2rem] border border-gray-200 bg-gray-50 shadow-inner overflow-hidden flex items-center justify-center">
+          <div className="relative flex min-h-[16rem] items-center justify-center overflow-hidden border border-artbar-navy/10 bg-white">
             {generatedImage ? (
 	              <img
 	                src={generatedImage}
@@ -412,9 +413,9 @@ ${text('Thank you!', copy.emailThanks)}`;
 	                className="block h-auto w-full max-h-[min(70vh,560px)] object-contain"
 	              />
             ) : (
-              <div className="text-center text-gray-300 px-6 py-12">
-	                <ImageIcon size={48} className="mx-auto mb-4 opacity-50" />
-	                <p className="font-heading font-bold uppercase tracking-widest text-xs">{text('Sketch will appear here', copy.sketchPlaceholder)}</p>
+              <div className="px-6 py-12 text-center text-artbar-taupe/70">
+	                <ImageIcon size={36} strokeWidth={1.5} className="mx-auto mb-4" />
+	                <p className="text-xs font-semibold tracking-[0.08em]">{text('Sketch will appear here', copy.sketchPlaceholder)}</p>
 	              </div>
             )}
           </div>
@@ -430,14 +431,14 @@ ${text('Thank you!', copy.emailThanks)}`;
 	                {text('Save sketch', copy.saveSketch)}
 	              </a>
 
-              <div className="bg-green-50 text-green-800 p-4 rounded-xl border border-green-200 text-sm flex items-start gap-3">
+              <div className="bg-white text-artbar-navy p-4 border-l-2 border-artbar-taupe text-sm flex items-start gap-3">
 	                <Sparkles size={16} className="mt-0.5 flex-shrink-0" />
 	                <div>
 	                  <strong><JpText>{text('Like this version?', copy.likeThisVersionTitle)}</JpText></strong> <JpText>{text('Send it to Artbar with your class details so the team can match it to the right student and class day.', copy.likeThisVersionBody)}</JpText>
 	                </div>
               </div>
 
-              <div className="rounded-2xl border border-artbar-navy/10 bg-artbar-bg/80 p-5 md:p-6 space-y-4">
+              <div className="border-t border-artbar-navy/15 pt-6 space-y-4">
                 <div>
 	                  <h3 className="font-heading font-heavy text-artbar-navy text-lg mb-2">
 	                    <JpText>{text('Use this sketch for your Paint Your Pet class', copy.classUseTitle)}</JpText>
@@ -461,7 +462,7 @@ ${text('Thank you!', copy.emailThanks)}`;
                         resetHandoffState();
                       }}
 	                      placeholder={text('e.g. Alex Tanaka', stripJpSentinel(copy.studentNamePlaceholder))}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-taupe focus:outline-none focus:ring-1 focus:ring-artbar-taupe"
+                      className="w-full border-0 border-b border-artbar-navy/25 bg-transparent px-0 py-2.5 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-navy focus:outline-none"
                       autoComplete="name"
                     />
                   </div>
@@ -479,7 +480,7 @@ ${text('Thank you!', copy.emailThanks)}`;
                         resetHandoffState();
                       }}
 	                      placeholder={text('e.g. alex@example.com', stripJpSentinel(copy.studentEmailPlaceholder))}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-taupe focus:outline-none focus:ring-1 focus:ring-artbar-taupe"
+                      className="w-full border-0 border-b border-artbar-navy/25 bg-transparent px-0 py-2.5 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-navy focus:outline-none"
                       autoComplete="email"
                     />
                   </div>
@@ -497,7 +498,7 @@ ${text('Thank you!', copy.emailThanks)}`;
                         resetHandoffState();
                       }}
 	                      placeholder={text('e.g. Luna', stripJpSentinel(copy.petNamePlaceholder))}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-taupe focus:outline-none focus:ring-1 focus:ring-artbar-taupe"
+                      className="w-full border-0 border-b border-artbar-navy/25 bg-transparent px-0 py-2.5 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-navy focus:outline-none"
                       autoComplete="off"
                     />
                   </div>
@@ -514,7 +515,7 @@ ${text('Thank you!', copy.emailThanks)}`;
                         setClassDate(e.target.value);
                         resetHandoffState();
                       }}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-artbar-navy focus:border-artbar-taupe focus:outline-none focus:ring-1 focus:ring-artbar-taupe"
+                      className="w-full border-0 border-b border-artbar-navy/25 bg-transparent px-0 py-2.5 text-sm text-artbar-navy focus:border-artbar-navy focus:outline-none"
                     />
                   </div>
 
@@ -531,7 +532,7 @@ ${text('Thank you!', copy.emailThanks)}`;
                         resetHandoffState();
                       }}
 	                      placeholder={text('e.g. Ginza', stripJpSentinel(copy.locationPlaceholder))}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-taupe focus:outline-none focus:ring-1 focus:ring-artbar-taupe"
+                      className="w-full border-0 border-b border-artbar-navy/25 bg-transparent px-0 py-2.5 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-navy focus:outline-none"
                       autoComplete="off"
                     />
                   </div>
@@ -549,12 +550,12 @@ ${text('Thank you!', copy.emailThanks)}`;
                       }}
 	                      placeholder={text('e.g. Booking under a different name, two pets, special note', stripJpSentinel(copy.notesPlaceholder))}
                       rows={3}
-                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-taupe focus:outline-none focus:ring-1 focus:ring-artbar-taupe resize-none"
+                      className="w-full border-0 border-b border-artbar-navy/25 bg-transparent px-0 py-2.5 text-sm text-artbar-navy placeholder:text-gray-400 focus:border-artbar-navy focus:outline-none resize-none"
                     />
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-artbar-navy/10 bg-white px-4 py-4">
+                <div className="border border-artbar-navy/10 bg-white px-4 py-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-bold uppercase tracking-[0.2em] text-artbar-taupe">

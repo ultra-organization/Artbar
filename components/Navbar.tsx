@@ -50,7 +50,9 @@ export const Navbar: React.FC = () => {
       ? (lang === 'jp' ? '見積もりを依頼' : 'Request a quote')
       : site.nav.book;
   /** Hero/top-of-home bar height — must not depend on `isOpen` or the logo jumps when the mobile menu opens. */
-  const isHeroNavLayout = isHome && !scrolled;
+  /** Pages that open on a full-bleed photo hero (PageHero) get the same transparent bar as home. */
+  const hasPhotoHero = isHome || /^\/(themes|locations|instructors|guides)\/[^/]+\/?$/.test(barePathname) || /^\/(team-building|private-parties)\/?$/.test(barePathname);
+  const isHeroNavLayout = hasPhotoHero && !scrolled;
   const isTransparent = isHeroNavLayout && !isOpen;
 
   const navLinks: NavLink[] = [

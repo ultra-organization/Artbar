@@ -86,7 +86,7 @@ export const PaintYourPet: React.FC = () => {
       </section>
 
       {/* ── How it works + price ───────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-artbar-navy py-20 text-white md:py-28">
+      <section className="relative mb-4 overflow-hidden bg-artbar-navy py-20 md:mb-6 text-white md:py-28">
         <Hairline className="inset-3 md:inset-6" />
         <div ref={infoReveal.ref} className={`${WRAP} relative grid items-start gap-14 lg:grid-cols-12 lg:gap-16 reveal ${infoReveal.isVisible ? 'visible' : ''}`}>
           <div className="lg:col-span-7">

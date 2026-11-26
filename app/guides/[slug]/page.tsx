@@ -1,8 +1,12 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { JpText } from '@/components/JpText';
+import { segmentJpDeep } from '@/lib/jp-segment';
+import { PageHero, PrimaryAction, TextLink, Hairline } from '@/components/premium/Kit';
+import { WRAP, h2Class } from '@/components/premium/styles';
+import { DecoSplat, Splat } from '@/components/premium/Paint';
 import { ARTBAR_BOOKING_URL } from '@/constants';
 import { PageJsonLd } from '@/components/PageJsonLd';
 import {
@@ -116,8 +120,13 @@ export default async function GuideDetailPage({ params }: Props) {
     ],
   };
 
+  const jp = lang === 'jp';
+  const h2 = h2Class(lang);
+  const view = jp ? segmentJpDeep(copy) : copy;
+  const bestFor = view.bestFor.filter((x) => x.trim());
+
   return (
-    <main className="grain min-h-screen bg-artbar-bg pb-20">
+    <main className="hp relative min-h-screen bg-artbar-bg pb-24 text-artbar-navy md:pb-32">
       <PageJsonLd path={path} lang={lang} name={copy.title} description={copy.description} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(guideJsonLd) }} />
       <link
@@ -128,110 +137,102 @@ export default async function GuideDetailPage({ params }: Props) {
         fetchPriority="high"
       />
 
-      <section className="relative min-h-[70vh] overflow-hidden bg-artbar-navy pt-32 text-white">
-        <Image
-          src={guide.image}
-          alt={copy.title}
-          fill
-          priority
-          className="object-cover opacity-55"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-artbar-navy/70 via-artbar-navy/45 to-artbar-bg" />
-        <div className="relative z-10 mx-auto flex min-h-[58vh] max-w-[1120px] flex-col justify-end px-6 pb-16 md:px-10">
-          <Link
-            href={localizeHrefForLanguage('/guides', lang)}
-            className="mb-8 inline-flex w-fit min-h-[44px] items-center rounded-full bg-white/15 px-4 py-2 font-heading text-sm font-bold uppercase tracking-wider text-white backdrop-blur transition hover:bg-white/25"
-          >
-            {lang === 'jp' ? 'ガイド一覧' : 'All guides'}
-          </Link>
-          <p className="mb-4 font-heading text-sm font-bold uppercase tracking-widest text-artbar-taupe">
-            {copy.eyebrow}
-          </p>
-          <h1 className="max-w-4xl font-heading text-4xl font-heavy leading-tight md:text-6xl">
-            {copy.title}
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/90 md:text-xl">{copy.intro}</p>
-        </div>
-      </section>
+      <PageHero
+        lang={lang}
+        image={guide.image}
+        alt={copy.title}
+        eyebrow={<JpText>{view.eyebrow}</JpText>}
+        title={<JpText>{view.title}</JpText>}
+        subtitle={<JpText>{view.intro}</JpText>}
+        actions={
+          <>
+            <PrimaryAction href={ARTBAR_BOOKING_URL}><JpText>{view.cta}</JpText></PrimaryAction>
+            <TextLink tone="light" href={localizeHrefForLanguage('/guides', lang)}>{jp ? 'ガイド一覧' : 'All guides'}</TextLink>
+          </>
+        }
+      />
 
-      <section className="mx-auto -mt-10 grid max-w-[1120px] gap-8 px-6 md:px-10 lg:grid-cols-[1fr_330px]">
-        <article className="relative z-10 rounded-lg bg-white p-7 shadow-xl md:p-10">
-          <div className="mb-10">
-            <h2 className="mb-4 font-heading text-2xl font-bold text-artbar-navy">
-              {lang === 'jp' ? 'こんな方におすすめ' : 'Best for'}
-            </h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {copy.bestFor.map((item) => (
-                <div key={item} className="flex items-start gap-3 rounded-lg bg-artbar-bg p-4 text-artbar-navy">
-                  <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-artbar-taupe" />
-                  <span className="font-heading font-bold">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className={`${WRAP} grid gap-16 pt-16 md:pt-24 lg:grid-cols-12 lg:gap-12`}>
+        <article className="min-w-0 lg:col-span-7">
+          {bestFor.length > 0 && (
+            <section>
+              <p className="flex items-center gap-4 text-[12px] font-medium tracking-[0.16em] text-artbar-taupe md:text-[13px]">
+                <span className="h-px w-10 bg-current" aria-hidden />{jp ? 'こんな方におすすめ' : 'Best for'}
+              </p>
+              <ul className="mt-6 grid border-t border-artbar-navy/15 sm:grid-cols-2 sm:gap-x-10">
+                {bestFor.map((item, i) => (
+                  <li key={item} className="flex items-start gap-4 border-b border-artbar-navy/10 py-4 text-[15px] font-semibold leading-[1.7] md:text-base">
+                    <Splat seed={510 + i * 13} color={i % 2 ? '#D1C7B8' : '#A39384'} className="mt-1 h-4 w-4 shrink-0" />
+                    <span><JpText>{item}</JpText></span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-          <div className="space-y-10">
-            {copy.sections.map((section) => (
+          <div className="mt-16 space-y-14 md:mt-20 md:space-y-16">
+            {view.sections.map((section) => (
               <section key={section.title}>
-                <h2 className="mb-3 font-heading text-3xl font-bold leading-tight text-artbar-navy">
-                  {section.title}
-                </h2>
-                <p className="text-lg leading-relaxed text-artbar-gray">{section.body}</p>
+                <h2 className={h2}><JpText>{section.title}</JpText></h2>
+                <p className="mt-5 max-w-[68ch] text-[15px] leading-[2] text-artbar-gray md:text-[17px]"><JpText>{section.body}</JpText></p>
               </section>
             ))}
           </div>
 
-          <section className="mt-12 border-t border-gray-100 pt-10">
-            <h2 className="mb-6 font-heading text-3xl font-bold text-artbar-navy">
-              {lang === 'jp' ? 'よくある質問' : 'Common questions'}
-            </h2>
-            <div className="space-y-5">
-              {copy.faqs.map((faq) => (
-                <div key={faq.question} className="rounded-lg border border-black/5 bg-artbar-bg p-5">
-                  <h3 className="mb-2 font-heading text-lg font-bold text-artbar-navy">{faq.question}</h3>
-                  <p className="leading-relaxed text-artbar-gray">{faq.answer}</p>
-                </div>
-              ))}
-            </div>
-          </section>
+          {view.faqs.length > 0 && (
+            <section className="mt-20 md:mt-24">
+              <h2 className={h2}>{jp ? 'よくある質問' : 'Common questions'}</h2>
+              <dl className="mt-8 border-t border-artbar-navy/15">
+                {view.faqs.map((faq) => (
+                  <div key={faq.question} className="grid gap-3 border-b border-artbar-navy/10 py-7 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-10">
+                    <dt className={`${jp ? 'text-[16px] font-semibold leading-[1.7] tracking-[0.03em]' : 'font-heading text-lg font-semibold leading-snug'}`}><JpText>{faq.question}</JpText></dt>
+                    <dd className="text-[14px] leading-[1.95] text-artbar-gray md:text-[15px]"><JpText>{faq.answer}</JpText></dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
         </article>
 
-        <aside className="relative z-10 space-y-6 lg:pt-0">
-          <div className="rounded-lg bg-artbar-navy p-6 text-white shadow-xl">
-            <h2 className="mb-3 font-heading text-2xl font-bold">{lang === 'jp' ? '次のステップ' : 'Next step'}</h2>
-            <p className="mb-5 text-white/80">
-              {lang === 'jp'
-                ? 'スケジュールから空き状況を確認して、参加したいセッションを選べます。'
-                : 'Check the schedule and choose the session that fits your plan.'}
-            </p>
-            <a
-              href={ARTBAR_BOOKING_URL}
-              className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-artbar-taupe px-6 pt-3 pb-2 font-heading font-bold text-artbar-navy transition hover:scale-[1.02]"
-            >
-              {copy.cta} <ArrowRight size={16} />
-            </a>
-          </div>
-
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="mb-4 font-heading text-xl font-bold text-artbar-navy">
-              {lang === 'jp' ? '関連ページ' : 'Related pages'}
-            </h2>
-            <div className="space-y-2">
-              {guide.relatedLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={localizeHrefForLanguage(link.href, lang)}
-                  className="flex min-h-[44px] items-center justify-between rounded-lg px-3 py-2 font-heading font-bold text-artbar-navy transition hover:bg-artbar-bg hover:text-artbar-taupe"
-                >
-                  {lang === 'jp' ? link.labelJp : link.labelEn}
-                  <ArrowRight size={15} />
-                </Link>
-              ))}
+        <aside className="lg:col-span-4 lg:col-start-9">
+          <div className="space-y-8 lg:sticky lg:top-28">
+            <div className="relative overflow-hidden bg-artbar-navy px-7 py-9 text-white md:px-9 md:py-11">
+              <Hairline tone="light" className="inset-2.5 md:inset-3" />
+              <DecoSplat seed={93} color="#3E6686" className="-right-16 -top-16 h-48 w-48" opacity={0.55} />
+              <div className="relative">
+                <h2 className={`${jp ? 'text-xl font-semibold tracking-[0.04em]' : 'font-heading text-2xl font-semibold'}`}>{jp ? '次のステップ' : 'Next step'}</h2>
+                <p className="mt-4 text-[14px] leading-[1.9] text-white/75 md:text-[15px]">
+                  {jp
+                    ? 'スケジュールから空き状況を確認して、参加したいセッションを選べます。'
+                    : 'Check the schedule and choose the session that fits your plan.'}
+                </p>
+                <div className="mt-7"><PrimaryAction href={ARTBAR_BOOKING_URL} className="w-full"><JpText>{view.cta}</JpText></PrimaryAction></div>
+              </div>
             </div>
+
+            {guide.relatedLinks.length > 0 && (
+              <nav aria-label={jp ? '関連ページ' : 'Related pages'}>
+                <p className="flex items-center gap-4 text-[12px] font-medium tracking-[0.16em] text-artbar-taupe md:text-[13px]">
+                  <span className="h-px w-10 bg-current" aria-hidden />{jp ? '関連ページ' : 'Related pages'}
+                </p>
+                <ul className="mt-4 border-t border-artbar-navy/15">
+                  {guide.relatedLinks.map((link) => (
+                    <li key={link.href} className="border-b border-artbar-navy/10">
+                      <Link
+                        href={localizeHrefForLanguage(link.href, lang)}
+                        className="group flex min-h-[52px] items-center justify-between gap-4 py-3 text-[15px] font-semibold transition-colors hover:text-artbar-blue focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-artbar-navy"
+                      >
+                        {jp ? link.labelJp : link.labelEn}
+                        <ArrowRight size={15} className="shrink-0 text-artbar-taupe transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
           </div>
         </aside>
-      </section>
+      </div>
     </main>
   );
 }
