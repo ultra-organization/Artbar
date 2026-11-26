@@ -4,16 +4,17 @@ import { withBrowserAcquisition } from '@/lib/painta-acquisition';
 
 import React from 'react';
 import Image from 'next/image';
-import { PriceDisplay } from '../components/PriceDisplay';
 import { cleanDisplayText } from '../lib/jp-display';
-import { Button } from '../components/ui/Button';
 import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useContent } from '../context/ContentContext';
-import { HERO_BLUR_DATA_URL, PRIVATE_PARTY_INQUIRY_URL } from '../constants';
+import { PRIVATE_PARTY_INQUIRY_URL } from '../constants';
+import { trackInquiryClick } from '../lib/analytics';
+import { ClosingCta, Eyebrow, Hairline, PageHero, PrimaryAction, WRAP, h2Class } from '../components/premium/Kit';
+import { DecoSplat, PAINT, Splat, Tilt } from '../components/premium/Paint';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { YearEndHeroLink, YearEndPartySection } from '../components/YearEndPartySection';
-import { Check, Clock, Wine, Palette, Utensils, Sparkles } from 'lucide-react';
+import { Check, Clock, Utensils } from 'lucide-react';
 
 export const PrivateParties: React.FC = () => {
   const { site, lang, localizedCopy } = useContent();
@@ -39,278 +40,196 @@ export const PrivateParties: React.FC = () => {
     { value: common.minGuests, label: common.minGuestsLabel },
   ];
 
+  const jp = lang === 'jp';
+  const h2 = h2Class(lang);
+  const inquire = (source: string) => {
+    trackInquiryClick('private_party', source);
+    window.location.href = withBrowserAcquisition(PRIVATE_PARTY_INQUIRY_URL);
+  };
+  const plans = [
+    { key: 'adult', plan: privateParties.pricing.adult, source: 'private_party_adult' },
+    { key: 'kids', plan: privateParties.pricing.kids, source: 'private_party_kids' },
+  ] as const;
+
   return (
-    <div className="grain relative pt-28 md:pt-40 pb-20 bg-artbar-bg min-h-screen">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-        <div className="relative w-full max-w-5xl mx-auto mb-8 h-[30vh] min-h-[200px] rounded-[2.5rem] overflow-hidden md:mb-16 md:h-[40vh] bg-artbar-bg">
-          <Image
-            key={topHeroSrc || 'private-parties-hero'}
-            src={topHeroSrc}
-            alt={heroImageAlt}
-            fill
-            priority
-            placeholder="blur"
-            blurDataURL={HERO_BLUR_DATA_URL}
-            className="object-cover"
-            sizes="(max-width: 1200px) 100vw, 80vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-artbar-bg via-artbar-bg/40 to-transparent" />
-        </div>
+    <div className="hp relative min-h-screen bg-artbar-bg text-artbar-navy">
+      <PageHero
+        key={topHeroSrc || 'private-parties-hero'}
+        lang={lang}
+        image={topHeroSrc}
+        alt={heroImageAlt}
+        eyebrow={<JpText>{privateParties.hero.badge}</JpText>}
+        title={<JpText>{privateParties.hero.title}</JpText>}
+        highlight={<JpText>{privateParties.hero.titleHighlight}</JpText>}
+        subtitle={<JpText>{privateParties.hero.subtitle}</JpText>}
+        actions={
+          <>
+            <PrimaryAction onClick={() => inquire('private_party_hero')}><JpText>{specialtyInquiry.cta}</JpText></PrimaryAction>
+            <YearEndHeroLink kind="private" tone="dark" />
+          </>
+        }
+      />
 
-        <div className="text-center max-w-4xl mx-auto mb-12 md:mb-20">
-          <span className="text-artbar-taupe font-heading font-bold tracking-widest text-sm uppercase mb-6 block"><JpText>{privateParties.hero.badge}</JpText></span>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-heading font-heavy text-artbar-navy mb-8 leading-tight">
-            <span className="block"><JpText>{privateParties.hero.title}</JpText></span>
-            <span className="text-artbar-taupe block"><JpText>{privateParties.hero.titleHighlight}</JpText></span>
-          </h1>
-          <p className="text-lg md:text-2xl text-artbar-gray leading-relaxed font-light">
-            <JpText>{privateParties.hero.subtitle}</JpText>
-          </p>
-          <Button
-            variant="taupe"
-            size="cta"
-            onClick={() => { window.location.href = withBrowserAcquisition(PRIVATE_PARTY_INQUIRY_URL); }}
-            className="mt-8 w-full max-w-xs shadow-xl sm:w-auto"
-          >
-            <JpText>{privateParties.specialtyInquiry.cta}</JpText>
-          </Button>
-          <div className="mt-6 flex justify-center">
-            <YearEndHeroLink kind="private" tone="light" />
-          </div>
-        </div>
+      {/* A thin cream mount keeps the navy hero and the navy seasonal band apart. */}
+      <div className="bg-artbar-bg pt-4 md:pt-6">
+        <YearEndPartySection kind="private" facts={yearEndFacts} feeNote={`+ ${common.venueFeeLabel} ${common.venueFeePrice}`} />
+      </div>
 
-        <YearEndPartySection
-          kind="private"
-          facts={yearEndFacts}
-          feeNote={`+ ${common.venueFeeLabel} ${common.venueFeePrice}`}
-        />
-
-        <div
-          ref={occasionsReveal.ref}
-          className={`reveal grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 md:mb-24 ${occasionsReveal.isVisible ? 'visible' : ''}`}
-        >
+      {/* ── Occasions: a hung row of mounted photos ────────────────────── */}
+      <section className="relative overflow-hidden py-20 md:py-28">
+        <div ref={occasionsReveal.ref} className={`${WRAP} reveal-stagger grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-8 ${occasionsReveal.isVisible ? 'visible' : ''}`}>
           {privateParties.occasions.map((item, idx) => (
-            <div key={idx} className="group relative h-48 md:h-96 rounded-[2rem] overflow-hidden ">
-              <Image
-                src={item.image}
-                alt={stripJpSentinel(item.title)}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 50vw, 25vw"
-              />
-              <div className="absolute inset-0 bg-artbar-navy/20 group-hover:bg-artbar-navy/40 transition-colors"></div>
-              <div className="absolute bottom-4 left-2 right-2 md:bottom-6 md:left-4 md:right-4">
-                {cleanDisplayText(item.title) && <div className="bg-white/90 backdrop-blur-sm py-3 px-2 md:px-4 rounded-xl text-center shadow-lg">
-                  <span className="font-heading font-bold text-artbar-navy text-sm md:text-base"><JpText>{item.title}</JpText></span>
-                </div>}
-              </div>
-            </div>
+            <figure key={idx} className={`group ${idx % 2 ? 'mt-10 md:mt-16' : ''}`}>
+              <Tilt max={5} className="hp-wipe">
+                <div className="relative aspect-[3/4] overflow-hidden bg-artbar-light-taupe/40">
+                  <Image src={item.image} alt={stripJpSentinel(item.title)} fill className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.05]" sizes="(max-width: 768px) 50vw, 25vw" />
+                  <Hairline className="inset-2.5 md:inset-3" />
+                </div>
+              </Tilt>
+              {cleanDisplayText(item.title) && (
+                <figcaption className="mt-4 flex items-start gap-3 text-[14px] font-semibold leading-snug tracking-[0.04em] md:text-base">
+                  <span className="mt-[0.6em] h-px w-5 shrink-0 bg-artbar-taupe" aria-hidden />
+                  <JpText>{item.title}</JpText>
+                </figcaption>
+              )}
+            </figure>
           ))}
         </div>
+      </section>
 
-        <div ref={pricingReveal.ref} className={`reveal grid lg:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(260px,0.7fr)] gap-8 mb-16 md:mb-24 ${pricingReveal.isVisible ? 'visible' : ''}`}>
-            {/* Adult Pricing */}
-            <div className="bg-white p-6 sm:p-8 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-300 border border-white relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 md:p-10 opacity-5 group-hover:opacity-10 transition-opacity">
-                   <Wine size={120} className="text-artbar-navy" />
+      {/* ── Plans: two priced tickets and a custom-request note ────────── */}
+      <section className="relative bg-white py-20 md:py-28">
+        <DecoSplat seed={606} color={PAINT.lightTaupe} className="-left-20 top-10 h-72 w-72" opacity={0.5} />
+        <div ref={pricingReveal.ref} className={`${WRAP} relative grid gap-8 lg:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(280px,0.75fr)] reveal ${pricingReveal.isVisible ? 'visible' : ''}`}>
+          {plans.map(({ key, plan, source }) => (
+            <article key={key} className="relative flex flex-col bg-artbar-bg p-7 md:p-10">
+              <Hairline tone="taupe" className="inset-2.5 md:inset-3.5" />
+              <div className="relative flex flex-1 flex-col">
+                <p className="text-[12px] font-semibold tracking-[0.14em] text-artbar-taupe"><JpText>{standardLabel}</JpText></p>
+                <h2 className={`mt-3 ${jp ? 'text-2xl font-semibold tracking-[0.04em] md:text-[28px]' : 'font-heading text-3xl font-semibold md:text-4xl'}`}><JpText>{plan.title}</JpText></h2>
+                <p className="mt-1.5 text-sm text-artbar-gray"><JpText>{plan.subtitle}</JpText></p>
+                <div className="mt-7 flex items-end justify-between gap-4 border-y border-artbar-navy/15 py-6">
+                  <span className="whitespace-nowrap font-heading text-[clamp(2.2rem,9vw,3rem)] font-semibold leading-none">{cleanDisplayText(plan.price)}</span>
+                  <span className="text-right text-xs text-artbar-gray"><JpText>{priceSuffix}</JpText></span>
                 </div>
-                
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-8">
+                <ul className="mt-2">
+                  {plan.items.map((item, i) => (
+                    <li key={i} className="flex gap-3 border-b border-artbar-navy/10 py-4">
+                      <Check size={16} strokeWidth={2.4} className="mt-1 shrink-0 text-artbar-taupe" aria-hidden />
                       <div>
-                          <span className="text-artbar-taupe font-heading font-bold tracking-widest text-xs uppercase mb-2 block"><JpText>{standardLabel}</JpText></span>
-                          <h3 className="text-3xl md:text-4xl font-heading font-heavy text-artbar-navy mb-2"><JpText>{privateParties.pricing.adult.title}</JpText></h3>
-                          <p className="text-artbar-gray font-medium"><JpText>{privateParties.pricing.adult.subtitle}</JpText></p>
+                        <p className="text-[15px] font-semibold"><JpText>{item.title}</JpText></p>
+                        <p className="mt-0.5 text-sm leading-[1.85] text-artbar-gray"><JpText>{item.desc}</JpText></p>
                       </div>
-                  </div>
-
-                  <PriceDisplay amount={privateParties.pricing.adult.price} suffix={priceSuffix} />
-
-                  <div className="space-y-5 mb-8">
-                      {privateParties.pricing.adult.items.map((item, i) => (
-                        <div key={i} className="flex gap-3">
-                            <div className="w-6 h-6 rounded-full bg-artbar-bg flex items-center justify-center text-artbar-taupe mt-1 flex-shrink-0"><Check size={14} strokeWidth={3} /></div>
-                            <div>
-                            <span className="font-heading font-bold text-artbar-navy block"><JpText>{item.title}</JpText></span>
-                            <span className="text-base md:text-lg text-artbar-gray"><JpText>{item.desc}</JpText></span>
-                            </div>
-                        </div>
-                      ))}
-                  </div>
-
-                  <div className="bg-artbar-bg p-4 sm:p-6 rounded-2xl mb-8 border border-artbar-light-taupe/20">
-                      <div className="flex flex-col gap-1 mb-4">
-                        <span className="text-artbar-gray text-sm"><JpText>{privateParties.pricing.common.venueFeeLabel}</JpText></span>
-                        <span className="font-heading font-bold text-artbar-navy">{privateParties.pricing.common.venueFeePrice}</span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-artbar-gray text-sm"><JpText>{privateParties.pricing.common.minGuestsLabel}</JpText></span>
-                        <span className="font-heading font-bold text-artbar-navy"><JpText>{privateParties.pricing.common.minGuests}</JpText></span>
-                      </div>
-                  </div>
-
-	                  <Button
-	                    variant="primary"
-	                    size="cta"
-	                    onClick={() => { window.location.href = withBrowserAcquisition(PRIVATE_PARTY_INQUIRY_URL); }}
-	                    className="w-full rounded-2xl text-base shadow-lg shadow-artbar-navy/20 transition-transform hover:scale-[1.01]"
-                  >
-                    <JpText>{privateParties.pricing.adult.cta}</JpText>
-                  </Button>
+                    </li>
+                  ))}
+                </ul>
+                <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
+                  <div><dt className="text-xs text-artbar-gray"><JpText>{common.venueFeeLabel}</JpText></dt><dd className="mt-1 font-semibold">{common.venueFeePrice}</dd></div>
+                  <div><dt className="text-xs text-artbar-gray"><JpText>{common.minGuestsLabel}</JpText></dt><dd className="mt-1 font-semibold"><JpText>{common.minGuests}</JpText></dd></div>
+                </dl>
+                <div className="mt-auto pt-8">
+                  <PrimaryAction tone="navy" onClick={() => inquire(source)}><JpText>{plan.cta}</JpText></PrimaryAction>
                 </div>
-            </div>
+              </div>
+            </article>
+          ))}
 
-            {/* Kids Pricing */}
-             <div className="bg-artbar-bg border border-artbar-light-taupe/30 p-6 sm:p-8 rounded-[3rem] hover:shadow-xl transition-all duration-300 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-6 md:p-10 opacity-5 group-hover:opacity-10 transition-opacity">
-                   <Palette size={120} className="text-artbar-taupe" />
-                </div>
-
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-8">
-                       <div>
-                          <span className="text-artbar-taupe font-heading font-bold tracking-widest text-xs uppercase mb-2 block"><JpText>{standardLabel}</JpText></span>
-                          <h3 className="text-3xl md:text-4xl font-heading font-heavy text-artbar-navy mb-2"><JpText>{privateParties.pricing.kids.title}</JpText></h3>
-                          <p className="text-artbar-gray font-medium"><JpText>{privateParties.pricing.kids.subtitle}</JpText></p>
-                      </div>
-                  </div>
-
-                  <PriceDisplay amount={privateParties.pricing.kids.price} suffix={priceSuffix} />
-
-                  <div className="space-y-5 mb-8">
-                      {privateParties.pricing.kids.items.map((item, i) => (
-                        <div key={i} className="flex gap-3">
-                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-artbar-taupe mt-1 flex-shrink-0"><Check size={14} strokeWidth={3} /></div>
-                            <div>
-                            <span className="font-heading font-bold text-artbar-navy block"><JpText>{item.title}</JpText></span>
-                            <span className="text-base md:text-lg text-artbar-gray"><JpText>{item.desc}</JpText></span>
-                            </div>
-                        </div>
-                      ))}
-                  </div>
-
-                  <div className="bg-white p-4 sm:p-6 rounded-2xl mb-8 border border-artbar-light-taupe/20">
-                      <div className="flex flex-col gap-1 mb-4">
-                        <span className="text-artbar-gray text-sm"><JpText>{privateParties.pricing.common.venueFeeLabel}</JpText></span>
-                        <span className="font-heading font-bold text-artbar-navy">{privateParties.pricing.common.venueFeePrice}</span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-artbar-gray text-sm"><JpText>{privateParties.pricing.common.minGuestsLabel}</JpText></span>
-                        <span className="font-heading font-bold text-artbar-navy"><JpText>{privateParties.pricing.common.minGuests}</JpText></span>
-                      </div>
-                  </div>
-
-	                  <Button
-	                    variant="primary"
-	                    size="cta"
-	                    onClick={() => { window.location.href = withBrowserAcquisition(PRIVATE_PARTY_INQUIRY_URL); }}
-	                    className="w-full rounded-2xl text-base shadow-lg shadow-artbar-navy/20 transition-transform hover:scale-[1.01]"
-                  >
-                    <JpText>{privateParties.pricing.kids.cta}</JpText>
-                  </Button>
-                </div>
-            </div>
-
-            <div className="bg-white/70 border-2 border-artbar-taupe p-6 md:p-10 rounded-[2.5rem] shadow-sm lg:col-span-2 xl:col-span-1 xl:self-start">
-              <h3 className="text-2xl md:text-3xl font-heading font-bold text-artbar-navy mb-8 leading-tight">
-                <JpText>{specialtyInquiry.title}</JpText>
-              </h3>
-              <ul className="space-y-3 mb-10">
-                {specialtyInquiry.items.map((item) => (
-                  <li key={item} className="text-lg font-heading font-bold text-artbar-navy leading-snug">
+          <aside className="relative overflow-hidden bg-artbar-navy p-7 text-white md:p-10 lg:col-span-2 xl:col-span-1 xl:self-start">
+            <Hairline className="inset-2.5 md:inset-3.5" />
+            <div className="relative">
+              <h3 className={`${jp ? 'text-xl font-semibold leading-[1.6] tracking-[0.04em] md:text-2xl' : 'font-heading text-2xl font-semibold leading-tight md:text-3xl'}`}><JpText>{specialtyInquiry.title}</JpText></h3>
+              <ul className="mt-6 border-t border-white/15">
+                {specialtyInquiry.items.map((item, i) => (
+                  <li key={item} className="flex items-center gap-3 border-b border-white/10 py-3.5 text-[15px] font-semibold">
+                    <span className="relative h-5 w-5 shrink-0" aria-hidden><Splat seed={140 + i * 11} color={i % 2 ? PAINT.lightTaupe : PAINT.taupe} className="absolute inset-0 h-full w-full" /></span>
                     <JpText>{item}</JpText>
                   </li>
                 ))}
               </ul>
-              <p className="text-base md:text-lg text-artbar-gray leading-relaxed mb-8">
-                <JpText>{specialtyInquiry.note}</JpText>
-              </p>
-              <Button
-	                variant="taupe"
-	                size="cta"
-	                onClick={() => { window.location.href = withBrowserAcquisition(PRIVATE_PARTY_INQUIRY_URL); }}
-	                className="w-full rounded-2xl text-base"
-              >
-                <JpText>{specialtyInquiry.cta}</JpText>
-              </Button>
+              <p className="mt-6 text-sm leading-[1.9] text-white/70"><JpText>{specialtyInquiry.note}</JpText></p>
+              <div className="mt-8"><PrimaryAction onClick={() => inquire('private_party_custom')}><JpText>{specialtyInquiry.cta}</JpText></PrimaryAction></div>
             </div>
+          </aside>
         </div>
+      </section>
 
-        <div ref={capacityReveal.ref} className={`reveal mb-16 md:mb-24 ${capacityReveal.isVisible ? 'visible' : ''}`}>
-          <div className="flex items-center gap-4 mb-12">
-             <div className="h-px bg-artbar-light-taupe flex-grow"></div>
-             <h2 className="text-2xl md:text-3xl font-heading font-bold text-artbar-navy text-center px-4"><JpText>{privateParties.capacity.title}</JpText></h2>
-             <div className="h-px bg-artbar-light-taupe flex-grow"></div>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-             {localizedCopy.privatePartyCapacityRows.map((loc, i) => (
-               <div key={i} className={`p-4 md:p-6 rounded-[2rem] text-center flex flex-col items-center justify-center min-h-[160px] md:min-h-[180px] ${loc.highlight ? 'bg-artbar-navy text-white' : 'bg-white text-artbar-navy'}`}>
-                  <span className="text-3xl md:text-4xl font-heading font-bold mb-2">{loc.cap}</span>
-                  <span className="text-xs font-bold uppercase tracking-widest opacity-60 mb-4"><JpText>{maxGuestsLabel}</JpText></span>
-                  <h4 className="font-bold text-base md:text-lg leading-tight"><JpText>{loc.name[lang]}</JpText></h4>
-                  <span className="text-sm md:text-base mt-2 opacity-80"><JpText>{loc.desc[lang]}</JpText></span>
-               </div>
-             ))}
-          </div>
+      {/* ── Capacity: a studio register ────────────────────────────────── */}
+      <section className="relative py-20 md:py-28">
+        <div ref={capacityReveal.ref} className={`${WRAP} reveal ${capacityReveal.isVisible ? 'visible' : ''}`}>
+          <h2 className={h2}><JpText>{privateParties.capacity.title}</JpText></h2>
+          <ul className="mt-10 grid border-t border-artbar-navy/15 sm:grid-cols-2 lg:grid-cols-5">
+            {localizedCopy.privatePartyCapacityRows.map((loc, i) => (
+              <li key={i} className={`flex items-baseline justify-between gap-4 border-b border-artbar-navy/10 py-6 sm:flex-col sm:justify-start sm:gap-0 sm:py-8 lg:border-b-0 ${i % 2 ? 'sm:border-l sm:pl-6' : 'sm:pr-6'} ${i > 0 ? 'lg:border-l lg:pl-6' : ''}`}>
+                <div className="min-w-0">
+                  <p className="text-[15px] font-semibold"><JpText>{loc.name[lang]}</JpText></p>
+                  <p className="mt-1 text-[13px] text-artbar-gray"><JpText>{loc.desc[lang]}</JpText></p>
+                </div>
+                <p className="shrink-0 text-right sm:mt-6 sm:text-left">
+                  <span className={`font-heading text-4xl font-semibold leading-none md:text-5xl ${loc.highlight ? 'text-artbar-taupe' : ''}`}>{loc.cap}</span>
+                  <span className="mt-1 block text-[11px] tracking-[0.1em] text-artbar-gray"><JpText>{maxGuestsLabel}</JpText></span>
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
+      </section>
 
-        <div ref={timelineReveal.ref} className={`reveal bg-white rounded-[3rem] p-6 md:p-12 border border-artbar-bg shadow-sm ${timelineReveal.isVisible ? 'visible' : ''}`}>
-           <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
-              
-              {/* Timeline */}
-              <div>
-	                 <h3 className="text-2xl font-heading font-bold text-artbar-navy mb-8 flex flex-col items-start gap-3">
-	                    <Clock className="text-artbar-taupe" /> <JpText>{privateParties.timeline.title}</JpText>
-	                 </h3>
-                   <p className="mb-5 text-sm md:text-base font-bold text-artbar-taupe">
-                     <JpText>{privateParties.timeline.note}</JpText>
-                   </p>
-	                 <div className="space-y-6 relative">
-                    <div className="absolute left-[11px] top-2 bottom-4 w-0.5 bg-artbar-bg"></div>
-                    {privateParties.timeline.steps.map((step, i) => (
-                       <div key={i} className="relative flex gap-3 items-start">
-                          <div className="w-6 h-6 rounded-full bg-artbar-taupe border-4 border-white shadow-sm flex-shrink-0 relative z-10"></div>
-                          <div>
-                             <span className="text-xs font-bold text-artbar-gray bg-artbar-bg px-2 py-1 rounded mb-1 inline-block"><JpText>{step.time}</JpText></span>
-                             <h4 className="font-bold text-artbar-navy"><JpText>{step.title}</JpText></h4>
-                             <p className="text-base md:text-lg text-artbar-gray"><JpText>{step.desc}</JpText></p>
-                          </div>
-                       </div>
-                    ))}
-                 </div>
+      {/* ── The evening, hour by hour + food ───────────────────────────── */}
+      <section className="relative bg-white py-20 md:py-28">
+        <div ref={timelineReveal.ref} className={`${WRAP} grid gap-16 lg:grid-cols-12 lg:gap-20 reveal ${timelineReveal.isVisible ? 'visible' : ''}`}>
+          <div className="lg:col-span-7">
+            <Clock size={22} strokeWidth={1.6} className="text-artbar-taupe" aria-hidden />
+            <h2 className={`mt-5 ${h2}`}><JpText>{privateParties.timeline.title}</JpText></h2>
+            <p className="mt-4 text-sm font-semibold text-artbar-taupe md:text-[15px]"><JpText>{privateParties.timeline.note}</JpText></p>
+            <ol className="relative mt-10 border-l border-artbar-navy/15 pl-8">
+              {privateParties.timeline.steps.map((step, i) => (
+                <li key={i} className="relative pb-9 last:pb-0">
+                  <span className="absolute -left-[2.6rem] top-0.5 h-5 w-5" aria-hidden>
+                    <Splat seed={420 + i * 5} color={i % 2 ? PAINT.lightTaupe : PAINT.taupe} className="absolute inset-0 h-full w-full" />
+                  </span>
+                  <p className="font-heading text-sm font-semibold tracking-[0.08em] text-artbar-taupe"><JpText>{step.time}</JpText></p>
+                  <h3 className="mt-1.5 text-[17px] font-semibold"><JpText>{step.title}</JpText></h3>
+                  <p className="mt-1 text-[15px] leading-[1.9] text-artbar-gray"><JpText>{step.desc}</JpText></p>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="lg:col-span-5">
+            <div className="relative bg-artbar-bg p-7 md:p-10">
+              <Hairline tone="taupe" className="inset-2.5 md:inset-3.5" />
+              <div className="relative">
+                <Utensils size={22} strokeWidth={1.6} className="text-artbar-taupe" aria-hidden />
+                <h3 className={`mt-5 ${jp ? 'text-xl font-semibold tracking-[0.04em] md:text-2xl' : 'font-heading text-2xl font-semibold md:text-3xl'}`}><JpText>{privateParties.catering.title}</JpText></h3>
+                <p className="mt-4 text-[15px] leading-[1.9]"><JpText>{privateParties.catering.desc}</JpText></p>
+                <ul className="mt-6 border-t border-artbar-navy/15">
+                  {privateParties.catering.items.filter((item) => cleanDisplayText(item)).map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 border-b border-artbar-navy/10 py-3.5 text-[15px] text-artbar-gray">
+                      <Check size={15} strokeWidth={2.4} className="mt-1 shrink-0 text-artbar-taupe" aria-hidden />
+                      <span><JpText>{item}</JpText></span>
+                    </li>
+                  ))}
+                </ul>
+                <ul className="mt-6 space-y-2.5">
+                  {privateParties.catering.notes.filter((note) => cleanDisplayText(note)).map((note) => (
+                    <li key={note} className="flex items-start gap-3 text-sm font-semibold text-artbar-taupe">
+                      <span className="mt-[0.55em] h-px w-4 shrink-0 bg-current" aria-hidden />
+                      <span><JpText>{note}</JpText></span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              {/* Catering */}
-              <div className="lg:bg-artbar-bg lg:rounded-[2.5rem] lg:p-8">
-                  <h3 className="text-2xl font-heading font-bold text-artbar-navy mb-6 flex flex-col items-start gap-3">
-                    <Utensils className="text-artbar-taupe" /> <JpText>{privateParties.catering.title}</JpText>
-                  </h3>
-                  <p className="text-artbar-navy leading-relaxed mb-6">
-                    <JpText>{privateParties.catering.desc}</JpText>
-                  </p>
-                  <ul className="space-y-4 mb-8">
-                     {privateParties.catering.items.map((item, i) => (
-                        <li key={i} className="flex items-start gap-3 text-base text-artbar-gray">
-                            <Sparkles size={16} className="text-artbar-taupe mt-1 flex-shrink-0" />
-                            <span><JpText>{item}</JpText></span>
-                        </li>
-                     ))}
-                  </ul>
-                    <ul className="mt-8 space-y-3">
-                      {privateParties.catering.notes.map((note) => (
-                        <li key={note} className="flex items-start gap-3 text-sm md:text-base font-bold text-artbar-taupe">
-                          <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-artbar-taupe flex-shrink-0" />
-                          <span><JpText>{note}</JpText></span>
-                        </li>
-                      ))}
-                    </ul>
-	              </div>
-
-           </div>
+            </div>
+          </div>
         </div>
+      </section>
 
-      </div>
+      <ClosingCta
+        lang={lang}
+        className="pt-4 md:pt-6"
+        title={<><span className="block"><JpText>{privateParties.hero.title}</JpText></span><span className="block text-artbar-light-taupe"><JpText>{privateParties.hero.titleHighlight}</JpText></span></>}
+        body={<JpText>{specialtyInquiry.note}</JpText>}
+        actions={<PrimaryAction onClick={() => inquire('private_party_bottom')}><JpText>{specialtyInquiry.cta}</JpText></PrimaryAction>}
+      />
     </div>
   );
 };

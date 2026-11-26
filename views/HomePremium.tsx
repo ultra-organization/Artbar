@@ -555,9 +555,9 @@ export const HomePremium: React.FC = () => {
 
           <div className="mt-20 md:mt-24">
             <p className="mb-8 text-center text-[12px] tracking-[0.18em] text-white/55 md:mb-10">{jp ? '企業イベントでも選ばれています' : 'Companies who have joined Artbar events'}</p>
-            <div className="group-event-logos grid grid-cols-2 border-l border-t border-white/10 sm:grid-cols-4 lg:grid-cols-7">
+            <div className="group-event-logos grid grid-cols-3 border-l border-t border-white/10 sm:grid-cols-4 lg:grid-cols-7">
               {PARTNER_LOGOS.map((logo) => (
-                <div key={logo.name} className="flex min-h-[6.5rem] min-w-0 items-center justify-center border-b border-r border-white/10 px-6 py-6 opacity-80 transition-opacity hover:opacity-100">
+                <div key={logo.name} className="flex min-h-[5rem] min-w-0 items-center justify-center border-b border-r border-white/10 px-3 py-4 sm:min-h-[6.5rem] sm:px-6 sm:py-6 opacity-80 transition-opacity hover:opacity-100">
                   <PartnerLogo {...logo} size="compact" tone="reverse" scaleBoost={PARTNER_LOGO_SCALE_BOOSTS[logo.name]} />
                 </div>
               ))}
