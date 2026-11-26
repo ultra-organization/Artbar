@@ -9,8 +9,10 @@ import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { HERO_BLUR_DATA_URL } from '../constants';
+import { WRAP } from '../components/premium/styles';
+import { DecoSplat, PAINT } from '../components/premium/Paint';
 import { localizeHrefForLanguage, publicUrlForPath, siteLanguageToRouteLocale } from '../lib/locale-routing';
-import { ArrowLeft, Calendar, User, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Facebook, Twitter, Linkedin } from 'lucide-react';
 import type { BlogPost as BlogPostData } from '../types';
 export const BlogPost: React.FC = () => {
   const params = useParams();
@@ -75,150 +77,91 @@ export const BlogPost: React.FC = () => {
   const shareTitle = encodeURIComponent(titleForAttr);
   const shareLabel = blogPostCopy.shareLabel;
 
+  const jp = lang === 'jp';
+  const shareClass = 'flex h-11 w-11 items-center justify-center rounded-full border border-artbar-navy/20 text-artbar-navy transition-colors duration-300 hover:border-artbar-taupe hover:bg-artbar-taupe focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-artbar-navy';
+
   return (
-    <div className="grain relative bg-artbar-bg min-h-screen pb-20">
-      <div className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden bg-artbar-bg">
-        <Image
-          key={post.image}
-          src={post.image}
-          alt={titleForAttr}
-          fill
-          priority
-          placeholder="blur"
-          blurDataURL={HERO_BLUR_DATA_URL}
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-artbar-navy/30 via-transparent to-artbar-bg"></div>
-        <div className="absolute top-32 left-0 w-full px-6">
-           <div className="max-w-[1000px] mx-auto">
-             <Link 
-              href={blogHref}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-md text-sm font-bold text-white transition-colors hover:bg-white/30"
-             >
-               <ArrowLeft size={16} /> <JpText>{site.blogPage.back}</JpText>
-             </Link>
-           </div>
+    <div className="hp relative min-h-screen bg-artbar-bg pb-24 text-artbar-navy md:pb-32">
+      {/* ── Article header ─────────────────────────────────────────────── */}
+      <header className="relative overflow-hidden pb-10 pt-28 md:pb-14 md:pt-40">
+        <DecoSplat seed={post.id.length * 37} color={PAINT.lightTaupe} className="-right-24 top-10 h-64 w-64 md:right-[6%] md:h-80 md:w-80" opacity={0.45} />
+        <div className="relative mx-auto w-full max-w-[920px] px-7 sm:px-8 md:px-12">
+          <Link href={blogHref} className="group inline-flex min-h-11 items-center gap-2 text-sm font-semibold tracking-[0.04em] text-artbar-navy/80 transition-colors hover:text-artbar-navy">
+            <ArrowLeft size={15} className="transition-transform duration-300 group-hover:-translate-x-1" aria-hidden /> <JpText>{site.blogPage.back}</JpText>
+          </Link>
+          {post.tags.length > 0 && (
+            <p className="hp-in mt-8 flex flex-wrap gap-x-4 gap-y-1 text-[12px] tracking-[0.1em] text-artbar-taupe">
+              {post.tags.map((tag) => <span key={tag}>#{tag}</span>)}
+            </p>
+          )}
+          <h1 className={`hp-in mt-4 ${jp ? 'text-[clamp(1.6rem,6.4vw,2.8rem)] font-semibold leading-[1.5] tracking-[0.04em]' : 'font-heading text-[clamp(2.2rem,8vw,4rem)] font-semibold leading-[1.04] tracking-[-0.015em]'}`} style={{ animationDelay: '100ms' }}>
+            <JpText>{title}</JpText>
+          </h1>
+          <p className="hp-in mt-7 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-artbar-navy/15 pt-5 text-sm text-artbar-gray" style={{ animationDelay: '200ms' }}>
+            <span className="font-semibold text-artbar-navy"><JpText>{author}</JpText></span>
+            <span className="h-px w-5 bg-artbar-taupe" aria-hidden />
+            <span className="font-heading tracking-[0.06em]">{post.date}</span>
+          </p>
+        </div>
+      </header>
+
+      <div className={WRAP}>
+        <div className="relative aspect-[16/10] overflow-hidden bg-artbar-light-taupe/40 md:aspect-[16/8]">
+          <Image key={post.image} src={post.image} alt={titleForAttr} fill priority placeholder="blur" blurDataURL={HERO_BLUR_DATA_URL} className="hp-kb object-cover" sizes="100vw" />
+          <div className="pointer-events-none absolute inset-3 border border-white/40 md:inset-5" aria-hidden />
         </div>
       </div>
 
-      <article className="max-w-[800px] mx-auto px-6 relative -mt-32 z-10">
-        <div className="bg-white rounded-[3rem] p-8 md:p-16 shadow-xl border border-white/50">
-          
-          {/* Header */}
-          <header className="mb-10 text-center">
-             <div className="flex flex-wrap justify-center gap-2 mb-6">
-                {post.tags.map(tag => (
-                   <span key={tag} className="bg-artbar-bg text-artbar-navy px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">{tag}</span>
-                ))}
-             </div>
-             
-             <h1 className="text-3xl md:text-5xl font-heading font-heavy text-artbar-navy mb-6 leading-tight">
-               <JpText>{title}</JpText>
-             </h1>
-             
-             <div className="flex items-center justify-center gap-6 text-sm md:text-base text-artbar-gray border-t border-b border-gray-100 py-4">
-                <div className="flex items-center gap-2">
-                   <User size={16} className="text-artbar-taupe" />
-                   <span className="font-heading font-bold"><JpText>{author}</JpText></span>
-                </div>
-                <div className="flex items-center gap-2">
-                   <Calendar size={16} className="text-artbar-taupe" />
-                   <span className="font-mono">{post.date}</span>
-                </div>
-             </div>
-          </header>
-
-          <div
-            ref={proseReveal.ref}
-            className={`reveal artbar-prose max-w-none ${proseReveal.isVisible ? 'visible' : ''}`}
-            dangerouslySetInnerHTML={{ __html: bodyContent }}
-          />
-          {needsBodyFetch && (
-            <div className="space-y-4" aria-hidden="true">
-              <div className="h-4 w-3/4 rounded-full bg-artbar-bg" />
-              <div className="h-4 w-full rounded-full bg-artbar-bg" />
-              <div className="h-4 w-5/6 rounded-full bg-artbar-bg" />
-            </div>
-          )}
-
-          <div className="mt-16 pt-8 border-t border-gray-100">
-            <h3 className="text-center font-heading font-bold text-artbar-navy mb-6 text-sm uppercase tracking-widest">
-              <JpText>{shareLabel}</JpText>
-            </h3>
-            <div className="flex justify-center gap-4">
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#3b5998] hover:opacity-80 transition-opacity shadow-sm"
-                aria-label={stripJpSentinel(blogPostCopy.facebookShareLabel)}
-              >
-                <Facebook size={20} className="text-current" strokeWidth={2} />
-              </a>
-              <a
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareTitle}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#1DA1F2] hover:opacity-80 transition-opacity shadow-sm"
-                aria-label={stripJpSentinel(blogPostCopy.xShareLabel)}
-              >
-                <Twitter size={20} className="text-current" strokeWidth={2} />
-              </a>
-              <a
-                href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#0077B5] hover:opacity-80 transition-opacity shadow-sm"
-                aria-label={stripJpSentinel(blogPostCopy.linkedinShareLabel)}
-              >
-                <Linkedin size={20} className="text-current" strokeWidth={2} />
-              </a>
-            </div>
+      <article className="mx-auto w-full max-w-[760px] px-7 pt-14 sm:px-8 md:px-12 md:pt-20">
+        <div
+          ref={proseReveal.ref}
+          className={`reveal artbar-prose max-w-none ${proseReveal.isVisible ? 'visible' : ''}`}
+          dangerouslySetInnerHTML={{ __html: bodyContent }}
+        />
+        {needsBodyFetch && (
+          <div className="space-y-4" aria-hidden="true">
+            <div className="h-4 w-3/4 bg-artbar-light-taupe/40" />
+            <div className="h-4 w-full bg-artbar-light-taupe/40" />
+            <div className="h-4 w-5/6 bg-artbar-light-taupe/40" />
           </div>
+        )}
 
+        <div className="mt-16 flex flex-wrap items-center justify-between gap-6 border-y border-artbar-navy/15 py-6">
+          <p className="text-[12px] font-medium tracking-[0.14em] text-artbar-taupe"><JpText>{shareLabel}</JpText></p>
+          <div className="flex gap-3">
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" className={shareClass} aria-label={stripJpSentinel(blogPostCopy.facebookShareLabel)}><Facebook size={17} strokeWidth={1.8} /></a>
+            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${shareTitle}`} target="_blank" rel="noreferrer" className={shareClass} aria-label={stripJpSentinel(blogPostCopy.xShareLabel)}><Twitter size={17} strokeWidth={1.8} /></a>
+            <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noreferrer" className={shareClass} aria-label={stripJpSentinel(blogPostCopy.linkedinShareLabel)}><Linkedin size={17} strokeWidth={1.8} /></a>
+          </div>
         </div>
       </article>
 
-      <section className="max-w-[1000px] mx-auto px-6 mt-20">
-        <h3 className="font-heading font-bold text-2xl text-artbar-navy mb-8 text-center">
+      <section className="mx-auto mt-20 w-full max-w-[1080px] px-7 sm:px-8 md:mt-28 md:px-12">
+        <h2 className={`${jp ? 'text-xl font-semibold tracking-[0.04em] md:text-2xl' : 'font-heading text-2xl font-semibold md:text-3xl'}`}>
           <JpText>{blogPostCopy.moreFromJournal}</JpText>
-        </h3>
-        <div
-          ref={moreReveal.ref}
-          className={`grid md:grid-cols-2 gap-8 reveal-stagger ${moreReveal.isVisible ? 'visible' : ''}`}
-        >
+        </h2>
+        <div ref={moreReveal.ref} className={`mt-8 grid gap-10 md:grid-cols-2 reveal-stagger ${moreReveal.isVisible ? 'visible' : ''}`}>
           {content.blog
             .filter((p) => p.id !== post.id)
             .slice(0, 2)
             .map((p) => (
-              <Link
-                key={p.id}
-                href={localizeHrefForLanguage(`/blog/${p.slug}`, lang)}
-                className="bg-white rounded-2xl p-6 flex gap-4 items-center hover:shadow-lg transition-all snap-start"
-              >
-                <div className="relative w-24 h-24 rounded-xl overflow-hidden shrink-0">
-                  <Image
-                    src={p.image}
-                    alt={lang === 'en' ? p.titleEn : stripJpSentinel(p.titleJp)}
-                    fill
-                    className="object-cover"
-                    sizes="96px"
-                  />
+              <Link key={p.id} href={localizeHrefForLanguage(`/blog/${p.slug}`, lang)} className="group grid grid-cols-[7rem_1fr] items-center gap-5 border-t border-artbar-navy/15 pt-6 sm:grid-cols-[9rem_1fr]">
+                <div className="relative aspect-square overflow-hidden bg-artbar-light-taupe/40">
+                  <Image src={p.image} alt={jp ? stripJpSentinel(p.titleJp) : p.titleEn} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="144px" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-artbar-navy mb-2 line-clamp-2">
-                    <JpText>{lang === 'en' ? p.titleEn : p.titleJp}</JpText>
-                  </h4>
-                  <span className="text-sm text-artbar-taupe font-bold uppercase tracking-wider">
+                  <h3 className={`line-clamp-3 transition-colors group-hover:text-artbar-blue ${jp ? 'text-[15px] font-semibold leading-[1.7]' : 'font-heading text-lg font-semibold leading-snug'}`}>
+                    <JpText>{jp ? p.titleJp : p.titleEn}</JpText>
+                  </h3>
+                  <span className="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold tracking-[0.04em] text-artbar-taupe">
                     <JpText>{blogPostCopy.readStory}</JpText>
+                    <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                   </span>
                 </div>
               </Link>
             ))}
         </div>
       </section>
-
     </div>
   );
 };

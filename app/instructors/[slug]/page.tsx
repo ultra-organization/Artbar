@@ -13,6 +13,8 @@ import { absoluteUrl, ORGANIZATION_ID, WEBSITE_ID, safeJsonLd } from '@/lib/json
 import { publicUrlForPath, siteLanguageToRouteLocale, localizePath } from '@/lib/locale-routing';
 import { buildLocalizedAlternates, buildOpenGraph, getRequestLang } from '@/lib/request-lang';
 import type { SiteLanguage } from '@/lib/language';
+import { PageHero, PrimaryAction } from '@/components/premium/Kit';
+import { WRAP } from '@/components/premium/styles';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -74,31 +76,35 @@ export default async function InstructorProfilePage({ params }: Props) {
       ...(instructor.id !== 'glicinapeony' && { jobTitle: role, worksFor: { '@id': ORGANIZATION_ID } }),
     },
   };
+  const jp = lang === 'jp';
   return (
-    <div className="grain min-h-screen bg-artbar-bg pt-32 pb-20">
+    <div className="hp min-h-screen bg-artbar-bg pb-24 text-artbar-navy md:pb-32">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
-      <div className="mx-auto max-w-[1180px] px-6 md:px-10">
-        <Link href={localizePath('/instructors', locale)} className="inline-flex min-h-11 items-center text-sm font-bold text-artbar-navy underline underline-offset-4">
-          {lang === 'jp' ? '← インストラクター一覧' : '← All instructors'}
-        </Link>
-        <div className="mt-6 overflow-hidden rounded-[2.5rem] border border-gray-100 bg-white shadow-sm">
-          <div className="relative h-64 bg-artbar-bg sm:h-80">
-            <Image src={instructor.artworkImage} alt={lang === 'jp' ? `${name}の作品` : `${name}'s Art`} fill priority className="object-cover" sizes="100vw" />
-          </div>
-          <div className="relative px-6 pb-10 sm:px-10">
-            <div className="relative -mt-16 mb-6 h-32 w-32 overflow-hidden rounded-full border-[6px] border-white bg-white shadow-md">
-              <Image src={instructor.profileImage} alt={name} fill className="object-cover" sizes="128px" />
+      <PageHero
+        lang={lang}
+        image={instructor.artworkImage}
+        alt={jp ? `${name}の作品` : `${name}'s Art`}
+        eyebrow={<JpText>{role}</JpText>}
+        title={<JpText>{name}</JpText>}
+        subtitle={instructor.languages}
+        actions={<PrimaryAction href={ARTBAR_BOOKING_URL}>{jp ? 'クラスを探す' : 'Explore classes'}</PrimaryAction>}
+      />
+      <section className="pt-16 md:pt-24">
+        <div className={`${WRAP} grid gap-12 md:grid-cols-12 md:gap-16`}>
+          <div className="md:col-span-4">
+            <div className="relative aspect-[4/5] w-full max-w-xs overflow-hidden bg-white">
+              <Image src={instructor.profileImage} alt={name} fill className="object-cover" sizes="(max-width: 768px) 80vw, 320px" />
+              <div className="pointer-events-none absolute inset-3 border border-white/50" aria-hidden />
             </div>
-            <p className="mb-3 text-sm font-bold uppercase tracking-wider text-artbar-taupe"><JpText>{role}</JpText></p>
-            <h1 className="font-heading text-4xl font-heavy text-artbar-navy md:text-5xl"><JpText>{name}</JpText></h1>
-            <p className="mt-4 text-sm font-bold text-artbar-navy">{instructor.languages}</p>
-            <p className="mt-6 max-w-3xl whitespace-pre-line text-lg leading-relaxed text-artbar-gray"><JpText>{bio}</JpText></p>
-            <a href={ARTBAR_BOOKING_URL} className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-artbar-taupe px-7 py-3 font-heading font-bold text-artbar-navy hover:opacity-90 focus-visible:outline-2 focus-visible:outline-artbar-navy">
-              {lang === 'jp' ? 'クラスを探す' : 'Explore classes'}
-            </a>
+          </div>
+          <div className="md:col-span-8">
+            <p className="whitespace-pre-line text-[16px] leading-[2.05] text-artbar-gray md:text-lg"><JpText>{bio}</JpText></p>
+            <Link href={localizePath('/instructors', locale)} className="mt-10 inline-flex min-h-11 items-center gap-2 border-b border-artbar-navy/25 pb-0.5 text-sm font-semibold tracking-[0.04em] transition-colors hover:border-artbar-navy">
+              {jp ? '← インストラクター一覧' : '← All instructors'}
+            </Link>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

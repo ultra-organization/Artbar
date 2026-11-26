@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '../components/ui/Button';
-import { ChevronDown, ChevronUp, Send } from 'lucide-react';
+import { ArrowDown, Plus, Send } from 'lucide-react';
+import { Hairline, PILL_NAVY, WRAP } from '../components/premium/Kit';
+import { DecoSplat, Magnetic, PAINT } from '../components/premium/Paint';
 import { useContent } from '../context/ContentContext';
 import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
@@ -80,192 +81,130 @@ export const Contact: React.FC = () => {
     failed: contactCopy.failed,
   };
 
+  const jp = lang === 'jp';
+  const labelClass = 'block text-[12px] font-medium tracking-[0.14em] text-artbar-taupe';
+  const fieldClass = 'mt-2 w-full border-0 border-b border-artbar-navy/20 bg-transparent px-0 py-3 text-[16px] text-artbar-navy outline-none transition-colors placeholder:text-artbar-gray/50 focus:border-artbar-navy focus:ring-0';
+
   return (
-    <div className="grain relative pt-28 md:pt-40 pb-20 bg-artbar-bg min-h-screen">
-      <div
-        className="max-w-[1000px] mx-auto px-6 md:px-10"
-      >
-        
-        {/* Header */}
-        <div className="text-center mb-12 md:mb-20">
-          <span className="text-artbar-taupe font-heading font-bold tracking-widest text-sm uppercase mb-4 block"><JpText>{site.contactPage.badge}</JpText></span>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-heading font-heavy text-artbar-navy mb-8"><JpText>{site.contactPage.title}</JpText></h1>
-          {stripJpSentinel(site.contactPage.notice2).trim() && <div className="bg-white p-6 md:p-8 rounded-[2rem] max-w-3xl mx-auto shadow-sm">
-            <p className="text-artbar-navy leading-relaxed font-medium">
+    <div className="hp relative min-h-screen bg-artbar-bg pb-24 text-artbar-navy md:pb-32">
+      {/* ── Header ─────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden pb-14 pt-32 md:pb-20 md:pt-44">
+        <DecoSplat seed={9} color={PAINT.lightTaupe} className="-right-24 top-16 h-72 w-72 md:right-[8%] md:h-96 md:w-96" opacity={0.5} />
+        <div className={`${WRAP} relative`}>
+          {stripJpSentinel(site.contactPage.badge).trim() && (
+            <p className="hp-in flex items-center gap-4 text-[12px] font-medium tracking-[0.16em] text-artbar-taupe md:text-[13px]"><span className="h-px w-10 bg-current" aria-hidden /><JpText>{site.contactPage.badge}</JpText></p>
+          )}
+          <h1 className={`hp-in mt-5 max-w-4xl ${jp ? 'text-[clamp(2rem,8vw,3.6rem)] font-semibold leading-[1.35] tracking-[0.04em]' : 'font-heading text-[clamp(2.8rem,10vw,5.2rem)] font-semibold leading-[0.98] tracking-[-0.02em]'}`} style={{ animationDelay: '100ms' }}>
+            <JpText>{site.contactPage.title}</JpText>
+          </h1>
+          {stripJpSentinel(site.contactPage.notice2).trim() && (
+            <p className="hp-in mt-6 max-w-2xl border-l-2 border-artbar-taupe pl-5 text-[15px] font-medium leading-[1.9] md:text-base" style={{ animationDelay: '200ms' }}>
               <JpText>{site.contactPage.notice2}</JpText>
             </p>
-          </div>}
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <a href="#contact-form" className="inline-flex min-h-12 items-center justify-center rounded-full bg-artbar-navy px-6 py-3 font-bold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-artbar-navy">
-              {lang === 'jp' ? 'メッセージを送る' : 'Send a message'}
-            </a>
-            <a href="#contact-faqs" className="inline-flex min-h-12 items-center justify-center rounded-full border border-artbar-taupe px-6 py-3 font-bold text-artbar-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-artbar-navy">
-              {lang === 'jp' ? 'よくある質問' : 'Read FAQs'}
-            </a>
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div id="contact-faqs" className="scroll-mt-28 mb-16 md:mb-24">
-          <h2 className="text-3xl font-heading font-bold text-artbar-navy mb-10 px-4 border-l-4 border-artbar-taupe"><JpText>{site.contactPage.faqTitle}</JpText></h2>
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <div 
-                key={index} 
-                className={`border border-white rounded-3xl overflow-hidden transition-all duration-300 ${openIndex === index ? 'bg-white shadow-md border-transparent' : 'bg-white/60 hover:bg-white'}`}
-              >
-                <button
-                  onClick={() => toggleFaq(index)}
-                  aria-expanded={openIndex === index}
-                  aria-controls={`faq-answer-${index}`}
-                  className="w-full px-5 md:px-8 py-5 flex justify-between items-center text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-artbar-navy"
-                >
-                  <span className={`font-heading font-bold text-base md:text-lg pr-4 ${openIndex === index ? 'text-artbar-navy' : 'text-artbar-navy/70'}`}>
-                    <JpText>{faq.question}</JpText>
-                  </span>
-                  <span className="flex-shrink-0 text-artbar-taupe">
-                    {openIndex === index ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                  </span>
-                </button>
-                <div id={`faq-answer-${index}`} hidden={openIndex !== index} className="px-5 md:px-8 pb-6">
-                  <p className="whitespace-pre-line text-artbar-gray leading-relaxed">
-                    <JpText>{faq.answer}</JpText>
-                  </p>
-                </div>
-              </div>
+          )}
+          <div className="hp-in mt-9 flex flex-wrap gap-x-8 gap-y-3" style={{ animationDelay: '300ms' }}>
+            {[{ href: '#contact-form', label: jp ? 'メッセージを送る' : 'Send a message' }, { href: '#contact-faqs', label: jp ? 'よくある質問' : 'Read FAQs' }].map((l) => (
+              <a key={l.href} href={l.href} className="group inline-flex min-h-11 items-center gap-2 border-b border-artbar-navy/25 pb-0.5 text-[15px] font-semibold tracking-[0.04em] transition-colors hover:border-artbar-navy focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-artbar-navy">
+                {l.label}
+                <ArrowDown size={15} className="transition-transform duration-300 group-hover:translate-y-0.5" aria-hidden />
+              </a>
             ))}
           </div>
         </div>
+      </section>
 
-        <div id="contact-form" tabIndex={-1} className="scroll-mt-28 relative overflow-clip">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-artbar-taupe/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute bottom-0 -left-20 w-64 h-64 bg-artbar-navy/5 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div className="bg-white border border-white shadow-xl rounded-[3rem] p-6 md:p-16 relative z-10">
-            <h2 className="text-3xl font-heading font-bold text-artbar-navy mb-8 text-center"><JpText>{site.contactPage.formTitle}</JpText></h2>
-            {status === 'ok' && (
-              <p className="text-center text-artbar-navy mb-6 text-base"><JpText>{copy.sent}</JpText></p>
-            )}
-            {status === 'err' && (
-              <p className="text-center text-red-700 mb-6 text-base">
-                {errorMessage ? errorMessage : <JpText>{copy.failed}</JpText>}
-              </p>
-            )}
-            <form className="space-y-8" onSubmit={handleSubmit} noValidate>
-              {/* Honeypot — hidden from real users; bots fill it. */}
-              <div className="hidden" aria-hidden="true">
-                <label htmlFor="company">Company</label>
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={form.company}
-                  onChange={updateField('company')}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="subject" className="block text-base font-heading font-bold text-artbar-navy mb-2 tracking-wide">
-                  <JpText>{copy.subjectLabel}</JpText>
-                </label>
-                <select
-                  id="subject"
-                  name="subject"
-                  className="w-full px-6 py-4 rounded-xl bg-artbar-bg border-2 border-transparent focus:bg-white focus:border-artbar-taupe focus:ring-0 transition-colors outline-none appearance-none text-artbar-navy text-base"
-                  required
-                  value={form.subject}
-                  onChange={updateField('subject')}
-                >
-                  {subjects.map((s, i) => (
-                    <option key={s.value || 'placeholder'} value={s.value} disabled={i === 0 && s.value === ''}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <label htmlFor="name" className="block text-base font-heading font-bold text-artbar-navy mb-2 tracking-wide">
-                    <JpText>{copy.nameLabel}</JpText>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="w-full px-6 py-4 rounded-xl bg-artbar-bg border-2 border-transparent focus:bg-white focus:border-artbar-taupe focus:ring-0 transition-colors outline-none"
-                    placeholder={copy.namePlaceholder}
-                    required
-                    value={form.name}
-                    onChange={updateField('name')}
-                  />
+      <div className={`${WRAP} grid gap-20 lg:grid-cols-12 lg:gap-16`}>
+        {/* ── FAQ ───────────────────────────────────────────────────────── */}
+        <section id="contact-faqs" className="scroll-mt-28 lg:col-span-6">
+          <h2 className={`${jp ? 'text-2xl font-semibold tracking-[0.04em] md:text-[28px]' : 'font-heading text-3xl font-semibold md:text-4xl'}`}><JpText>{site.contactPage.faqTitle}</JpText></h2>
+          <div className="mt-8 border-t border-artbar-navy/15">
+            {faqs.map((faq, index) => {
+              const open = openIndex === index;
+              return (
+                <div key={index} className="border-b border-artbar-navy/10">
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    aria-expanded={open}
+                    aria-controls={`faq-answer-${index}`}
+                    className="flex w-full items-center justify-between gap-6 py-5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-artbar-navy md:py-6"
+                  >
+                    <span className={`text-[15px] font-semibold leading-[1.7] transition-colors md:text-base ${open ? 'text-artbar-navy' : 'text-artbar-navy/80'}`}>
+                      <JpText>{faq.question}</JpText>
+                    </span>
+                    <Plus size={20} className={`shrink-0 text-artbar-taupe transition-transform duration-300 ${open ? 'rotate-45' : ''}`} aria-hidden />
+                  </button>
+                  <div id={`faq-answer-${index}`} hidden={!open} className="pb-6 pr-10">
+                    <p className="whitespace-pre-line text-[15px] leading-[1.95] text-artbar-gray"><JpText>{faq.answer}</JpText></p>
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="email" className="block text-base font-heading font-bold text-artbar-navy mb-2 tracking-wide">
-                    <JpText>{copy.emailLabel}</JpText>
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full px-6 py-4 rounded-xl bg-artbar-bg border-2 border-transparent focus:bg-white focus:border-artbar-taupe focus:ring-0 transition-colors outline-none"
-                    placeholder={copy.emailPlaceholder}
-                    required
-                    value={form.email}
-                    onChange={updateField('email')}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="phone" className="block text-base font-heading font-bold text-artbar-navy mb-2 tracking-wide">
-                  <JpText>{copy.phoneLabel}</JpText>
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  className="w-full px-6 py-4 rounded-xl bg-artbar-bg border-2 border-transparent focus:bg-white focus:border-artbar-taupe focus:ring-0 transition-colors outline-none"
-                  placeholder="090-1234-5678"
-                  required
-                  value={form.phone}
-                  onChange={updateField('phone')}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-base font-heading font-bold text-artbar-navy mb-2 tracking-wide">
-                  <JpText>{copy.messageLabel}</JpText>
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={6}
-                  className="w-full px-6 py-4 rounded-xl bg-artbar-bg border-2 border-transparent focus:bg-white focus:border-artbar-taupe focus:ring-0 transition-colors outline-none resize-none text-base"
-                  placeholder={copy.messagePh}
-                  value={form.message}
-                  onChange={updateField('message')}
-                ></textarea>
-              </div>
-
-              <div className="text-center pt-4">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="cta"
-                  disabled={status === 'sending'}
-                  className="w-full min-w-0 shadow-xl shadow-navy-900/10 md:w-auto md:min-w-[12.5rem] disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  <span className="flex items-center gap-2">
-                    <JpText>{status === 'sending' ? sendingLabels[lang] : copy.send}</JpText> <Send size={18} />
-                  </span>
-                </Button>
-              </div>
-            </form>
+              );
+            })}
           </div>
-        </div>
+        </section>
+
+        {/* ── Form on a mounted sheet ───────────────────────────────────── */}
+        <section id="contact-form" tabIndex={-1} className="scroll-mt-28 lg:col-span-6">
+          <div className="relative bg-white p-7 shadow-[0_40px_80px_-50px_rgba(5,55,97,0.45)] md:p-12 lg:sticky lg:top-28">
+            <Hairline tone="taupe" className="inset-2.5 md:inset-3.5" />
+            <div className="relative">
+              <h2 className={`${jp ? 'text-2xl font-semibold tracking-[0.04em] md:text-[28px]' : 'font-heading text-3xl font-semibold md:text-4xl'}`}><JpText>{site.contactPage.formTitle}</JpText></h2>
+              {status === 'ok' && (
+                <p role="status" className="mt-6 border-l-2 border-artbar-taupe pl-4 text-[15px]"><JpText>{copy.sent}</JpText></p>
+              )}
+              {status === 'err' && (
+                <p role="alert" className="mt-6 border-l-2 border-red-700 pl-4 text-[15px] text-red-700">
+                  {errorMessage ? errorMessage : <JpText>{copy.failed}</JpText>}
+                </p>
+              )}
+              <form className="mt-8 space-y-8" onSubmit={handleSubmit} noValidate>
+                {/* Honeypot — hidden from real users; bots fill it. */}
+                <div className="hidden" aria-hidden="true">
+                  <label htmlFor="company">Company</label>
+                  <input type="text" id="company" name="company" tabIndex={-1} autoComplete="off" value={form.company} onChange={updateField('company')} />
+                </div>
+
+                <div>
+                  <label htmlFor="subject" className={labelClass}><JpText>{copy.subjectLabel}</JpText></label>
+                  <select id="subject" name="subject" className={`${fieldClass} cursor-pointer appearance-none`} required value={form.subject} onChange={updateField('subject')}>
+                    {subjects.map((s, i) => (
+                      <option key={s.value || 'placeholder'} value={s.value} disabled={i === 0 && s.value === ''}>{s.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid gap-8 md:grid-cols-2">
+                  <div>
+                    <label htmlFor="name" className={labelClass}><JpText>{copy.nameLabel}</JpText></label>
+                    <input type="text" id="name" name="name" className={fieldClass} placeholder={copy.namePlaceholder} required value={form.name} onChange={updateField('name')} />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className={labelClass}><JpText>{copy.emailLabel}</JpText></label>
+                    <input type="email" id="email" name="email" className={fieldClass} placeholder={copy.emailPlaceholder} required value={form.email} onChange={updateField('email')} />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className={labelClass}><JpText>{copy.phoneLabel}</JpText></label>
+                  <input type="tel" id="phone" name="phone" className={fieldClass} placeholder="090-1234-5678" required value={form.phone} onChange={updateField('phone')} />
+                </div>
+
+                <div>
+                  <label htmlFor="message" className={labelClass}><JpText>{copy.messageLabel}</JpText></label>
+                  <textarea id="message" name="message" rows={5} className={`${fieldClass} resize-none`} placeholder={copy.messagePh} value={form.message} onChange={updateField('message')} />
+                </div>
+
+                <div className="pt-2">
+                  <Magnetic className="w-full sm:w-auto">
+                    <button type="submit" disabled={status === 'sending'} className={`${PILL_NAVY} w-full disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto`}>
+                      <JpText>{status === 'sending' ? sendingLabels[lang] : copy.send}</JpText>
+                      <Send size={17} aria-hidden />
+                    </button>
+                  </Magnetic>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
