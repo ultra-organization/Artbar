@@ -1,6 +1,7 @@
 import { getPublishedCopyPayload } from '@/lib/copy/published';
 import { mergePublishedLocaleIntoContent } from '@/lib/copy/resolve';
-import Image from 'next/image';
+import { PageHero, PrimaryAction, TextLink } from '@/components/premium/Kit';
+import { WRAP, h2Class } from '@/components/premium/styles';
 import { LocationExperience } from '@/components/LocationExperience';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
@@ -112,7 +113,7 @@ export default async function LocationDetailPage({ params }: Props) {
   };
 
   return (
-    <main className="grain min-h-screen bg-artbar-bg pt-32 pb-20">
+    <main className="hp min-h-screen bg-artbar-bg pb-20 text-artbar-navy">
       <PageJsonLd path={path} lang={lang} name={name} description={description} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(locationJsonLd) }} />
       <link
@@ -123,93 +124,67 @@ export default async function LocationDetailPage({ params }: Props) {
         fetchPriority="high"
       />
 
-      <div className="mx-auto grid max-w-[1180px] gap-10 px-6 md:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div>
-          <p className="mb-4 font-heading text-sm font-bold uppercase tracking-widest text-artbar-taupe">
-            {lang === 'jp' ? 'Artbar スタジオ' : 'Artbar Studio'}
-          </p>
-          <h1 className="mb-6 font-heading text-4xl font-heavy leading-tight text-artbar-navy md:text-6xl">
-            {name}
-          </h1>
-          <p className="mb-8 max-w-2xl text-lg leading-relaxed text-artbar-gray">{description}</p>
-
-          <div className="space-y-6 rounded-lg border border-black/5 bg-white p-6 shadow-sm">
-            <section>
-              <h2 className="mb-2 font-heading text-lg font-bold text-artbar-navy">
-                {lang === 'jp' ? '住所' : 'Address'}
-              </h2>
-              <p className="whitespace-pre-line text-artbar-gray">{address}</p>
-            </section>
-            <section>
-              <h2 className="mb-2 font-heading text-lg font-bold text-artbar-navy">
-                {lang === 'jp' ? 'アクセス' : 'Transit Access'}
-              </h2>
-              <p className="location-access-copy whitespace-pre-line text-artbar-gray">{access}</p>
-            </section>
-          </div>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href={scheduleEmbedUrl ? `#${STUDIO_CLASSES_ANCHOR}` : bookingDestination.href}
-              className="inline-flex min-h-[2.75rem] max-w-full items-center justify-center rounded-full bg-artbar-taupe px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy shadow-sm transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:px-8 sm:text-base"
-            >
+      <PageHero
+        lang={lang}
+        image={locationImage}
+        alt={name}
+        eyebrow={lang === 'jp' ? 'Artbar スタジオ' : 'Artbar Studio'}
+        title={name}
+        subtitle={description}
+        actions={
+          <>
+            <PrimaryAction href={scheduleEmbedUrl ? `#${STUDIO_CLASSES_ANCHOR}` : bookingDestination.href}>
               {lang === 'jp' ? `${name}のクラスを見る` : `View ${name} classes`}
-            </a>
+            </PrimaryAction>
             {location.mapUrl && (
-              <a
-                href={location.mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-[2.75rem] max-w-full items-center justify-center rounded-full border border-artbar-navy px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy transition hover:bg-artbar-navy hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:px-8 sm:text-base"
-              >
+              <TextLink tone="light" href={location.mapUrl} target="_blank" rel="noopener noreferrer">
                 {lang === 'jp' ? 'Google Map' : 'Open Map'}
-              </a>
+              </TextLink>
             )}
-          </div>
-        </div>
+          </>
+        }
+      />
 
-        <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-white shadow-xl">
-          <Image
-            src={locationImage}
-            alt={name}
-            fill
-            priority
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
-        </div>
-      </div>
+      <section className="py-16 md:py-24">
+        <div className={WRAP}><dl className="grid border-t border-artbar-navy/15 md:grid-cols-2">
+          <div className="border-b border-artbar-navy/10 py-7 md:border-b-0 md:pr-10">
+            <dt className="text-[12px] font-medium tracking-[0.14em] text-artbar-taupe">{lang === 'jp' ? '住所' : 'Address'}</dt>
+            <dd className="mt-3 whitespace-pre-line text-[16px] leading-[1.9] md:text-lg">{address}</dd>
+          </div>
+          <div className="py-7 md:border-l md:border-artbar-navy/10 md:pl-10">
+            <dt className="text-[12px] font-medium tracking-[0.14em] text-artbar-taupe">{lang === 'jp' ? 'アクセス' : 'Transit Access'}</dt>
+            <dd className="location-access-copy mt-3 whitespace-pre-line text-[15px] leading-[1.9] text-artbar-gray md:text-base">{access}</dd>
+          </div>
+        </dl></div>
+      </section>
 
       <LocationExperience locationId={location.id} lang={lang} />
 
       {scheduleEmbedUrl && (
-        <section id={STUDIO_CLASSES_ANCHOR} className="mx-auto mt-16 scroll-mt-28 max-w-[1180px] px-4 sm:px-6 md:mt-20 md:px-10">
-          {/* The transparent embed canvas lets this studio panel supply its background. */}
-          <div className="overflow-hidden rounded-[2.5rem] bg-[#F3F3ED] py-10 shadow-sm sm:px-4 md:px-10 md:py-14">
-            <div className="mx-4 mb-8 text-center sm:mx-0">
-              <p className="mb-3 font-heading text-xs font-bold uppercase tracking-widest text-artbar-taupe">
-                {lang === 'jp' ? 'このスタジオで予約する' : 'Book this studio'}
-              </p>
-              <h2 className="font-heading text-3xl font-heavy text-artbar-navy md:text-5xl">
-                {lang === 'jp' ? `${name}の今後1週間のクラス` : `Upcoming classes at ${name}`}
-              </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-base font-light leading-relaxed text-artbar-gray md:text-lg">
-                {lang === 'jp'
-                  ? 'このスタジオで現在予約できるクラスをご覧ください。'
-                  : 'See what is available at this studio over the next seven days.'}
-              </p>
+        <section id={STUDIO_CLASSES_ANCHOR} className="mt-16 scroll-mt-20 bg-[#F3F3ED] py-16 md:mt-24 md:py-24">
+          {/* The transparent embed canvas lets this studio band supply its background. */}
+          <div className={WRAP}>
+            <p className="text-[12px] font-medium tracking-[0.16em] text-artbar-taupe md:text-[13px]">
+              {lang === 'jp' ? 'このスタジオで予約する' : 'Book this studio'}
+            </p>
+            <h2 className={`mt-4 ${h2Class(lang)}`}>
+              {lang === 'jp' ? `${name}の今後1週間のクラス` : `Upcoming classes at ${name}`}
+            </h2>
+            <p className="mt-4 max-w-2xl text-[15px] leading-[1.95] text-artbar-gray md:text-base">
+              {lang === 'jp'
+                ? 'このスタジオで現在予約できるクラスをご覧ください。'
+                : 'See what is available at this studio over the next seven days.'}
+            </p>
+            <div className="-mx-7 mt-10 sm:-mx-8 md:mx-0">
+              <PaintaScheduleEmbed
+                src={scheduleEmbedUrl}
+                title={lang === 'jp' ? `${name}のクラススケジュール` : `${name} class schedule`}
+              />
             </div>
-            <PaintaScheduleEmbed
-              src={scheduleEmbedUrl}
-              title={lang === 'jp' ? `${name}のクラススケジュール` : `${name} class schedule`}
-            />
-            <div className="mx-4 mt-8 text-center sm:mx-0">
-              <a
-                href={getLocationStudioScheduleUrl(location.id, lang)}
-                className="inline-flex min-h-[2.75rem] w-full max-w-full items-center justify-center rounded-full bg-artbar-taupe px-6 py-2.5 text-center font-heading text-sm font-bold leading-snug text-artbar-navy shadow-sm transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 sm:min-h-[3rem] sm:w-auto sm:px-8 sm:text-base"
-              >
+            <div className="mt-10">
+              <PrimaryAction href={getLocationStudioScheduleUrl(location.id, lang)}>
                 {lang === 'jp' ? `${name}のすべてのクラスを見る` : `All classes at ${name}`}
-              </a>
+              </PrimaryAction>
             </div>
           </div>
         </section>

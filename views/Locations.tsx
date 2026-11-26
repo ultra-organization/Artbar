@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { CalendarDays, Navigation } from 'lucide-react';
+import { ArrowDownRight, CalendarDays } from 'lucide-react';
 import { JpText } from '../components/JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useContent } from '../context/ContentContext';
@@ -12,63 +12,72 @@ import { getLocationBookingDestination } from '../lib/location-booking';
 import { trackBookingClick } from '../lib/analytics';
 import type { Location } from '../types';
 import type { JapaneseUiCopy } from '@/lib/copy/types';
+import { Hairline, PILL_TAUPE, Seal, TextLink, WRAP, h2Class } from '../components/premium/Kit';
+import { DecoSplat, PAINT, Tilt } from '../components/premium/Paint';
 
 export const Locations: React.FC = () => {
   const { lang, content, site, localizedCopy } = useContent();
   const locationCopy = localizedCopy.ui.locations;
   const operatingReveal = useScrollReveal();
+  const jp = lang === 'jp';
 
   return (
-    <div className="grain relative pt-24 md:pt-32 pb-16 md:pb-20 bg-artbar-bg min-h-screen">
-      <div className="max-w-[1200px] mx-auto px-6 md:px-10">
-        
-        {/* Page Header */}
-        <div className="text-center mb-12 md:mb-20">
-          <h1 className="text-3xl md:text-6xl lg:text-7xl font-heading font-heavy text-artbar-navy mb-4"><JpText>{site.nav.locations}</JpText></h1>
-          <p className="text-artbar-gray text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-            <JpText>{locationCopy.intro}</JpText>
-          </p>
+    <div className="hp relative min-h-screen bg-artbar-bg text-artbar-navy">
+      {/* ── Header: title + the studio index ───────────────────────────── */}
+      <section className="relative overflow-hidden pb-16 pt-32 md:pb-24 md:pt-44">
+        <DecoSplat seed={2016} color={PAINT.lightTaupe} className="-right-24 top-16 h-80 w-80 md:right-[8%] md:h-96 md:w-96" opacity={0.55} />
+        <div className={`${WRAP} relative grid gap-12 lg:grid-cols-12 lg:gap-16`}>
+          <div className="lg:col-span-6">
+            <h1 className={`hp-in ${jp ? 'text-[clamp(2rem,8vw,3.6rem)] font-semibold leading-[1.35] tracking-[0.04em]' : 'font-heading text-[clamp(2.8rem,10vw,5.2rem)] font-semibold leading-[0.98] tracking-[-0.02em]'}`}>
+              <JpText>{site.nav.locations}</JpText>
+            </h1>
+            <p className="hp-in mt-6 max-w-lg text-[15px] leading-[1.95] text-artbar-gray md:text-[17px]" style={{ animationDelay: '150ms' }}>
+              <JpText>{locationCopy.intro}</JpText>
+            </p>
+            <Seal tone="dark" className="mt-10 hidden w-28 text-[11px] opacity-80 lg:block" />
+          </div>
+          <nav aria-label={jp ? 'スタジオを選ぶ' : 'Choose a studio'} className="hp-in lg:col-span-6" style={{ animationDelay: '300ms' }}>
+            <ul className="border-t border-artbar-navy/15">
+              {content.locations.map((loc) => (
+                <li key={loc.id}>
+                  <a href={`#studio-${loc.id}`} className="group flex min-h-14 items-center justify-between gap-4 border-b border-artbar-navy/10 py-4 transition-colors hover:text-artbar-taupe focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-artbar-navy">
+                    <span className={`${jp ? 'text-[17px] font-semibold tracking-[0.04em] md:text-xl' : 'font-heading text-xl font-semibold md:text-2xl'}`}>
+                      <JpText>{studioDisplayName(jp ? loc.nameJp : loc.nameEn)}</JpText>
+                    </span>
+                    <ArrowDownRight size={18} className="shrink-0 text-artbar-taupe transition-transform duration-300 group-hover:translate-x-0.5 group-hover:translate-y-0.5" aria-hidden />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
+      </section>
 
-        <nav aria-label={lang === 'jp' ? 'スタジオを選ぶ' : 'Choose a studio'} className="mb-8 flex flex-wrap justify-center gap-2">
-          {content.locations.map((loc) => <a key={loc.id} href={`#studio-${loc.id}`} className="inline-flex min-h-11 items-center rounded-full border border-artbar-taupe/50 bg-white px-4 text-sm focus-visible:outline-2 focus-visible:outline-artbar-navy"><JpText>{studioDisplayName(lang === 'en' ? loc.nameEn : loc.nameJp)}</JpText></a>)}
-        </nav>
-        <div className="space-y-12 md:space-y-16">
-          {content.locations.map((loc) => (
-            <LocationCard
-              key={loc.id}
-              loc={loc}
-              lang={lang}
-              locationCopy={locationCopy}
-            />
-          ))}
-        </div>
-
-        <div ref={operatingReveal.ref} className={`reveal mt-16 md:mt-24 pt-12 md:pt-16 border-t border-artbar-light-taupe/30 ${operatingReveal.isVisible ? 'visible' : ''}`}>
-           <div className="bg-white border md:border-2 border-artbar-navy p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] max-w-4xl mx-auto text-center md:text-left">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                 <div>
-                    <h3 className="text-xl md:text-2xl font-heading font-bold text-artbar-navy mb-4"><JpText>{site.locationsPage.operating.title}</JpText></h3>
-                    <p className="font-bold text-base md:text-lg mb-1"><JpText>{site.locationsPage.operating.name}</JpText></p>
-                    <p className="text-xs md:text-sm opacity-70 mb-1"><JpText>{site.locationsPage.operating.address}</JpText></p>
-                    <p className="text-xs md:text-sm opacity-70"><JpText>{site.locationsPage.operating.ceo}</JpText></p>
-                 </div>
-                 <div className="flex flex-col items-center md:items-end w-full md:w-auto">
-                    <p className="max-w-sm text-sm md:text-base leading-relaxed text-artbar-gray md:text-right">
-                       <JpText>{site.locationsPage.operating.inquiryText}</JpText>{' '}
-                       <a
-                         href={`mailto:${site.locationsPage.operating.inquiryEmail}`}
-                         className="font-heading font-bold text-artbar-navy underline decoration-artbar-taupe decoration-2 underline-offset-4 transition-colors hover:text-artbar-taupe"
-                       >
-                         {site.locationsPage.operating.inquiryEmail}
-                       </a>
-                    </p>
-                 </div>
-              </div>
-           </div>
-        </div>
-
+      <div>
+        {content.locations.map((loc, i) => (
+          <LocationCard key={loc.id} loc={loc} lang={lang} locationCopy={locationCopy} index={i} />
+        ))}
       </div>
+
+      {/* ── Colophon: operating company ────────────────────────────────── */}
+      <section className="py-20 md:py-28">
+        <div ref={operatingReveal.ref} className={`${WRAP} reveal ${operatingReveal.isVisible ? 'visible' : ''}`}>
+          <div className="grid gap-8 border-y border-artbar-navy/15 py-10 md:grid-cols-12 md:items-center md:py-12">
+            <div className="md:col-span-6">
+              <p className="text-[12px] font-medium tracking-[0.16em] text-artbar-taupe"><JpText>{site.locationsPage.operating.title}</JpText></p>
+              <p className="mt-4 text-lg font-semibold"><JpText>{site.locationsPage.operating.name}</JpText></p>
+              <p className="mt-1 text-sm text-artbar-gray"><JpText>{site.locationsPage.operating.address}</JpText></p>
+              <p className="mt-1 text-sm text-artbar-gray"><JpText>{site.locationsPage.operating.ceo}</JpText></p>
+            </div>
+            <p className="max-w-md text-[15px] leading-[1.9] text-artbar-gray md:col-span-6 md:justify-self-end md:text-right">
+              <JpText>{site.locationsPage.operating.inquiryText}</JpText>{' '}
+              <a href={`mailto:${site.locationsPage.operating.inquiryEmail}`} className="font-semibold text-artbar-navy underline decoration-artbar-taupe decoration-1 underline-offset-4 transition-colors hover:text-artbar-taupe">
+                {site.locationsPage.operating.inquiryEmail}
+              </a>
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
@@ -77,102 +86,88 @@ function LocationCard({
   loc,
   lang,
   locationCopy,
+  index,
 }: {
   loc: Location;
   lang: 'en' | 'jp';
   locationCopy: JapaneseUiCopy['locations'];
+  index: number;
 }) {
   const reveal = useScrollReveal();
+  const jp = lang === 'jp';
   const isFranchise = loc.isFranchise === true;
+  const flip = index % 2 === 1;
   const directionsUrl = loc.mapUrl?.trim()
     ? loc.mapUrl
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc.addressJp)}`;
   const bookingDestination = getLocationBookingDestination(loc.id, lang);
+  const name = studioDisplayName(jp ? loc.nameJp : loc.nameEn);
   return (
-            <div
-              id={`studio-${loc.id}`}
-              ref={reveal.ref}
-              className={`reveal scroll-mt-28 bg-white rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-lg border border-gray-100 flex flex-col lg:flex-row group transition-all hover:shadow-xl ${reveal.isVisible ? 'visible' : ''}`}
-            >
-              <div className="lg:w-2/5 relative min-h-[220px] lg:min-h-full overflow-hidden">
-                <Image 
-                  src={loc.image} 
-                  alt={lang === 'en' ? loc.nameEn : stripJpSentinel(loc.nameJp)}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 1024px) 100vw, 40vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-artbar-navy/50 to-transparent opacity-60 lg:opacity-30"></div>
-              </div>
-
-              {/* Details Section */}
-              <div className="lg:w-3/5 p-6 md:p-12 flex flex-col">
-                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                    <h2 className="text-2xl md:text-3xl font-heading font-bold text-artbar-navy leading-tight">
-                      <JpText>{studioDisplayName(lang === 'en' ? loc.nameEn : loc.nameJp)}</JpText>
-                      {isFranchise && (
-                        <span className="mt-2 block text-sm font-normal text-artbar-taupe">
-                          <JpText>{lang === 'en' ? '(Franchise)' : '（フランチャイズ）'}</JpText>
-                        </span>
-                      )}
-                    </h2>
-                 </div>
-
-                 <div className="flex flex-col gap-2 mb-8 sm:flex-row sm:flex-wrap md:gap-3">
-                    <a
-                      href={bookingDestination.href}
-                      onClick={() => trackBookingClick(`location_${loc.id}`)}
-                      className="inline-flex min-h-[44px] max-w-full items-center justify-center gap-2 rounded-full bg-artbar-taupe px-5 pt-3 pb-2 text-center text-xs font-bold uppercase tracking-wide text-artbar-navy shadow-sm transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 md:text-sm"
-                    >
-                      <CalendarDays size={14} className="shrink-0 md:w-4 md:h-4" aria-hidden />
-                      <JpText>{bookingDestination.hasStudioClasses
-                        ? (lang === 'en' ? 'View Studio Classes' : 'このスタジオのクラスを見る')
-                        : (lang === 'en' ? 'View Osaka Schedule' : '大阪のスケジュールを見る')}</JpText>
-                    </a>
-                    <a
-                      href={directionsUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex min-h-[44px] max-w-full items-center justify-center gap-2 rounded-full border border-artbar-light-taupe bg-white px-5 pt-3 pb-2 text-center text-xs font-bold uppercase tracking-wide text-artbar-navy transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-artbar-navy focus-visible:ring-offset-2 md:text-sm"
-                    >
-                      <Navigation size={14} className="shrink-0 md:w-4 md:h-4" aria-hidden />
-                      <JpText>{locationCopy.directions}</JpText>
-                    </a>
-                 </div>
-
-                 {/* Address & Access */}
-                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-8">
-                    <div>
-                        <span className="text-[9px] font-bold tracking-[0.2em] text-artbar-taupe uppercase block mb-2"><JpText>{locationCopy.locationAddressLabel}</JpText></span>
-                        <p className="font-medium text-artbar-navy leading-relaxed text-sm">
-                           <JpText>{lang === 'en' ? loc.addressEn : loc.addressJp}</JpText>
-                        </p>
-                    </div>
-                    <div>
-                        <span className="text-[9px] font-bold tracking-[0.2em] text-artbar-taupe uppercase block mb-2"><JpText>{locationCopy.transitAccessLabel}</JpText></span>
-                        <p className="location-access-copy font-medium text-artbar-gray leading-relaxed text-sm whitespace-pre-line">
-                           <JpText>{lang === 'en' ? loc.accessEn : loc.accessJp}</JpText>
-                        </p>
-                    </div>
-                 </div>
-
-                 {/* Mini Map */}
-                 <div className="mt-auto h-40 md:h-48 w-full rounded-2xl overflow-hidden relative bg-gray-100 border border-gray-200">
-                    <iframe 
-                      width="100%" 
-                      height="100%" 
-                      frameBorder="0" 
-                      scrolling="no" 
-                      src={`https://maps.google.com/maps?q=${encodeURIComponent(loc.addressJp)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                      title={`${loc.nameEn} Map`}
-                      className="absolute inset-0 w-full h-full grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
-                    ></iframe>
-                    <div className="absolute bottom-2 right-2 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-[9px] font-bold text-artbar-navy shadow-sm pointer-events-none uppercase tracking-widest">
-                       Google Maps
-                    </div>
-                 </div>
-
-              </div>
+    <section
+      id={`studio-${loc.id}`}
+      ref={reveal.ref}
+      className={`reveal scroll-mt-24 border-t border-artbar-navy/10 py-16 md:py-24 ${index % 2 ? 'bg-white' : ''} ${reveal.isVisible ? 'visible' : ''}`}
+    >
+      <div className={`${WRAP} grid items-start gap-10 lg:grid-cols-12 lg:gap-16`}>
+        <div className={`relative lg:col-span-6 ${flip ? 'lg:order-2' : ''}`}>
+          <Tilt max={3}>
+            <div className="relative aspect-[4/3] overflow-hidden bg-artbar-light-taupe/40">
+              <Image src={loc.image} alt={jp ? stripJpSentinel(loc.nameJp) : loc.nameEn} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
+              <Hairline className="inset-3 md:inset-4" />
             </div>
+          </Tilt>
+          {/* Map, mounted like a second print */}
+          <div className={`relative mt-5 h-44 overflow-hidden bg-artbar-light-taupe/30 md:h-52 ${flip ? 'lg:mr-16' : 'lg:ml-16'}`}>
+            <iframe
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              scrolling="no"
+              loading="lazy"
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(loc.addressJp)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+              title={`${loc.nameEn} Map`}
+              className="absolute inset-0 h-full w-full opacity-85 grayscale transition-all duration-500 hover:opacity-100 hover:grayscale-0"
+            />
+            <div className="pointer-events-none absolute inset-2 border border-artbar-navy/10" aria-hidden />
+          </div>
+        </div>
+
+        <div className={`lg:col-span-6 lg:pt-4 ${flip ? 'lg:order-1' : ''}`}>
+          <h2 className={h2Class(lang)}>
+            <JpText>{name}</JpText>
+          </h2>
+          {isFranchise && (
+            <p className="mt-2 text-sm text-artbar-taupe"><JpText>{jp ? '（フランチャイズ）' : '(Franchise)'}</JpText></p>
+          )}
+
+          <dl className="mt-8 border-t border-artbar-navy/15">
+            <div className="grid gap-2 border-b border-artbar-navy/10 py-5 sm:grid-cols-[8rem_1fr] sm:gap-6">
+              <dt className="text-[12px] font-medium tracking-[0.14em] text-artbar-taupe"><JpText>{locationCopy.locationAddressLabel}</JpText></dt>
+              <dd className="text-[15px] leading-[1.85]"><JpText>{jp ? loc.addressJp : loc.addressEn}</JpText></dd>
+            </div>
+            <div className="grid gap-2 border-b border-artbar-navy/10 py-5 sm:grid-cols-[8rem_1fr] sm:gap-6">
+              <dt className="text-[12px] font-medium tracking-[0.14em] text-artbar-taupe"><JpText>{locationCopy.transitAccessLabel}</JpText></dt>
+              <dd className="location-access-copy whitespace-pre-line text-[15px] leading-[1.85] text-artbar-gray"><JpText>{jp ? loc.accessJp : loc.accessEn}</JpText></dd>
+            </div>
+          </dl>
+
+          <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-8">
+            <a
+              href={bookingDestination.href}
+              onClick={() => trackBookingClick(`location_${loc.id}`)}
+              className={`${PILL_TAUPE} w-full sm:w-auto`}
+            >
+              <CalendarDays size={17} className="shrink-0" aria-hidden />
+              <JpText>{bookingDestination.hasStudioClasses
+                ? (jp ? 'このスタジオのクラスを見る' : 'View Studio Classes')
+                : (jp ? '大阪のスケジュールを見る' : 'View Osaka Schedule')}</JpText>
+            </a>
+            <TextLink href={directionsUrl} target="_blank" rel="noreferrer">
+              <JpText>{locationCopy.directions}</JpText>
+            </TextLink>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
