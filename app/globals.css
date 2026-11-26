@@ -548,3 +548,86 @@ html:lang(ja) h4 span {
   .hp-wipe { clip-path: none; transition: none; }
   .tilt, .magnetic { transition: none; }
 }
+
+/* ── Premium gift ticket (components/premium/GiftTicket.tsx) ─────────────── */
+.gt-ticket {
+  --notch: 13px;
+  --perf: 15rem; /* stub height on phones = where the ticket tears */
+  border-radius: 6px;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 var(--perf), #0000 98%, #000) left top / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% var(--perf), #0000 98%, #000) right top / 51% 100% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 0 var(--perf), #0000 98%, #000) left top / 51% 100% no-repeat,
+    radial-gradient(circle var(--notch) at 100% var(--perf), #0000 98%, #000) right top / 51% 100% no-repeat;
+}
+.gt-perf {
+  left: calc(var(--notch) + 6px);
+  right: calc(var(--notch) + 6px);
+  top: calc(var(--perf) - 3px);
+  height: 6px;
+  background: radial-gradient(circle, var(--color-artbar-bg) 2.1px, transparent 2.6px) 0 50% / 11px 6px repeat-x;
+}
+@media (min-width: 640px) {
+  .gt-ticket { --perf: 18rem; }
+}
+@media (min-width: 768px) {
+  .gt-ticket {
+    --notch: 15px;
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at 41.666% 0, #0000 98%, #000) left top / 100% 51% no-repeat,
+      radial-gradient(circle var(--notch) at 41.666% 100%, #0000 98%, #000) left bottom / 100% 51% no-repeat;
+    mask:
+      radial-gradient(circle var(--notch) at 41.666% 0, #0000 98%, #000) left top / 100% 51% no-repeat,
+      radial-gradient(circle var(--notch) at 41.666% 100%, #0000 98%, #000) left bottom / 100% 51% no-repeat;
+  }
+  .gt-perf {
+    left: calc(41.666% - 3px);
+    right: auto;
+    top: calc(var(--notch) + 6px);
+    bottom: calc(var(--notch) + 6px);
+    width: 6px;
+    height: auto;
+    background: radial-gradient(circle, var(--color-artbar-bg) 2.1px, transparent 2.6px) 50% 0 / 6px 11px repeat-y;
+  }
+}
+
+/* Drop in and settle at a slight angle, like a ticket laid on the table. */
+.gt-drop {
+  filter: drop-shadow(0 22px 30px rgba(5, 55, 97, 0.16)) drop-shadow(0 2px 3px rgba(5, 55, 97, 0.08));
+  opacity: 0;
+  transform: translateY(48px) rotate(-5deg);
+  transition: opacity 0.7s ease-out, transform 1.2s cubic-bezier(0.2, 1.25, 0.35, 1);
+}
+.gt-in .gt-drop { opacity: 1; transform: rotate(-1deg); }
+@media (hover: hover) {
+  .gt-in .gt-drop:hover { transform: translateY(-4px) rotate(0deg); transition-duration: 0.7s; }
+}
+
+/* Curled corner: the page shows where the paper lifted; the underside is the folded flap. */
+.gt-curl {
+  --curl: 30px;
+  width: var(--curl);
+  height: var(--curl);
+  background: linear-gradient(to top left, var(--color-artbar-bg) 50%, #c9beb0 50%, #e9e3db 62%, #fbfaf8 80%, #fff 100%);
+  filter: drop-shadow(-4px -4px 5px rgba(5, 55, 97, 0.12));
+  transition: width 0.7s cubic-bezier(0.2, 1.3, 0.4, 1), height 0.7s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+@media (min-width: 768px) { .gt-curl { --curl: 36px; } }
+@media (hover: hover) {
+  .gt-drop:hover .gt-curl { width: 104px; height: 104px; }
+}
+/* Touch screens have no hover: lift the corner once when the ticket lands. */
+@media (hover: none) {
+  .gt-in .gt-curl { animation: gt-peek 2s cubic-bezier(0.3, 1.2, 0.4, 1) 1.1s both; }
+}
+@keyframes gt-peek {
+  0% { width: 30px; height: 30px; }
+  40% { width: 84px; height: 84px; }
+  100% { width: 40px; height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gt-drop { opacity: 1; transform: rotate(-1deg); transition: none; }
+  .gt-in .gt-drop:hover { transform: rotate(-1deg); }
+  .gt-curl, .gt-in .gt-curl { transition: none; animation: none; }
+}

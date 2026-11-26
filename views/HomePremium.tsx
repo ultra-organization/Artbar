@@ -34,6 +34,7 @@ import {
 } from '../constants';
 import { mediaAssetUrl } from '../lib/media/resolve';
 import { themeSlugFromItem } from '../lib/theme-slugs';
+import { GiftTicket } from '../components/premium/GiftTicket';
 import { trackBookingClick, trackGiftCertificateClick, trackInquiryClick, type BookingClickLocation } from '../lib/analytics';
 import { withBrowserAcquisition } from '../lib/painta-acquisition';
 import { PartnerLogo } from '../components/PartnerLogo';
@@ -272,27 +273,9 @@ export const HomePremium: React.FC = () => {
 
       {/* ── 2. Holiday gift certificate (seasonal) ─────────────────────── */}
       {holiday && (
-        <section aria-labelledby="hp-gift-title" className="holiday-fade-in bg-artbar-bg pt-16 md:pt-24">
+        <section aria-labelledby="hp-gift-title" className="holiday-fade-in overflow-x-clip bg-artbar-bg pb-4 pt-16 md:pt-24">
           <div className={WRAP}>
-            <div className="relative grid overflow-hidden bg-white ring-1 ring-artbar-navy/10 md:grid-cols-[5fr_7fr]">
-              <div className="pointer-events-none absolute inset-2.5 z-[1] border border-artbar-taupe/35 md:inset-3.5" aria-hidden />
-              <div className="relative flex min-h-[15rem] items-center justify-center bg-artbar-navy md:min-h-[22rem]">
-                <div className="relative h-[78%] w-[78%] -rotate-3 transition-transform duration-700 hover:rotate-0">
-                  <Image src={gift.image} alt={cleanDisplayText(gift.imageAlt)} fill className="object-contain [filter:drop-shadow(0_16px_20px_rgba(0,0,0,0.45))]" sizes="(max-width: 768px) 80vw, 34vw" />
-                </div>
-              </div>
-              <div className="relative z-[2] flex flex-col justify-center px-7 py-10 md:px-14 md:py-14">
-                <Eyebrow><JpText>{gift.stub}</JpText></Eyebrow>
-                <h2 id="hp-gift-title" className={`mt-5 ${h2}`}><JpText>{gift.title}</JpText></h2>
-                <p className="mt-4 max-w-[34rem] text-[15px] leading-[1.95] text-artbar-gray md:text-base"><JpText>{gift.body}</JpText></p>
-                <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-8">
-                  <button type="button" className={`${PILL_NAVY} w-full sm:w-auto`} onClick={() => { trackGiftCertificateClick('home_holiday_banner'); window.location.href = withBrowserAcquisition(GIFT_CERTIFICATES_URL); }}>
-                    <JpText>{gift.cta}</JpText>
-                  </button>
-                  <TextLink href={localizeHrefForLanguage(HOLIDAY_GIFT_BLOG_PATH, lang)}><JpText>{gift.ideasLink}</JpText></TextLink>
-                </div>
-              </div>
-            </div>
+            <GiftTicket />
           </div>
         </section>
       )}
