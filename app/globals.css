@@ -518,3 +518,32 @@ html:lang(ja) h4 span {
 @media (prefers-reduced-motion: reduce) {
   .hp .hp-in, .hp .hp-spin { animation: none; }
 }
+
+/* Paint toolkit (components/premium/Paint.tsx) */
+.splat-land { opacity: 0; transform: scale(.35) rotate(-12deg); transform-origin: 50% 50%; }
+.splat-land.is-in { animation: splat-land .75s cubic-bezier(.2,1.45,.35,1) both; }
+.splat-land.is-in .splat-drops { animation: splat-drops .9s cubic-bezier(.15,.9,.3,1) both; transform-origin: 50% 50%; animation-delay: inherit; }
+@keyframes splat-land { from { opacity: 0; transform: scale(.35) rotate(-12deg); } to { opacity: 1; transform: none; } }
+@keyframes splat-drops { from { transform: scale(.55); opacity: 0; } 40% { opacity: 1; } to { transform: none; opacity: 1; } }
+.splat-thrown { transform-origin: 50% 50%; animation: splat-pop .42s cubic-bezier(.2,1.5,.35,1) both, splat-dry 1.6s ease-in 4.8s forwards; }
+.splat-thrown .splat-drops { transform-origin: 50% 50%; animation: splat-drops .55s cubic-bezier(.15,.9,.3,1) both; }
+@keyframes splat-pop { from { transform: scale(.2); } to { transform: scale(1); } }
+@keyframes splat-dry { to { opacity: 0; transform: scale(1.04); } }
+.brush-in { clip-path: inset(0 100% 0 0); animation: brush-in .9s cubic-bezier(.6,.05,.25,1) forwards; }
+@keyframes brush-in { to { clip-path: inset(0 0 0 0); } }
+.tilt { transition: transform .35s cubic-bezier(.2,.7,.2,1); transform-style: preserve-3d; will-change: transform; }
+.magnetic { transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+.hp-wipe { clip-path: inset(0 0 100% 0); transition: clip-path 1.1s cubic-bezier(.6,.05,.25,1); }
+.reveal-stagger.visible .hp-wipe { clip-path: inset(0 0 0 0); }
+.reveal-stagger.visible > *:nth-child(2) .hp-wipe { transition-delay: .12s; }
+.reveal-stagger.visible > *:nth-child(3) .hp-wipe { transition-delay: .24s; }
+.reveal-stagger.visible > *:nth-child(4) .hp-wipe { transition-delay: .36s; }
+.reveal-stagger.visible > *:nth-child(5) .hp-wipe { transition-delay: .12s; }
+.reveal-stagger.visible > *:nth-child(6) .hp-wipe { transition-delay: .24s; }
+.hp-hint { transition: opacity .6s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .splat-land, .splat-land.is-in, .splat-land.is-in .splat-drops, .splat-thrown, .splat-thrown .splat-drops { animation: none; opacity: 1; transform: none; }
+  .brush-in { animation: none; clip-path: none; }
+  .hp-wipe { clip-path: none; transition: none; }
+  .tilt, .magnetic { transition: none; }
+}

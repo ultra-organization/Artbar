@@ -11,7 +11,7 @@
  * ten-year seal that says "first and best" with facts instead of decoration.
  */
 
-import React, { useEffect, useId, useState } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -49,6 +49,15 @@ import { useHolidayTheme } from '../lib/holiday-season';
 import { GIFT_CERTIFICATES_URL, HOLIDAY_GIFT_BLOG_PATH, HOLIDAY_GIFT_COPY } from '../data/holiday-theme';
 import { YEAR_END_HOME_COPY } from '../data/year-end-parties';
 import { useYearEndSeason } from '../lib/year-end-season';
+import { BrushStroke, CountUp, DecoSplat, Magnetic, PAINT, PaintCanvas, Splat, SplatterLayer, Tilt } from '../components/premium/Paint';
+
+const THROW_COLORS = [PAINT.lightTaupe, PAINT.taupe, PAINT.white, PAINT.blue];
+const BRUSH_COLORS = [
+  { c: PAINT.taupe, jp: 'トープ', en: 'Taupe' },
+  { c: PAINT.lightTaupe, jp: 'サンド', en: 'Sand' },
+  { c: PAINT.white, jp: 'ホワイト', en: 'White' },
+  { c: PAINT.blue, jp: 'ブルー', en: 'Blue' },
+];
 
 const HOW_IT_WORKS_IMAGES = [
   GI.featureAllInclusive,
@@ -163,6 +172,11 @@ export const HomePremium: React.FC = () => {
   const holiday = useHolidayTheme();
   const yearEnd = useYearEndSeason();
   useEffect(() => setHasMounted(true), []);
+  const heroRef = useRef<HTMLElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
+  const [thrown, setThrown] = useState(false);
+  const onFirstThrow = useCallback(() => setThrown(true), []);
+  const [brush, setBrush] = useState<string>(PAINT.taupe);
 
   const priorityThemes = ['paint-pouring', 'paint-your-pet', 'texture-painting'];
   const orderedThemes = [...site.home.themes.items].sort((a, b) => {
@@ -250,13 +264,13 @@ export const HomePremium: React.FC = () => {
   const yearEndCopy = YEAR_END_HOME_COPY[lang];
 
   const heroTitle = jp
-    ? 'text-[clamp(1.5rem,7.3vw,2.6rem)] leading-[1.38] tracking-[0.03em] md:text-[clamp(2.75rem,4.6vw,4.4rem)]'
+    ? 'text-[clamp(1.4rem,6.9vw,2.6rem)] leading-[1.38] tracking-[0.03em] md:text-[clamp(2.75rem,4.6vw,4.4rem)]'
     : 'font-heading text-[clamp(2.6rem,10vw,3.4rem)] leading-[0.98] tracking-[-0.02em] md:text-[clamp(3.5rem,6.4vw,6rem)]';
 
   return (
     <div className="hp w-full bg-artbar-bg text-artbar-navy">
       {/* ── 1. Hero ─────────────────────────────────────────────────────── */}
-      <section className="relative z-[1] h-[100svh] min-h-[640px] w-full overflow-hidden bg-artbar-navy">
+      <section ref={heroRef} className="relative z-[1] h-[100svh] min-h-[640px] w-full cursor-crosshair overflow-hidden bg-artbar-navy">
         {heroDesktopIsVideo ? (
           <video autoPlay muted loop playsInline preload={mdUp ? 'auto' : 'none'} src={heroDesktopSrc} className="hp-hero-media absolute inset-0 hidden h-full w-full object-cover object-[center_30%] md:block" aria-hidden />
         ) : (
@@ -272,6 +286,7 @@ export const HomePremium: React.FC = () => {
         <div className="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-artbar-navy/70 via-artbar-navy/10 to-transparent md:block" aria-hidden />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[40%] bg-gradient-to-b from-artbar-taupe/55 to-transparent" aria-hidden />
         {holiday && <HolidayLights />}
+        <SplatterLayer targetRef={heroRef} colors={THROW_COLORS} onFirst={onFirstThrow} />
         {/* Mounted-print hairline */}
         <div className="pointer-events-none absolute inset-3 z-[2] border border-white/20 md:inset-6" aria-hidden />
 
@@ -282,32 +297,43 @@ export const HomePremium: React.FC = () => {
                 <span className="h-px w-6 shrink-0 bg-artbar-taupe md:w-10" aria-hidden />
                 <span className={jp ? '' : 'font-heading font-semibold uppercase'}>{tagline}</span>
               </p>
-              <h1 className={`hp-in mt-5 font-semibold text-white md:mt-7 ${heroTitle}`} style={{ animationDelay: '300ms' }}>
+              <h1 className={`hp-in relative isolate mt-5 font-semibold text-white md:mt-7 ${heroTitle}`} style={{ animationDelay: '300ms' }}>
                 <span className="block whitespace-nowrap">{stripJpSentinel(heroCopy.title)}</span>
-                <span className="block whitespace-nowrap">{stripJpSentinel(heroCopy.titleHighlight)}</span>
+                <span className="relative block w-fit whitespace-nowrap">
+                  <BrushStroke className="-bottom-[0.06em] left-[-2%] -z-10 h-[0.42em] w-[104%] opacity-80" />
+                  <span className="relative whitespace-nowrap">{stripJpSentinel(heroCopy.titleHighlight)}</span>
+                </span>
               </h1>
               <p className="hp-in mt-5 max-w-xl whitespace-pre-line text-[15px] leading-[1.9] text-white/80 md:mt-6 md:text-lg" style={{ animationDelay: '450ms' }}>
                 <JpText>{heroCopy.subtitle.replace(/<wbr\s*\/?>/gi, '')}</JpText>
               </p>
               <div className="hp-in mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-8 md:mt-9" style={{ animationDelay: '600ms' }}>
-                <button type="button" onClick={() => goBook('home_hero')} className={`${PILL_TAUPE} w-full sm:w-auto`}>
-                  <JpText>{heroCopy.ctaSchedule}</JpText>
-                  <ArrowRight size={17} strokeWidth={2.2} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
-                </button>
+                <Magnetic className="w-full sm:w-auto">
+                  <button type="button" onClick={() => goBook('home_hero')} className={`${PILL_TAUPE} w-full sm:w-auto`}>
+                    <JpText>{heroCopy.ctaSchedule}</JpText>
+                    <ArrowRight size={17} strokeWidth={2.2} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                  </button>
+                </Magnetic>
                 <button type="button" onClick={scrollToPopularThemes} className="group inline-flex min-h-11 items-center gap-2 border-b border-white/40 pb-0.5 text-sm font-medium text-white/90 transition-colors hover:border-white hover:text-white md:text-[15px]">
                   <JpText>{site.home.hero.ctaFindPainting}</JpText>
                   <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                 </button>
               </div>
             </div>
-            <Seal className="hp-in relative mb-2 hidden w-40 shrink-0 text-[15px] lg:block xl:w-44" />
+            <div className="relative mb-2 hidden w-40 shrink-0 lg:block xl:w-44">
+              <DecoSplat seed={2016} color={PAINT.taupe} className="-inset-[38%]" delay={700} opacity={0.92} />
+              <Seal className="hp-in relative text-[15px]" />
+              <p className={`hp-hint absolute -bottom-9 left-1/2 w-max -translate-x-1/2 text-[11px] tracking-[0.08em] text-white/70 ${thrown ? 'opacity-0' : 'opacity-100'}`}>
+                {jp ? 'クリックで絵の具を飛ばせます' : 'Click anywhere to throw paint'}
+              </p>
+            </div>
           </div>
 
           {/* Facts rail: proof and first-visit facts, above the fold (HB 4-1/4-2). */}
           <dl className="hp-in mt-8 hidden grid-cols-5 border-t border-white/20 pt-5 text-white md:mt-10 md:grid" style={{ animationDelay: '800ms' }}>
             {[
               { v: <span className="flex items-center gap-2.5"><Stars /><span className="font-heading text-lg font-semibold">{heroCopy.ratingScore}</span></span>, l: jp ? 'Google 口コミ' : 'Google reviews' },
-              { v: <span className="font-heading text-lg font-semibold tabular-nums">{guestCountFormatted}</span>, l: jp ? '名が体験' : 'guests so far' },
+              { v: <span className="font-heading text-lg font-semibold"><CountUp value={Number(guestCountFormatted.replace(/[^0-9]/g, ''))} locale={jp ? 'ja-JP' : 'en-US'} /></span>, l: jp ? '名が体験' : 'guests so far' },
               { v: <span className="font-heading text-lg font-semibold">{quickInfo.priceValue}</span>, l: jp ? 'ドリンク・画材込み' : 'drinks & materials included' },
               { v: <span className="text-[15px] font-semibold">{quickInfo.items[0].value}</span>, l: quickInfo.items[0].label },
               { v: <span className="text-[15px] font-semibold">{jp ? '4スタジオ' : '4 studios'}</span>, l: quickInfo.items[1].value },
@@ -354,8 +380,9 @@ export const HomePremium: React.FC = () => {
       )}
 
       {/* ── 3. First visit (HB 4-2) ─────────────────────────────────────── */}
-      <section className="bg-artbar-bg pb-16 pt-20 md:pb-24 md:pt-28">
-        <div ref={firstVisitReveal.ref} className={`${WRAP} reveal ${firstVisitReveal.isVisible ? 'visible' : ''}`}>
+      <section className="relative overflow-hidden bg-artbar-bg pb-16 pt-20 md:pb-24 md:pt-28">
+        <DecoSplat seed={7} color={PAINT.lightTaupe} className="-right-24 -top-16 h-72 w-72 md:-right-16 md:h-[26rem] md:w-[26rem]" speed={0.12} opacity={0.55} />
+        <div ref={firstVisitReveal.ref} className={`${WRAP} relative reveal ${firstVisitReveal.isVisible ? 'visible' : ''}`}>
           <div className="grid gap-8 md:grid-cols-12 md:gap-12">
             <div className="md:col-span-5">
               <Eyebrow><JpText>{quickInfo.eyebrow}</JpText></Eyebrow>
@@ -437,6 +464,7 @@ export const HomePremium: React.FC = () => {
                   <Image src={yearEndCopy.image} alt={cleanDisplayText(yearEndCopy.imageAlt)} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 55vw" />
                 </div>
               </div>
+              <DecoSplat seed={1225} color={PAINT.taupe} className="-bottom-24 -left-24 hidden h-64 w-64 md:block xl:-left-32" delay={200} />
               <div className="absolute -bottom-8 -left-4 hidden w-44 rotate-[-4deg] bg-white p-2 shadow-[0_30px_60px_-25px_rgba(0,0,0,0.6)] md:block xl:-left-10 xl:w-52">
                 <div className="relative aspect-[4/5]">
                   <Image src={yearEndCopy.insetImage} alt={cleanDisplayText(yearEndCopy.insetImageAlt)} fill className="object-cover" sizes="208px" />
@@ -452,8 +480,7 @@ export const HomePremium: React.FC = () => {
         <div ref={themesReveal.ref} className={WRAP}>
           <div className={`mb-12 grid gap-6 md:mb-16 md:grid-cols-12 md:items-end reveal ${themesReveal.isVisible ? 'visible' : ''}`}>
             <div className="md:col-span-7">
-              <Eyebrow latin>Themes</Eyebrow>
-              <h2 className={`mt-5 ${h2}`}><JpText>{site.home.themes.title}</JpText></h2>
+              <h2 className={h2}><JpText>{site.home.themes.title}</JpText></h2>
               <p className="mt-4 max-w-lg text-[15px] leading-[1.95] text-artbar-gray md:text-base"><JpText>{site.home.themes.subtitle}</JpText></p>
             </div>
             <div className="md:col-span-5 md:justify-self-end">
@@ -469,21 +496,26 @@ export const HomePremium: React.FC = () => {
               const slug = themeSlugFromItem(item);
               const plainTitle = stripJpSentinel(item.title.replace(/<wbr\s*\/?>/gi, ''));
               return (
-                <article key={slug} className="group min-w-0">
-                  <Link href={localizeHrefForLanguage(`/themes/${slug}`, lang)} className="block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-artbar-navy">
+                <article key={slug} className="group relative min-w-0">
+                  <Splat seed={300 + i * 17} color={[PAINT.taupe, PAINT.blue, PAINT.lightTaupe][i % 3]} className="pointer-events-none absolute -right-8 -top-8 z-0 h-32 w-32 scale-50 opacity-0 transition duration-500 ease-[cubic-bezier(.2,1.5,.35,1)] group-hover:scale-100 group-hover:opacity-100 md:-right-16 md:-top-16 md:h-52 md:w-52" />
+                  <Link href={localizeHrefForLanguage(`/themes/${slug}`, lang)} className="relative z-[1] block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-artbar-navy">
+                    <Tilt className="hp-wipe">
                     <div className="relative aspect-[4/5] overflow-hidden bg-artbar-light-taupe/40">
                       <Image src={item.image} alt={plainTitle} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition-transform duration-[1.4s] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.06]" />
                       <div className="pointer-events-none absolute inset-2 border border-white/0 transition-colors duration-500 group-hover:border-white/60 md:inset-3" aria-hidden />
                       <span className="absolute left-3 top-3 font-heading text-[10px] font-semibold tracking-[0.3em] text-white drop-shadow md:left-5 md:top-5 md:text-[11px]">No.{String(i + 1).padStart(2, '0')}</span>
+                      <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 [background:radial-gradient(circle_at_var(--gx,50%)_var(--gy,50%),rgba(255,255,255,0.22),transparent_55%)] group-hover:opacity-100" aria-hidden />
                     </div>
+                    </Tilt>
                     <h3 className={`mt-4 md:mt-6 ${jp ? 'text-base font-semibold leading-snug tracking-[0.04em] md:text-xl' : 'font-heading text-lg font-semibold leading-tight md:text-2xl'}`}><JpText>{item.title}</JpText></h3>
                     <p className="mt-2 line-clamp-2 text-[13px] leading-[1.85] text-artbar-gray md:text-sm"><JpText>{item.desc}</JpText></p>
                   </Link>
                   <TextLink
+                    data-no-splat
                     href={getArtbarBookingThemeUrl(slug)}
                     onClick={() => trackBookingClick('home_themes', { theme: slug })}
                     aria-label={`${plainTitle}: ${jp ? '空き日程を見る' : 'View dates'}`}
-                    className="mt-3 md:mt-4"
+                    className="relative z-[1] mt-3 md:mt-4"
                   >
                     {jp ? '空き日程を見る' : 'View dates'}
                   </TextLink>
@@ -507,7 +539,10 @@ export const HomePremium: React.FC = () => {
           <div className={`grid border-t border-artbar-navy/15 md:grid-cols-3 reveal-stagger ${featuredReveal.isVisible ? 'visible' : ''}`}>
             {featuredTestimonials.map((item, i) => (
               <figure key={i} className={`flex flex-col pt-10 md:px-10 md:pt-14 ${i ? 'border-t border-artbar-navy/15 md:border-l md:border-t-0' : 'md:pl-0'} ${i === featuredTestimonials.length - 1 ? 'md:pr-0' : ''} pb-10 md:pb-0`}>
-                <span className="font-heading text-6xl leading-[0.6] text-artbar-taupe" aria-hidden>&ldquo;</span>
+                <span className="relative inline-block w-fit font-heading text-6xl leading-[0.6] text-artbar-taupe" aria-hidden>
+                  <Splat seed={40 + i * 9} color={PAINT.lightTaupe} className="absolute -left-5 -top-6 -z-0 h-16 w-16 opacity-60" />
+                  <span className="relative">&ldquo;</span>
+                </span>
                 <blockquote className="mt-5 flex-grow text-[15px] leading-[2] text-artbar-navy md:text-[17px]"><JpText>{item.text}</JpText></blockquote>
                 <figcaption className="mt-8 flex items-center gap-4">
                   {item.userImage ? (
@@ -533,7 +568,10 @@ export const HomePremium: React.FC = () => {
           <Eyebrow latin className="justify-center [&>span:first-child]:hidden md:[&>span:first-child]:block">{stripJpSentinel(site.home.concept.est)}</Eyebrow>
           <h2 className={`mt-6 max-w-4xl whitespace-pre-line ${h2}`}><JpText>{site.home.concept.title}</JpText></h2>
 
-          <div ref={conceptVideoLazy.ref} className="group relative mt-12 w-full max-w-[60rem] border border-artbar-navy/10 bg-artbar-bg p-2.5 md:mt-16 md:p-4">
+          <div className="relative mt-12 w-full max-w-[60rem] md:mt-16">
+          <DecoSplat seed={88} color={PAINT.navy} className="-bottom-16 -left-20 h-56 w-56 md:-bottom-24 md:-left-36 md:h-80 md:w-80" speed={-0.08} />
+          <DecoSplat seed={511} color={PAINT.taupe} className="-right-16 -top-16 h-44 w-44 md:-right-28 md:-top-24 md:h-64 md:w-64" speed={0.1} delay={180} />
+          <div ref={conceptVideoLazy.ref} className="group relative w-full border border-artbar-navy/10 bg-artbar-bg p-2.5 md:p-4">
             <div className="relative aspect-square overflow-hidden md:aspect-video">
               {hasConceptVideo ? (
                 <>
@@ -549,6 +587,7 @@ export const HomePremium: React.FC = () => {
                 <Play className="ml-1 h-7 w-7 text-white md:h-8 md:w-8" fill="currentColor" strokeWidth={0} aria-hidden />
               </a>
             </div>
+          </div>
           </div>
 
           <p className="mt-12 max-w-3xl text-[16px] leading-[2] md:mt-16 md:text-xl md:leading-[2]"><JpText>{site.home.concept.p1}</JpText></p>
@@ -570,8 +609,9 @@ export const HomePremium: React.FC = () => {
       </section>
 
       {/* ── 9. Private & company events ─────────────────────────────────── */}
-      <section id="group-events" aria-labelledby="hp-group-title" className="scroll-mt-20 bg-artbar-navy text-white">
-        <div ref={groupReveal.ref} className={`${WRAP} py-20 md:py-28 reveal ${groupReveal.isVisible ? 'visible' : ''}`}>
+      <section id="group-events" aria-labelledby="hp-group-title" className="relative scroll-mt-20 overflow-hidden bg-artbar-navy text-white">
+        <DecoSplat seed={33} color={PAINT.blue} className="-left-28 top-10 h-80 w-80 md:h-[30rem] md:w-[30rem]" speed={0.1} opacity={0.6} />
+        <div ref={groupReveal.ref} className={`${WRAP} relative py-20 md:py-28 reveal ${groupReveal.isVisible ? 'visible' : ''}`}>
           <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-16">
             <div className="lg:col-span-5">
               <Eyebrow tone="light">{jp ? '貸切イベント・チームビルディング' : 'Private parties & company events'}</Eyebrow>
@@ -613,19 +653,21 @@ export const HomePremium: React.FC = () => {
         <div ref={howReveal.ref} className={WRAP}>
           <div className={`grid gap-6 md:grid-cols-12 md:items-end reveal ${howReveal.isVisible ? 'visible' : ''}`}>
             <div className="md:col-span-6">
-              <Eyebrow latin>How it works</Eyebrow>
-              <h2 className={`mt-5 ${h2}`}><JpText>{site.home.howItWorks.title}</JpText></h2>
+              <h2 className={h2}><JpText>{site.home.howItWorks.title}</JpText></h2>
             </div>
             <p className="text-[15px] leading-[2] text-artbar-gray md:col-span-5 md:col-start-8 md:text-base"><JpText>{site.home.howItWorks.subtitle}</JpText></p>
           </div>
           <ol className={`mt-14 grid grid-cols-1 gap-12 sm:grid-cols-2 md:mt-16 md:gap-8 lg:grid-cols-4 reveal-stagger ${howReveal.isVisible ? 'visible' : ''}`}>
             {site.home.howItWorks.steps.map((step, i) => (
               <li key={i} className={`group ${i % 2 === 1 ? 'lg:mt-16' : ''}`}>
-                <div className="relative aspect-[4/5] overflow-hidden">
+                <div className="hp-wipe relative aspect-[4/5] overflow-hidden">
                   <Image src={HOW_IT_WORKS_IMAGES[i] ?? HOW_IT_WORKS_IMAGES[0]} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover transition-transform duration-[1.4s] group-hover:scale-[1.05]" />
                 </div>
                 <div className="mt-6 flex items-baseline gap-4 border-t border-artbar-navy/15 pt-5">
-                  <span className="font-heading text-3xl font-semibold leading-none text-artbar-taupe" aria-hidden>{String(i + 1).padStart(2, '0')}</span>
+                  <span className="relative font-heading text-3xl font-semibold leading-none text-artbar-navy" aria-hidden>
+                    <Splat seed={900 + i * 31} color={[PAINT.lightTaupe, PAINT.taupe, PAINT.lightTaupe, PAINT.taupe][i]} className="absolute -left-4 -top-5 h-16 w-16 opacity-70" />
+                    <span className="relative">{String(i + 1).padStart(2, '0')}</span>
+                  </span>
                   <h3 className={jp ? 'text-lg font-semibold tracking-[0.06em]' : 'font-heading text-xl font-semibold'}><JpText>{step.title}</JpText></h3>
                 </div>
                 <p className="mt-3 text-[14px] leading-[1.95] text-artbar-gray"><JpText>{step.desc}</JpText></p>
@@ -640,11 +682,13 @@ export const HomePremium: React.FC = () => {
         <div ref={reviewsReveal.ref} className={WRAP}>
           <div className={`grid gap-8 md:grid-cols-12 md:items-end reveal ${reviewsReveal.isVisible ? 'visible' : ''}`}>
             <div className="md:col-span-7">
-              <Eyebrow latin>Google reviews</Eyebrow>
-              <h2 className={`mt-5 ${h2}`}><JpText>{site.home.testimonials.title}</JpText></h2>
+              <h2 className={h2}><JpText>{site.home.testimonials.title}</JpText></h2>
             </div>
             <div className="flex items-end gap-5 md:col-span-5 md:justify-self-end">
-              <span className="font-heading text-[4.5rem] font-semibold leading-[0.8] tracking-tight md:text-[5.5rem]">{heroCopy.ratingScore}</span>
+              <span className="relative font-heading text-[4.5rem] font-semibold leading-[0.8] tracking-tight md:text-[5.5rem]">
+                <DecoSplat seed={48} color={PAINT.lightTaupe} className="-inset-x-10 -inset-y-12" opacity={0.7} />
+                <span className="relative"><CountUp value={Number(heroCopy.ratingScore)} from={3} decimals={1} /></span>
+              </span>
               <span className="flex flex-col gap-2 pb-1">
                 <Stars size="h-4 w-4" />
                 <span className="text-xs tracking-[0.06em] text-artbar-gray"><JpText>{heroCopy.ratingSource}</JpText></span>
@@ -670,8 +714,7 @@ export const HomePremium: React.FC = () => {
       <section id="media" className="scroll-mt-28 bg-artbar-bg py-20 md:scroll-mt-32 md:py-28">
         <div ref={pressReveal.ref} className={WRAP}>
           <div className={`flex flex-col items-center text-center reveal ${pressReveal.isVisible ? 'visible' : ''}`}>
-            <Eyebrow latin>As seen in</Eyebrow>
-            <h2 className={`mt-5 ${h2}`}><JpText>{site.pressPage.title}</JpText></h2>
+            <h2 className={h2}><JpText>{site.pressPage.title}</JpText></h2>
             <p className="mt-4 max-w-2xl text-[15px] leading-[1.95] text-artbar-gray md:text-base"><JpText>{site.pressPage.subtitle}</JpText></p>
           </div>
         </div>
@@ -706,22 +749,37 @@ export const HomePremium: React.FC = () => {
 
       {/* ── 13. Closing CTA ─────────────────────────────────────────────── */}
       <div className="bg-artbar-bg pb-4 md:pb-6">
-      <section className="relative overflow-hidden bg-artbar-navy">
+      <section ref={ctaRef} className="relative overflow-hidden bg-artbar-navy [touch-action:pan-y]">
         <img src={content.images.cta || GI.featureAllInclusive} alt={stripJpSentinel(homeUiCopy.ctaImageAlt)} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-35" />
         <div className="absolute inset-0 bg-gradient-to-r from-artbar-navy via-artbar-navy/85 to-artbar-navy/40" />
-        <div className="pointer-events-none absolute inset-3 border border-white/20 md:inset-6" aria-hidden />
-        <div ref={ctaReveal.ref} className={`${WRAP} relative grid items-center gap-12 py-24 md:grid-cols-12 md:py-32 reveal ${ctaReveal.isVisible ? 'visible' : ''}`}>
+        <PaintCanvas targetRef={ctaRef} color={brush} />
+        <div className="pointer-events-none absolute inset-3 z-[2] border border-white/20 md:inset-6" aria-hidden />
+        <div ref={ctaReveal.ref} className={`${WRAP} relative z-[3] grid items-center gap-12 py-24 md:grid-cols-12 md:py-32 reveal ${ctaReveal.isVisible ? 'visible' : ''}`}>
           <div className="md:col-span-8">
             <Eyebrow tone="light" latin={!jp}><JpText>{site.home.cta.badge}</JpText></Eyebrow>
-            <h2 className={`mt-6 text-white ${h2}`}><JpText>{site.home.cta.title}</JpText></h2>
+            <h2 className={`relative isolate mt-6 w-fit text-white ${h2}`}>
+              <BrushStroke className="-bottom-1 left-0 -z-10 h-[0.45em] w-full opacity-70" delay={300} />
+              <JpText>{site.home.cta.title}</JpText>
+            </h2>
             <p className="mt-5 max-w-xl text-[15px] leading-[2] text-artbar-light-taupe md:text-lg"><JpText>{site.home.cta.subtitle}</JpText></p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <button type="button" onClick={() => goBook('home_bottom')} className={`${PILL_TAUPE} w-full whitespace-nowrap sm:w-auto sm:min-w-[13rem]`}>{stripJpSentinel(site.home.cta.btnBook)}</button>
-              <button type="button" onClick={() => router.push(localizeHrefForLanguage('/contact', lang))} className={`${PILL_GHOST_LIGHT} w-full whitespace-nowrap sm:w-auto sm:min-w-[13rem]`}>{stripJpSentinel(site.home.cta.btnContact)}</button>
+              <Magnetic className="w-full sm:w-auto"><button type="button" onClick={() => goBook('home_bottom')} className={`${PILL_TAUPE} w-full whitespace-nowrap sm:w-auto sm:min-w-[13rem]`}>{stripJpSentinel(site.home.cta.btnBook)}</button></Magnetic>
+              <Magnetic className="w-full sm:w-auto"><button type="button" onClick={() => router.push(localizeHrefForLanguage('/contact', lang))} className={`${PILL_GHOST_LIGHT} w-full whitespace-nowrap sm:w-auto sm:min-w-[13rem]`}>{stripJpSentinel(site.home.cta.btnContact)}</button></Magnetic>
+            </div>
+            <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-white/15 pt-6" data-no-splat>
+              <span className="text-[13px] tracking-[0.06em] text-white/70">{jp ? '色を選んで、この画面をなぞって描いてみよう' : 'Pick a colour and paint across this panel'}</span>
+              <div className="flex gap-2.5" role="radiogroup" aria-label={jp ? '絵の具の色' : 'Paint colour'}>
+                {BRUSH_COLORS.map((b) => (
+                  <button key={b.c} type="button" role="radio" aria-checked={brush === b.c} aria-label={jp ? b.jp : b.en} onClick={() => setBrush(b.c)}
+                    className={`h-8 w-8 rounded-full border border-white/30 transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${brush === b.c ? 'scale-110 ring-2 ring-white ring-offset-2 ring-offset-artbar-navy' : 'hover:scale-110'}`}
+                    style={{ background: b.c }} />
+                ))}
+              </div>
             </div>
           </div>
-          <div className="hidden justify-self-end md:col-span-4 md:block">
-            <Seal className="w-44 text-[15px] lg:w-52 lg:text-[17px]" />
+          <div className="relative hidden justify-self-end md:col-span-4 md:block">
+            <DecoSplat seed={2026} color={PAINT.taupe} className="-inset-[40%]" opacity={0.9} />
+            <Seal className="relative w-44 text-[15px] lg:w-52 lg:text-[17px]" />
           </div>
         </div>
       </section>
