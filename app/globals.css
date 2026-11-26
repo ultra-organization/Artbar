@@ -500,3 +500,37 @@ html:lang(ja) h4 span {
       radial-gradient(circle var(--notch) at 41.666% 100%, #0000 98%, #000) left bottom / 100% 51% no-repeat;
   }
 }
+
+/* ─── Home design-upgrade concept (/preview/home-v2) ───────────────────── */
+/* Josefin carries Latin glyphs; Zen Kaku Gothic New picks up Japanese. */
+.home-v2 .v2-display {
+  font-family: var(--font-josefin), var(--font-zen), "Hiragino Kaku Gothic ProN", sans-serif;
+  font-feature-settings: "palt";
+}
+.home-v2 .font-heavy { font-weight: 900; }
+/* Hung canvases on the navy studio wall: a thin gesso mat and a real cast shadow. */
+.home-v2 .v2-frame {
+  background: #fbfaf7;
+  padding: 6px;
+  box-shadow: 0 34px 50px -24px rgba(0, 10, 25, 0.75), 0 2px 0 rgba(255, 255, 255, 0.06);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s;
+}
+@media (min-width: 768px) { .home-v2 .v2-frame { padding: 10px; } }
+.home-v2 .group:hover .v2-frame {
+  transform: translateY(-4px);
+  box-shadow: 0 44px 60px -26px rgba(0, 10, 25, 0.85);
+}
+/* Soft spotlight across the wall, like gallery track lighting. */
+.home-v2 .v2-wall {
+  background-image: radial-gradient(ellipse 70% 45% at 50% 0%, rgba(255, 255, 255, 0.09), transparent 70%);
+}
+/* One orchestrated entrance: the hero copy rises in sequence on load. */
+@keyframes v2-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+.home-v2 .v2-rise { animation: v2-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .home-v2 .v2-rise { animation: none; }
+  .home-v2 .v2-frame, .home-v2 .group:hover .v2-frame { transition: none; transform: none; }
+}
