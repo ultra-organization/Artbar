@@ -501,125 +501,6 @@ html:lang(ja) h4 span {
   }
 }
 
-/* ─── Home design-upgrade concept (/preview/home-v2) ───────────────────── */
-/* Josefin carries Latin glyphs; Zen Kaku Gothic New picks up Japanese. */
-.home-v2 .v2-display {
-  font-family: var(--font-josefin), var(--font-zen), "Hiragino Kaku Gothic ProN", sans-serif;
-  font-feature-settings: "palt";
-}
-.home-v2 .font-heavy { font-weight: 900; }
-/* Hung canvases on the navy studio wall: a thin gesso mat and a real cast shadow. */
-.home-v2 .v2-frame {
-  background: #fbfaf7;
-  padding: 6px;
-  box-shadow: 0 34px 50px -24px rgba(0, 10, 25, 0.75), 0 2px 0 rgba(255, 255, 255, 0.06);
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s;
-}
-@media (min-width: 768px) { .home-v2 .v2-frame { padding: 10px; } }
-.home-v2 .group:hover .v2-frame {
-  transform: translateY(-4px);
-  box-shadow: 0 44px 60px -26px rgba(0, 10, 25, 0.85);
-}
-/* Soft spotlight across the wall, like gallery track lighting. */
-.home-v2 .v2-wall {
-  background-image: radial-gradient(ellipse 70% 45% at 50% 0%, rgba(255, 255, 255, 0.09), transparent 70%);
-}
-/* One orchestrated entrance: the hero copy rises in sequence on load. */
-@keyframes v2-rise {
-  from { opacity: 0; transform: translateY(18px); }
-  to { opacity: 1; transform: none; }
-}
-.home-v2 .v2-rise { animation: v2-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
-@media (prefers-reduced-motion: reduce) {
-  .home-v2 .v2-rise { animation: none; }
-  .home-v2 .v2-frame, .home-v2 .group:hover .v2-frame { transition: none; transform: none; }
-}
-
-/* ─── Home round two: "Paint everywhere" (/preview/home-v3) ────────────── */
-.home-v3 {
-  --v3-gesso: #F4F0E8;
-  --v3-cad: #F6B800;      /* cadmium yellow, from the Van Gogh irises canvas */
-  --v3-rose: #E8587E;     /* rose, from the pouring-art pinks */
-  --v3-viridian: #1E6F64; /* Monet water */
-  --v3-sky: #BFDDF0;      /* alcohol-ink blue, as a light ground */
-  --v3-mint: #9ED9BE;
-  font-family: var(--font-zen), "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-  font-weight: 500;
-  color: #053761;
-}
-.home-v3 .v3-display {
-  font-family: var(--font-dela), var(--font-zen), sans-serif;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  font-feature-settings: "palt";
-  line-break: strict;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
-.home-v3 .v3-note {
-  font-family: var(--font-klee), var(--font-zen), cursive;
-  font-weight: 600;
-}
-.home-v3 .font-black { font-weight: 900; }
-
-/* Brush-stroke masks (generated SVGs in /public/media/v2). */
-.home-v3 .v3-blob-1 { -webkit-mask: url(/media/v2/brush-blob-1.svg) center / 100% 100% no-repeat; mask: url(/media/v2/brush-blob-1.svg) center / 100% 100% no-repeat; }
-.home-v3 .v3-blob-2 { -webkit-mask: url(/media/v2/brush-blob-2.svg) center / 100% 100% no-repeat; mask: url(/media/v2/brush-blob-2.svg) center / 100% 100% no-repeat; }
-.home-v3 .v3-swipe { -webkit-mask: url(/media/v2/brush-swipe.svg) center / 100% 100% no-repeat; mask: url(/media/v2/brush-swipe.svg) center / 100% 100% no-repeat; }
-.home-v3 .v3-edge {
-  position: absolute; left: 0; right: 0; top: 1px; height: 48px; transform: translateY(-100%);
-  -webkit-mask: url(/media/v2/paint-edge.svg) center / 100% 100% no-repeat; mask: url(/media/v2/paint-edge.svg) center / 100% 100% no-repeat;
-  pointer-events: none;
-}
-@media (min-width: 768px) { .home-v3 .v3-edge { height: 72px; } }
-
-/* Buttons and links */
-.home-v3 .v3-btn {
-  box-shadow: 0 5px 0 rgba(5, 55, 97, 0.9);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
-}
-.home-v3 .v3-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 rgba(5, 55, 97, 0.9); filter: brightness(1.04); }
-.home-v3 .v3-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(5, 55, 97, 0.9); }
-.home-v3 .v3-link { text-decoration: underline; text-decoration-color: var(--v3-cad); text-decoration-thickness: 4px; text-underline-offset: 8px; }
-.home-v3 .v3-link:hover { text-decoration-color: currentColor; }
-.home-v3 .v3-link-light { text-decoration-color: rgba(255, 255, 255, 0.45); }
-
-.home-v3 .v3-sticker { box-shadow: 0 10px 20px -8px rgba(5, 55, 97, 0.45); }
-.home-v3 .v3-card { box-shadow: 0 10px 0 -4px rgba(5, 55, 97, 0.12); }
-
-/* Pinned canvases */
-.home-v3 .v3-pin { rotate: var(--tilt); transition: rotate 0.35s cubic-bezier(0.22, 1, 0.36, 1), translate 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-.home-v3 .v3-pin:hover, .home-v3 .v3-pin:focus-within { rotate: 0deg; translate: 0 -6px; }
-.home-v3 .v3-polaroid { box-shadow: 0 24px 40px -22px rgba(5, 30, 60, 0.55), 0 2px 6px rgba(5, 30, 60, 0.08); }
-.home-v3 .v3-tape {
-  position: absolute; top: -14px; left: 50%; z-index: 2; width: 38%; height: 28px;
-  transform: translateX(-50%) rotate(-3deg); opacity: 0.82;
-  -webkit-mask: url(/media/v2/brush-swipe.svg) center / 100% 100% no-repeat; mask: url(/media/v2/brush-swipe.svg) center / 100% 100% no-repeat;
-}
-
-/* Speech bubbles and sticky notes */
-.home-v3 .v3-bubble::after {
-  content: ""; position: absolute; bottom: -14px; left: 2.5rem; width: 28px; height: 28px;
-  background: #fff; clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-.home-v3 .v3-bubble-right::after { left: auto; right: 2.5rem; clip-path: polygon(0 0, 100% 0, 100% 100%); }
-.home-v3 .v3-sticky { box-shadow: 0 18px 24px -18px rgba(5, 30, 60, 0.5); }
-
-/* Theme ticker */
-.home-v3 .v3-ticker-track { animation: v3-ticker 60s linear infinite; }
-@keyframes v3-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-/* The one orchestrated moment: the yellow stroke paints in, then the film pops onto it. */
-@keyframes v3-paint-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-@keyframes v3-pop { from { opacity: 0; transform: scale(0.92) rotate(-2deg); } to { opacity: 1; transform: none; } }
-.home-v3 .v3-swipe-in { animation: v3-paint-in 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both; }
-.home-v3 .v3-pop-in { animation: v3-pop 0.7s cubic-bezier(0.22, 1.2, 0.36, 1) 0.6s both; }
-
-@media (prefers-reduced-motion: reduce) {
-  .home-v3 .v3-ticker-track, .home-v3 .v3-swipe-in, .home-v3 .v3-pop-in { animation: none; }
-  .home-v3 .v3-pin, .home-v3 .v3-btn { transition: none; }
-}
-
 /* Hero direction pitches (/preview/heroes) */
 .hero-lab .lab-in { animation: lab-in 1.1s cubic-bezier(.2,.7,.2,1) both; }
 .hero-lab .lab-kenburns { animation: lab-kb 18s ease-out both; }
@@ -629,4 +510,11 @@ html:lang(ja) h4 span {
 @keyframes lab-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
   .hero-lab .lab-in, .hero-lab .lab-kenburns, .hero-lab .lab-spin { animation: none; }
+}
+
+/* Home premium pass (/preview/home) */
+.hp .hp-in { animation: lab-in 1.1s cubic-bezier(.2,.7,.2,1) both; }
+.hp .hp-spin { animation: lab-spin 40s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .hp .hp-in, .hp .hp-spin { animation: none; }
 }
