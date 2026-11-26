@@ -1,14 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Instagram, Facebook, Youtube, Mail, MapPin } from 'lucide-react';
+import { Instagram, Facebook, Youtube, Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from './Logo';
 import { JpText } from './JpText';
 import { stripJpSentinel } from '../lib/jp-attr';
 import { useContent } from '../context/ContentContext';
-import { LOCATIONS, SOCIAL_PROFILES } from '../constants';
+import { SOCIAL_PROFILES } from '../constants';
+import { Seal } from './premium/Kit';
 import { localizeHrefForLanguage } from '../lib/locale-routing';
 import { locationPath } from '../lib/location-pages';
 import { getScheduleUrlForPathname } from '../lib/location-booking';
@@ -89,122 +90,52 @@ export const Footer: React.FC = () => {
   const pathname = usePathname();
   const scheduleUrl = getScheduleUrlForPathname(pathname, lang);
   const currentYear = new Date().getFullYear();
-  const socialIconClass = 'flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white shadow-sm transition-all hover:bg-artbar-taupe';
-  const footerLinkClass = 'inline-flex min-h-[44px] min-w-[44px] items-center py-2 hover:text-white hover:translate-x-1 transition-all';
-  const footerMetaLinkClass = 'inline-flex min-h-[44px] min-w-[44px] items-center px-1 hover:text-white transition-colors';
+  const jp = lang === 'jp';
+  const socialIconClass = 'flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white/85 transition-colors duration-300 hover:border-artbar-taupe hover:bg-artbar-taupe hover:text-artbar-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
+  const linkClass = 'group inline-flex min-h-[44px] items-center gap-2 text-[15px] text-white/80 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
+  const headClass = 'flex items-center gap-3 text-[12px] font-medium tracking-[0.16em] text-artbar-light-taupe md:text-[13px]';
+  const footerMetaLinkClass = 'inline-flex min-h-[44px] items-center transition-colors hover:text-white';
   const href = (path: string) => localizeHrefForLanguage(path, lang);
+  const Rule = () => <span className="h-px w-8 shrink-0 bg-artbar-taupe" aria-hidden />;
 
   return (
-    <>
-      <footer className="grain bg-artbar-navy pt-24 pb-[max(2rem,env(safe-area-inset-bottom,0px))] mt-0 text-white rounded-t-[var(--radius-feature)] mx-0 md:mx-2 relative overflow-hidden">
-        <div className="max-w-[1400px] mx-auto px-6 md:px-10 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
-
-            <div className="md:col-span-4">
-              <div className="mb-8">
-                <Logo variant="light" />
-              </div>
-              <p className="text-artbar-light-taupe/80 leading-relaxed mb-10 max-w-md font-light">
-                <JpText>{site.footer.tagline}</JpText>
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href={SOCIAL_PROFILES.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialIconClass}
-                  aria-label={stripJpSentinel(localizedCopy.ui.footer.instagramLabel)}
-                >
-                  <Instagram size={18} />
-                </a>
-                <a
-                  href={SOCIAL_PROFILES.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialIconClass}
-                  aria-label={stripJpSentinel(localizedCopy.ui.footer.facebookLabel)}
-                >
-                  <Facebook size={18} />
-                </a>
-                <a
-                  href={SOCIAL_PROFILES.tiktok}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialIconClass}
-                  aria-label="TikTok"
-                >
-                  <TikTokIcon size={18} />
-                </a>
-                <a
-                  href={SOCIAL_PROFILES.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={socialIconClass}
-                  aria-label="YouTube"
-                >
-                  <Youtube size={18} />
-                </a>
-                <a
-                  href="mailto:tokyo@artbar.co.jp"
-                  className={socialIconClass}
-                  aria-label={stripJpSentinel(localizedCopy.ui.footer.emailLabel)}
-                >
-                  <Mail size={18} />
-                </a>
-              </div>
-            </div>
-
-            <div className="md:col-span-3">
-              <h4 className="font-heading font-bold text-white text-lg mb-6 flex items-center gap-2">
-                <MapPin size={18} className="text-artbar-taupe" /> <JpText>{site.footer.locations}</JpText>
-              </h4>
-              <ul className="space-y-3 text-artbar-light-taupe">
-                {LOCATIONS.map((loc) => (
-                  <li key={loc.id}>
-                    <Link
-                      href={href(locationPath(loc.id))}
-                      className={footerLinkClass}
-                    >
-                      {lang === 'en' ? loc.nameEn.replace(/^Artbar\s*/i, '') : loc.nameJp.replace(/^Artbar\s*/i, '')}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="md:col-span-3">
-              <h4 className="font-heading font-bold text-white text-lg mb-6"><JpText>{site.footer.explore}</JpText></h4>
-              <ul className="space-y-3 text-artbar-light-taupe">
-                <li><a href={scheduleUrl} onClick={() => trackBookingClick('footer')} className={footerLinkClass}><JpText>{site.nav.schedule}</JpText></a></li>
-                <li><Link href={href('/team-building')} className={footerLinkClass}><JpText>{site.nav.teamBuilding}</JpText></Link></li>
-                <li><Link href={href('/private-parties')} className={footerLinkClass}><JpText>{site.nav.privateParties}</JpText></Link></li>
-                <li><Link href={href('/instructors')} className={footerLinkClass}><JpText>{site.nav.instructors}</JpText></Link></li>
-                <li><Link href={href('/guides')} className={footerLinkClass}><JpText>{lang === 'en' ? 'Guides' : 'ガイド'}</JpText></Link></li>
-                <li><Link href={href('/blog')} className={footerLinkClass}><JpText>{site.nav.blog}</JpText></Link></li>
-              </ul>
-            </div>
-
-             <div className="md:col-span-2">
-              <h4 className="font-heading font-bold text-white text-lg mb-6"><JpText>{site.footer.support}</JpText></h4>
-              <ul className="space-y-3 text-artbar-light-taupe">
-                <li><Link href={href('/contact')} className={footerLinkClass}><JpText>{site.nav.contact}</JpText></Link></li>
-                <li><Link href={href('/contact')} className={footerLinkClass}><JpText>{localizedCopy.ui.footer.faq}</JpText></Link></li>
-                <li><Link href={href('/contact')} className={footerLinkClass}><JpText>{localizedCopy.ui.footer.careers}</JpText></Link></li>
-              </ul>
-            </div>
+    <footer className="relative overflow-hidden bg-artbar-navy pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] text-white">
+      {/* Mounted-print hairline, the same frame as the hero. */}
+      <div className="pointer-events-none absolute inset-3 border border-white/15 md:inset-6" aria-hidden />
+      <div className="relative mx-auto max-w-[1320px] px-7 pt-20 sm:px-8 md:px-12 md:pt-28">
+        {/* Sign-off */}
+        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-xl">
+            <Logo variant="light" />
+            <p className="mt-7 text-[15px] leading-[1.95] text-white/70 md:text-base">
+              <JpText>{site.footer.tagline}</JpText>
+            </p>
+            <a
+              href={scheduleUrl}
+              onClick={() => trackBookingClick('footer')}
+              className="group mt-8 inline-flex min-h-12 items-center gap-3 rounded-full bg-artbar-taupe px-8 text-[15px] font-bold tracking-[0.04em] text-artbar-navy transition-colors duration-300 hover:bg-artbar-light-taupe focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-artbar-taupe"
+            >
+              <JpText>{site.nav.schedule}</JpText>
+              <ArrowRight size={16} strokeWidth={2.2} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+            </a>
           </div>
+          <Seal className="hidden w-32 shrink-0 text-[12px] md:block lg:w-36" />
+        </div>
 
-          <div className="border-t border-white/10 pt-10">
-            <h4 className="font-heading font-bold text-white text-lg mb-6"><JpText>{lang === 'en' ? 'Studios' : 'スタジオ'}</JpText></h4>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-5">
+        {/* Directory */}
+        <div className="mt-16 grid grid-cols-2 gap-x-8 gap-y-14 border-t border-white/15 pt-12 md:mt-20 md:grid-cols-12 md:pt-14">
+          <div className="col-span-2 md:col-span-6">
+            <h4 className={headClass}><Rule /><JpText>{jp ? 'スタジオ' : 'Studios'}</JpText></h4>
+            <ul className="mt-6 grid grid-cols-1 gap-x-10 sm:grid-cols-2">
               {FOOTER_STUDIOS.map((studio) => (
-                <li key={studio.id}>
-                  <Link href={href(locationPath(studio.id))} className="group block py-1">
-                    <span className="block text-artbar-light-taupe transition-colors group-hover:text-white">
-                      {lang === 'en' ? studio.nameEn : <JpText>{studio.nameJp}</JpText>}
+                <li key={studio.id} className="border-b border-white/10">
+                  <Link href={href(locationPath(studio.id))} className="group block py-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    <span className="flex items-center justify-between gap-3 text-[15px] font-semibold text-white/90 transition-colors group-hover:text-white">
+                      {jp ? <JpText>{studio.nameJp}</JpText> : studio.nameEn}
+                      <ArrowRight size={14} className="shrink-0 text-artbar-taupe opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden />
                     </span>
-                    <span className="mt-1 block text-sm font-light text-artbar-light-taupe/60">
-                      {lang === 'en' ? studio.metaEn : <JpText>{studio.metaJp}</JpText>}
+                    <span className="mt-1 block text-[12px] leading-relaxed text-white/50">
+                      {jp ? <JpText>{studio.metaJp}</JpText> : studio.metaEn}
                     </span>
                   </Link>
                 </li>
@@ -212,17 +143,46 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          <div className="border-t border-white/10 pt-8 mt-8 flex flex-col gap-3 md:flex-row md:justify-between md:items-center text-xs text-artbar-light-taupe/60 font-light tracking-wide">
-            <p className="cursor-default text-center md:text-left">{`© ${currentYear} Artbar Tokyo · Paint and Wine Art Studio · All rights reserved`}</p>
-            <div className="flex flex-wrap justify-center gap-x-4 md:gap-x-5 md:justify-end">
-              <Link href={href('/privacy-policy')} className={footerMetaLinkClass}><JpText>{site.footer.privacy}</JpText></Link>
-              <Link href={href('/terms-of-service')} className={footerMetaLinkClass}><JpText>{site.footer.terms}</JpText></Link>
-              <Link href={href('/specified-commercial-transactions')} className={footerMetaLinkClass}><JpText>{site.footer.commercial}</JpText></Link>
-              <span className="inline-flex min-h-[44px] items-center px-1"><JpText>{site.footer.company}</JpText></span>
-            </div>
+          <div className="md:col-span-3 md:col-start-8">
+            <h4 className={headClass}><Rule /><JpText>{site.footer.explore}</JpText></h4>
+            <ul className="mt-4">
+              <li><Link href={href('/team-building')} className={linkClass}><JpText>{site.nav.teamBuilding}</JpText></Link></li>
+              <li><Link href={href('/private-parties')} className={linkClass}><JpText>{site.nav.privateParties}</JpText></Link></li>
+              <li><Link href={href('/instructors')} className={linkClass}><JpText>{site.nav.instructors}</JpText></Link></li>
+              <li><Link href={href('/locations')} className={linkClass}><JpText>{site.footer.locations}</JpText></Link></li>
+              <li><Link href={href('/guides')} className={linkClass}><JpText>{jp ? 'ガイド' : 'Guides'}</JpText></Link></li>
+              <li><Link href={href('/blog')} className={linkClass}><JpText>{site.nav.blog}</JpText></Link></li>
+            </ul>
+          </div>
+
+          <div className="md:col-span-2">
+            <h4 className={headClass}><Rule /><JpText>{site.footer.support}</JpText></h4>
+            <ul className="mt-4">
+              <li><Link href={href('/contact')} className={linkClass}><JpText>{site.nav.contact}</JpText></Link></li>
+              <li><Link href={href('/contact')} className={linkClass}><JpText>{localizedCopy.ui.footer.faq}</JpText></Link></li>
+              <li><Link href={href('/contact')} className={linkClass}><JpText>{localizedCopy.ui.footer.careers}</JpText></Link></li>
+            </ul>
           </div>
         </div>
-      </footer>
-    </>
+
+        {/* Social + legal */}
+        <div className="mt-14 flex flex-col gap-8 border-t border-white/15 pt-8 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-wrap gap-3">
+            <a href={SOCIAL_PROFILES.instagram} target="_blank" rel="noopener noreferrer" className={socialIconClass} aria-label={stripJpSentinel(localizedCopy.ui.footer.instagramLabel)}><Instagram size={17} /></a>
+            <a href={SOCIAL_PROFILES.facebook} target="_blank" rel="noopener noreferrer" className={socialIconClass} aria-label={stripJpSentinel(localizedCopy.ui.footer.facebookLabel)}><Facebook size={17} /></a>
+            <a href={SOCIAL_PROFILES.tiktok} target="_blank" rel="noopener noreferrer" className={socialIconClass} aria-label="TikTok"><TikTokIcon size={17} /></a>
+            <a href={SOCIAL_PROFILES.youtube} target="_blank" rel="noopener noreferrer" className={socialIconClass} aria-label="YouTube"><Youtube size={17} /></a>
+            <a href="mailto:tokyo@artbar.co.jp" className={socialIconClass} aria-label={stripJpSentinel(localizedCopy.ui.footer.emailLabel)}><Mail size={17} /></a>
+          </div>
+          <div className="flex flex-wrap gap-x-5 text-xs tracking-wide text-white/55">
+            <Link href={href('/privacy-policy')} className={footerMetaLinkClass}><JpText>{site.footer.privacy}</JpText></Link>
+            <Link href={href('/terms-of-service')} className={footerMetaLinkClass}><JpText>{site.footer.terms}</JpText></Link>
+            <Link href={href('/specified-commercial-transactions')} className={footerMetaLinkClass}><JpText>{site.footer.commercial}</JpText></Link>
+            <span className="inline-flex min-h-[44px] items-center"><JpText>{site.footer.company}</JpText></span>
+          </div>
+        </div>
+        <p className="mt-4 pb-8 text-xs tracking-wide text-white/40 md:pb-10">{`© ${currentYear} Artbar Tokyo · Paint and Wine Art Studio · All rights reserved`}</p>
+      </div>
+    </footer>
   );
 };

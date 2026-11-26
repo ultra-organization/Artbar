@@ -1,6 +1,6 @@
 import { defaultContent } from '@/data/content';
 import { PageJsonLd } from '@/components/PageJsonLd';
-import { Home } from '@/views/Home';
+import { HomePremium as Home } from '@/views/HomePremium';
 import { HERO_HOME_VIDEO_DESKTOP, HERO_HOME_VIDEO_MOBILE } from '@/constants';
 import { nextImageSrcSet } from '@/lib/image-preload';
 import { getPublishedMediaMap } from '@/lib/media/published';

@@ -515,8 +515,9 @@ html:lang(ja) h4 span {
 /* Home premium pass (/preview/home) */
 .hp .hp-in { animation: lab-in 1.1s cubic-bezier(.2,.7,.2,1) both; }
 .hp .hp-spin { animation: lab-spin 40s linear infinite; }
+.hp .hp-kb { animation: lab-kb 18s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
-  .hp .hp-in, .hp .hp-spin { animation: none; }
+  .hp .hp-in, .hp .hp-spin, .hp .hp-kb { animation: none; }
 }
 
 /* Paint toolkit (components/premium/Paint.tsx) */

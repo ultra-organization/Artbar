@@ -11,7 +11,7 @@
  * ten-year seal that says "first and best" with facts instead of decoration.
  */
 
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -50,14 +50,7 @@ import { GIFT_CERTIFICATES_URL, HOLIDAY_GIFT_BLOG_PATH, HOLIDAY_GIFT_COPY } from
 import { YEAR_END_HOME_COPY } from '../data/year-end-parties';
 import { useYearEndSeason } from '../lib/year-end-season';
 import { BrushStroke, CountUp, DecoSplat, Magnetic, PAINT, PaintCanvas, Splat, SplatterLayer, Tilt } from '../components/premium/Paint';
-
-const THROW_COLORS = [PAINT.lightTaupe, PAINT.taupe, PAINT.white, PAINT.blue];
-const BRUSH_COLORS = [
-  { c: PAINT.taupe, jp: 'トープ', en: 'Taupe' },
-  { c: PAINT.lightTaupe, jp: 'サンド', en: 'Sand' },
-  { c: PAINT.white, jp: 'ホワイト', en: 'White' },
-  { c: PAINT.blue, jp: 'ブルー', en: 'Blue' },
-];
+import { BRUSH_COLORS, Eyebrow, PILL_BASE, PILL_GHOST_LIGHT, PILL_NAVY, PILL_TAUPE, Seal, Stars, TextLink, THROW_COLORS, WRAP, useH2 } from '../components/premium/Kit';
 
 const HOW_IT_WORKS_IMAGES = [
   GI.featureAllInclusive,
@@ -84,81 +77,6 @@ const CONCEPT_SOCIAL_AVATAR_URLS = [
 const YEAR_END_SECTION_ID = 'year-end-parties';
 const withYear = (text: string, year: number | null) =>
   year === null ? text.replace(/\s*\{year\}年?(<wbr>)?/, '').trim() : text.replace('{year}', String(year));
-
-/* ───────────────────────────── Shared pieces ───────────────────────────── */
-
-const WRAP = 'mx-auto w-full max-w-[1320px] px-6 md:px-12';
-
-function Stars({ className = '', size = 'h-3.5 w-3.5' }: { className?: string; size?: string }) {
-  return (
-    <span className={`inline-flex gap-[3px] text-artbar-taupe ${className}`} aria-hidden>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <svg key={i} viewBox="0 0 20 20" className={`${size} fill-current`}>
-          <path d="M10 1.5l2.6 5.5 6 .7-4.4 4.1 1.2 5.9L10 14.8l-5.4 2.9 1.2-5.9L1.4 7.7l6-.7z" />
-        </svg>
-      ))}
-    </span>
-  );
-}
-
-/** Rotating anniversary seal: tracked Josefin caps around a "10". */
-function Seal({ className = '', tone = 'light' }: { className?: string; tone?: 'light' | 'dark' }) {
-  const id = useId().replace(/:/g, '');
-  return (
-    <div className={`aspect-square ${tone === 'light' ? 'text-white' : 'text-artbar-navy'} ${className}`} role="img" aria-label="Artbar Tokyo, est. 2016, tenth anniversary">
-      <div className="relative h-full w-full">
-        <svg viewBox="0 0 200 200" className="hp-spin absolute inset-0 h-full w-full" aria-hidden>
-          <defs>
-            <path id={id} d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
-          </defs>
-          <text fill="currentColor" fontSize="11.5" fontFamily="var(--font-josefin)" fontWeight="600">
-            <textPath href={`#${id}`} textLength="496" lengthAdjust="spacing">
-              ARTBAR TOKYO · EST. 2016 · TENTH ANNIVERSARY ·
-            </textPath>
-          </text>
-        </svg>
-        <div className="absolute inset-[24%] flex flex-col items-center justify-center rounded-full border border-current/40" aria-hidden>
-          <span className="font-heading text-[2.6em] font-semibold leading-none tracking-tight">10</span>
-          <span className="mt-1 font-heading text-[0.55em] font-semibold uppercase tracking-[0.35em] opacity-80">Years</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/** Eyebrow on a short taupe rule. Latin labels set in tracked Josefin caps. */
-function Eyebrow({ children, tone = 'dark', latin = false, className = '' }: { children: React.ReactNode; tone?: 'dark' | 'light'; latin?: boolean; className?: string }) {
-  return (
-    <p className={`flex items-center gap-4 ${tone === 'light' ? 'text-artbar-light-taupe' : 'text-artbar-taupe'} ${latin ? 'font-heading text-[11px] font-semibold uppercase tracking-[0.32em] md:text-xs' : 'text-[12px] font-medium tracking-[0.16em] md:text-[13px]'} ${className}`}>
-      <span className="h-px w-10 shrink-0 bg-current opacity-80" aria-hidden />
-      <span>{children}</span>
-    </p>
-  );
-}
-
-function useH2(lang: 'en' | 'jp') {
-  return lang === 'jp'
-    ? 'font-semibold text-[clamp(1.6rem,6.4vw,2.1rem)] leading-[1.45] tracking-[0.04em] md:text-[clamp(2.1rem,3vw,2.75rem)]'
-    : 'font-heading font-semibold text-[clamp(2rem,7.5vw,2.6rem)] leading-[1.06] tracking-[-0.015em] md:text-[clamp(2.6rem,3.8vw,3.6rem)]';
-}
-
-/** Underlined text link used for every secondary action. */
-function TextLink({ children, tone = 'dark', className = '', ...rest }: React.AnchorHTMLAttributes<HTMLAnchorElement> & { tone?: 'dark' | 'light' }) {
-  const toneClass = tone === 'light'
-    ? 'border-white/40 text-white/90 hover:border-white hover:text-white focus-visible:outline-white'
-    : 'border-artbar-navy/25 text-artbar-navy hover:border-artbar-navy focus-visible:outline-artbar-navy';
-  return (
-    <a {...rest} className={`group inline-flex min-h-11 items-center gap-2 border-b pb-0.5 text-sm font-semibold tracking-[0.04em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 md:text-[15px] ${toneClass} ${className}`}>
-      {children}
-      <ArrowRight size={15} strokeWidth={2} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
-    </a>
-  );
-}
-
-const PILL_BASE = 'group inline-flex min-h-14 items-center justify-center gap-3 rounded-full px-9 text-[15px] font-bold tracking-[0.04em] transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 md:min-h-[3.75rem] md:text-base';
-const PILL_TAUPE = `${PILL_BASE} bg-artbar-taupe text-artbar-navy shadow-[0_18px_40px_-18px_rgba(163,147,132,0.9)] hover:bg-artbar-light-taupe focus-visible:outline-artbar-taupe`;
-const PILL_NAVY = `${PILL_BASE} bg-artbar-navy text-white hover:bg-artbar-blue focus-visible:outline-artbar-navy`;
-const PILL_GHOST_LIGHT = `${PILL_BASE} border border-white/40 text-white hover:border-white hover:bg-white/10 focus-visible:outline-white`;
 
 /* ───────────────────────────── Page ───────────────────────────── */
 
@@ -264,7 +182,7 @@ export const HomePremium: React.FC = () => {
   const yearEndCopy = YEAR_END_HOME_COPY[lang];
 
   const heroTitle = jp
-    ? 'text-[clamp(1.4rem,6.9vw,2.6rem)] leading-[1.38] tracking-[0.03em] md:text-[clamp(2.75rem,4.6vw,4.4rem)]'
+    ? 'text-[clamp(1.35rem,6.1vw,2.6rem)] leading-[1.42] tracking-[0.03em] md:text-[clamp(2.75rem,4.6vw,4.4rem)]'
     : 'font-heading text-[clamp(2.6rem,10vw,3.4rem)] leading-[0.98] tracking-[-0.02em] md:text-[clamp(3.5rem,6.4vw,6rem)]';
 
   return (
