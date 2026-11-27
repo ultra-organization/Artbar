@@ -71,7 +71,7 @@ export function Splat({ seed, color, className = '', style }: { seed: number; co
       <path d={d} className="splat-body" />
       <g className="splat-drops">
         {drops.map((p, i) => (
-          <ellipse key={i} cx={p.cx} cy={p.cy} rx={p.rx} ry={p.ry} transform={`rotate(${p.rot} ${p.cx} ${p.cy})`} />
+          <ellipse key={i} cx={p.cx.toFixed(2)} cy={p.cy.toFixed(2)} rx={p.rx.toFixed(2)} ry={p.ry.toFixed(2)} transform={`rotate(${p.rot.toFixed(1)} ${p.cx.toFixed(2)} ${p.cy.toFixed(2)})`} />
         ))}
       </g>
     </svg>

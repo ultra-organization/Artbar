@@ -12,6 +12,8 @@ export const HOLIDAY_GIFT_COPY = {
     ideasLink: 'Gift ideas from our guests',
     image: '/media/holiday/gift-certificate-cards.webp',
     imageAlt: 'The Artbar Tokyo gift certificate: a card reading “A Gift for You” and its painted art+bar cover',
+    /** The three steps printed on the real certificate. */
+    steps: ['Choose a session on our website', 'Enter the coupon code at checkout', 'Come paint with us and have fun'],
   },
   jp: {
     stub: 'アートバー東京 ギフト券',
@@ -21,6 +23,8 @@ export const HOLIDAY_GIFT_COPY = {
     ideasLink: 'ゲストの<wbr>ギフトアイデアを<wbr>見る',
     image: '/media/holiday/gift-certificate-cards.webp',
     imageAlt: 'アートバー東京のギフト券。「A Gift for You」のカードと、絵の具で描かれたart+barの表紙',
+    /** 実際のギフト券に印刷されている3つの手順 */
+    steps: ['サイトで日程を選ぶ', '予約時にコードを入力', 'あとは描いて<wbr>楽しむだけ'],
   },
 } as const;
 

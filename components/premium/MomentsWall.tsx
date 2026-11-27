@@ -53,7 +53,7 @@ export function MomentsWall({ lang, title, intro, photos, tone = 'light', classN
         </div>
 
         {/* Phone filmstrip */}
-        <div className="-mx-7 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-7 pb-6 [scrollbar-width:none] sm:-mx-8 sm:px-8 md:hidden">
+        <div className="-mx-7 -mb-6 mt-7 flex snap-x snap-mandatory gap-4 overflow-x-auto px-7 pb-12 pt-3 [scrollbar-width:none] sm:-mx-8 sm:px-8 md:hidden">
           {photos.map((p, i) => (
             <figure key={p.src} className={`relative aspect-[4/5] w-[74%] shrink-0 snap-center bg-white p-2 shadow-[0_24px_40px_-28px_rgba(5,55,97,0.55)] ${i % 2 ? 'rotate-[1deg]' : '-rotate-[1deg]'}`}>
               <div className="relative h-full overflow-hidden bg-artbar-light-taupe/40">

@@ -273,7 +273,7 @@ export const HomePremium: React.FC = () => {
 
       {/* ── 2. Holiday gift certificate (seasonal) ─────────────────────── */}
       {holiday && (
-        <section aria-labelledby="hp-gift-title" className="holiday-fade-in overflow-x-clip bg-artbar-bg pb-4 pt-16 md:pt-24">
+        <section aria-labelledby="hp-gift-title" className="holiday-fade-in relative z-[2] bg-artbar-bg pb-6 pt-16 md:pb-8 md:pt-24">
           <div className={WRAP}>
             <GiftTicket />
           </div>

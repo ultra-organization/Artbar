@@ -150,7 +150,7 @@ export const PrivateParties: React.FC = () => {
             </article>
           ))}
 
-          <aside className="relative overflow-hidden bg-artbar-navy p-7 text-white md:p-10 lg:col-span-2 xl:col-span-1 xl:self-start">
+          <aside className="relative bg-artbar-navy p-7 text-white md:p-10 lg:col-span-2 xl:col-span-1 xl:self-start">
             <Hairline className="inset-2.5 md:inset-3.5" />
             <div className="relative">
               <h3 className={`${jp ? 'text-xl font-semibold leading-[1.6] tracking-[0.04em] md:text-2xl' : 'font-heading text-2xl font-semibold leading-tight md:text-3xl'}`}><JpText>{specialtyInquiry.title}</JpText></h3>
