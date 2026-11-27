@@ -34,7 +34,7 @@ export type SeoGuide = {
 export const SEO_GUIDES: SeoGuide[] = [
   {
     slug: 'tokyo-rainy-day-date',
-    image: '/media/generated/private-anniversary.jpg',
+    image: '/media/real/couple-date.webp',
     primaryIntent: 'rainy day date Tokyo',
     primaryIntentJp: '東京 雨の日 デート',
     relatedLinks: [
@@ -188,7 +188,7 @@ export const SEO_GUIDES: SeoGuide[] = [
   },
   {
     slug: 'tokyo-art-workshop',
-    image: '/media/generated/team-building-custom-workshop.jpg',
+    image: '/media/real/group-team.webp',
     primaryIntent: 'Tokyo art workshop',
     primaryIntentJp: '東京 ワークショップ / 東京 アートワークショップ',
     relatedLinks: [

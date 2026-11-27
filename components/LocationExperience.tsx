@@ -47,12 +47,12 @@ export function LocationExperience({ locationId, lang }: { locationId: string; l
   const region = isOsaka ? (isJp ? '大阪' : 'Osaka') : (isJp ? '東京・横浜' : 'Tokyo and Yokohama');
 
   return (
-    <section aria-labelledby="first-artbar-class" className="mx-auto mt-16 max-w-[1180px] px-6 md:mt-20 md:px-10">
+    <section aria-labelledby="first-artbar-class" className="mx-auto w-full max-w-[1320px] px-7 sm:px-8 md:px-12">
       <div className="grid gap-6 border-t border-artbar-navy/15 pt-10 md:grid-cols-[0.8fr_1.2fr] md:gap-12 md:pt-12">
-        <h2 id="first-artbar-class" className="max-w-sm font-heading text-3xl font-bold leading-tight text-artbar-navy md:text-4xl">
+        <h2 id="first-artbar-class" className={`max-w-sm text-artbar-navy ${isJp ? 'text-[clamp(1.5rem,6vw,2.1rem)] font-semibold leading-[1.5] tracking-[0.04em]' : 'font-heading text-3xl font-semibold leading-tight md:text-4xl'}`}>
           {isJp ? 'はじめてでも、気軽にアート体験。' : 'Your first Artbar class'}
         </h2>
-        <div className="max-w-2xl space-y-4 text-base leading-relaxed text-artbar-navy/80">
+        <div className="max-w-2xl space-y-4 text-[15px] leading-[1.95] text-artbar-gray md:text-base">
           <p>
             {isJp
               ? `${region}で楽しむ、Artbarのアート体験。絵を描くのが久しぶりの方も、初めての方も、講師のサポートを受けながら自分らしい一枚を描けます。画材とエプロンをご用意しているので、気軽にご参加ください。`
@@ -68,7 +68,7 @@ export function LocationExperience({ locationId, lang }: { locationId: string; l
       <div className="mt-8 grid gap-6 sm:grid-cols-2 md:mt-10 md:gap-8">
         {photos.map((photo) => (
           <figure key={photo.src} className="min-w-0">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-white">
+            <div className="relative aspect-[4/3] overflow-hidden bg-white">
               <Image
                 src={photo.src}
                 alt={isJp ? photo.altJp : photo.altEn}
@@ -78,8 +78,9 @@ export function LocationExperience({ locationId, lang }: { locationId: string; l
                 className="object-cover"
                 style={{ objectPosition: photo.position }}
               />
+              <div className="pointer-events-none absolute inset-3 border border-white/40" aria-hidden />
             </div>
-            <figcaption className="mt-3 text-sm leading-relaxed text-artbar-navy/80">
+            <figcaption className="mt-4 flex items-start gap-3 text-sm leading-relaxed text-artbar-navy"><span className="mt-[0.6em] h-px w-5 shrink-0 bg-artbar-taupe" aria-hidden />
               {isJp ? photo.captionJp : photo.captionEn}
             </figcaption>
           </figure>

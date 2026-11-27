@@ -7,8 +7,7 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useContent } from '../context/ContentContext';
 import { stripJpSentinel } from '../lib/jp-attr';
-import { PopularThemesGrid } from '../components/PopularThemesGrid';
-import { pickDiscoveryThemes } from '../lib/theme-slugs';
+import { pickDiscoveryThemes, themeSlugFromItem } from '../lib/theme-slugs';
 import { THEME_PAGE_IMAGES } from '../data/generated-image-paths';
 import { mediaAssetUrl } from '../lib/media/resolve';
 import {
@@ -16,19 +15,17 @@ import {
   getThemeContent,
   resolveThemeContentSlug,
 } from '../data/theme-details';
-import { Button } from '../components/ui/Button';
 import { JpText } from '../components/JpText';
 import { ThemeScheduleEmbed } from '../components/ThemeScheduleEmbed';
 import { useScrollReveal } from '../hooks/useScrollReveal';
-import { getArtbarBookingThemeUrl, HERO_BLUR_DATA_URL } from '../constants';
+import { getArtbarBookingThemeUrl } from '../constants';
 import { localizeHrefForLanguage } from '../lib/locale-routing';
 import { trackBookingClick } from '../lib/analytics';
-import { Heart, Lightbulb, Star, Users, ArrowRight } from 'lucide-react';
+import { Lightbulb, Users } from 'lucide-react';
+import { ClosingCta, Eyebrow, Hairline, PageHero, PrimaryAction, Stars, TextLink, WRAP, h2Class, h3Class } from '../components/premium/Kit';
+import { ThemeCard } from '../components/premium/ThemeCard';
+import { DecoSplat, PAINT, Splat, Tilt } from '../components/premium/Paint';
 
-/** Shared soft, navy-tinted elevation for the white content panels (intro,
- *  experience, discovery) so each canvas lifts off the cream ground identically
- *  instead of the old shadow-xl / shadow-sm mix. */
-const PANEL_SHADOW = 'shadow-[0_20px_50px_-28px_rgba(5,55,97,0.30)]';
 
 export const ThemeDetail: React.FC = () => {
   const params = useParams();
@@ -76,9 +73,13 @@ export const ThemeDetail: React.FC = () => {
   const pageImages = THEME_PAGE_IMAGES[resolvedSlug as keyof typeof THEME_PAGE_IMAGES];
   const themeImages = {
     hero: mediaAssetUrl(media, `themes.${resolvedSlug}.hero`, pageImages?.hero ?? ''),
-    examples: (pageImages?.examples ?? []).map((image, index) =>
-      mediaAssetUrl(media, `themes.${resolvedSlug}.example.${index + 1}`, image)
-    ),
+    examples: (pageImages?.examples ?? []).map((ex, index) => ({
+      src: mediaAssetUrl(media, `themes.${resolvedSlug}.example.${index + 1}`, ex.src),
+      caption: (lang === 'jp' ? ex.ja : ex.en) ?? '',
+    })),
+    heroMobile: pageImages?.heroMobile,
+    heroPortrait: pageImages?.heroPortrait ?? false,
+    heroPosition: pageImages?.heroPosition,
     experience: mediaAssetUrl(
       media,
       `themes.${resolvedSlug}.experience`,
@@ -136,85 +137,52 @@ export const ThemeDetail: React.FC = () => {
     allCategories: localizedCopy.ui.themeDetail.allCategories,
   };
 
+  const jp = lang === 'jp';
+  const h2 = h2Class(lang);
+  const h3 = h3Class(lang);
+  const goBook = (where: 'theme_hero' | 'theme_bottom') => {
+    trackBookingClick(where, { theme: resolvedSlug });
+    window.location.href = withBrowserAcquisition(filteredBookingUrl);
+  };
+
   return (
-    <div className="bg-artbar-bg min-h-screen">
-      {/* Hero Section */}
-      <div className="relative min-h-[460px] bg-artbar-navy flex items-center justify-center text-white mt-24 mx-4 md:m-4 md:mt-24 rounded-[2.5rem] overflow-hidden py-14 md:min-h-[48vh] md:py-16">
-        <Image
-          key={heroSrc}
-          src={heroSrc}
-          alt={`${titleAsText} paint and sip class at Artbar Tokyo`}
-          fill
-          priority={process.env.NODE_ENV !== 'development'}
-          unoptimized={process.env.NODE_ENV === 'development'}
-          placeholder="blur"
-          blurDataURL={HERO_BLUR_DATA_URL}
-          className="object-cover opacity-50"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-artbar-navy/20 to-artbar-navy/90" />
+    <div className="hp min-h-screen bg-artbar-bg text-artbar-navy">
+      {/* ── Hero: the theme's own photo in the mounted-print frame ───────── */}
+      <PageHero
+        key={heroSrc}
+        lang={lang}
+        image={heroSrc}
+        mobileImage={themeImages.heroMobile}
+        objectPosition={themeImages.heroPosition}
+        portrait={themeImages.heroPortrait}
+        alt={`${titleAsText} paint and sip class at Artbar Tokyo`}
+        eyebrow={<JpText>{localizedTheme.heroBadge}</JpText>}
+        title={<JpText>{localizedTheme.title}</JpText>}
+        subtitle={<JpText>{localizedTheme.heroSub}</JpText>}
+        actions={<PrimaryAction onClick={() => goBook('theme_hero')}><JpText>{ui.viewSchedule}</JpText></PrimaryAction>}
+      />
 
-        <div className="relative z-10 text-center px-6 max-w-5xl w-full">
-          <span className="inline-block py-2 px-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-heading font-bold text-xs md:text-sm mb-6 md:mb-8 uppercase tracking-widest">
-            <JpText>{localizedTheme.heroBadge}</JpText>
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-heavy mb-6 md:mb-8 leading-tight tracking-tight">
-            <JpText>{localizedTheme.title}</JpText>
-          </h1>
-          <p className="text-base sm:text-lg md:text-2xl opacity-90 mb-8 md:mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-            <JpText>{localizedTheme.heroSub}</JpText>
-          </p>
-          <div className="flex justify-center items-center w-full px-4 sm:px-0 mb-8">
-            <Button
-              variant="taupe"
-              size="cta"
-              onClick={() => {
-                trackBookingClick('theme_hero', { theme: resolvedSlug });
-                window.location.href = withBrowserAcquisition(filteredBookingUrl);
-              }}
-              className="w-full max-w-[20rem] gap-2 shadow-[0_10px_40px_-10px_rgba(163,147,132,0.6)] transition-all duration-300 hover:shadow-[0_15px_50px_-10px_rgba(163,147,132,0.7)] sm:w-auto sm:max-w-none"
-            >
-              <JpText>{ui.viewSchedule}</JpText>
-              <ArrowRight size={18} className="shrink-0" aria-hidden />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* The Concept Intro */}
-      <section className={`py-16 md:py-24 bg-white mx-0 md:mx-6 md:-mt-12 relative z-10 md:rounded-[3rem] ${PANEL_SHADOW} text-center`}>
-        <div
-          ref={intro.ref}
-          className={`reveal max-w-[1400px] mx-auto px-6 md:px-10 ${intro.isVisible ? 'visible' : ''}`}
-        >
-          <div className="max-w-4xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-5xl font-heading font-heavy text-artbar-navy mb-8 leading-tight">
-              <JpText>{localizedTheme.introTitle}</JpText>
-            </h2>
-            <p className="text-artbar-gray text-lg md:text-2xl leading-relaxed font-light">
+      {/* ── Intro: statement left, three quick facts on a hairline ─────── */}
+      <section className="relative overflow-hidden py-20 md:py-28">
+        <DecoSplat seed={41} color={PAINT.lightTaupe} className="-right-24 -top-16 h-64 w-64 md:-right-10 md:h-80 md:w-80" opacity={0.6} />
+        <div ref={intro.ref} className={`${WRAP} relative reveal ${intro.isVisible ? 'visible' : ''}`}>
+          <div className="grid gap-8 lg:grid-cols-12 lg:gap-16">
+            <h2 className={`lg:col-span-6 ${h2}`}><JpText>{localizedTheme.introTitle}</JpText></h2>
+            <p className="text-[16px] leading-[2] text-artbar-gray md:text-lg lg:col-span-6 lg:pt-2">
               <JpText>{localizedTheme.introDesc}</JpText>
             </p>
           </div>
-
-          <div
-            className={`grid sm:grid-cols-3 gap-12 max-w-5xl mx-auto reveal-stagger ${intro.isVisible ? 'visible' : ''}`}
-          >
+          <ul className={`mt-14 grid border-t border-artbar-navy/15 sm:grid-cols-3 md:mt-20 reveal-stagger ${intro.isVisible ? 'visible' : ''}`}>
             {localizedTheme.quickFeatures.map((feat, i) => (
-              <div key={i} className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 bg-artbar-bg rounded-2xl flex items-center justify-center text-artbar-taupe shrink-0 shadow-sm">
-                  <feat.icon size={28} />
-                </div>
+              <li key={i} className={`flex gap-4 border-b border-artbar-navy/10 py-7 sm:border-b-0 sm:py-9 ${i ? 'sm:border-l sm:pl-8' : 'sm:pr-8'} ${i === 1 ? 'sm:pr-8' : ''}`}>
+                <feat.icon size={22} strokeWidth={1.6} className="mt-1 shrink-0 text-artbar-taupe" aria-hidden />
                 <div>
-                  <h4 className="font-heading font-bold text-artbar-navy text-xl mb-2 tracking-tight">
-                    <JpText>{feat.title}</JpText>
-                  </h4>
-                  <p className="text-artbar-gray text-sm md:text-base leading-relaxed max-w-[240px] mx-auto">
-                    <JpText>{feat.desc}</JpText>
-                  </p>
+                  <h3 className={h3}><JpText>{feat.title}</JpText></h3>
+                  <p className="mt-2 text-[14px] leading-[1.9] text-artbar-gray md:text-[15px]"><JpText>{feat.desc}</JpText></p>
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
@@ -222,247 +190,178 @@ export const ThemeDetail: React.FC = () => {
           embed's own light-theme background (#F3F3ED), NOT the brand cream, so the
           opaque iframe blends into the section instead of showing as a rectangle
           seam. Keep these in sync if Painta's embed background changes. */}
-      {!hideSchedule && <section className="relative bg-[#F3F3ED] py-12 md:py-16">
-        <div className="mx-auto max-w-[1400px] px-6 md:px-10">
-          <div className="mb-8 text-center md:mb-10">
-            <span className="mb-3 block font-heading text-xs font-bold uppercase tracking-widest text-artbar-taupe">
-              <JpText>{ui.viewUpcoming}</JpText>
-            </span>
-            <h2 className="mb-4 font-heading text-3xl font-heavy text-artbar-navy md:text-5xl">
-              <JpText>{ui.upcomingClassesTitle}</JpText>
-            </h2>
-            <p className="mx-auto max-w-2xl text-base font-light leading-relaxed text-artbar-gray md:text-lg">
-              <JpText>{ui.upcomingClassesSub}</JpText>
-            </p>
-          </div>
-          <div className="-mx-4 sm:-mx-6 md:-mx-10">
-            <ThemeScheduleEmbed
-              key={resolvedSlug}
-              themeSlug={resolvedSlug}
-              locale={lang === 'jp' ? 'ja' : 'en'}
-              title={ui.upcomingClassesTitle}
-              onEmptyChange={(isEmpty) => setEmptyScheduleSlug(isEmpty ? resolvedSlug : null)}
-            />
-          </div>
-        </div>
-      </section>}
-
-      {/* The Deep Dive */}
-      <section className={`py-16 md:py-24 bg-white md:mx-6 md:rounded-[3rem] ${PANEL_SHADOW}`}>
-        <div
-          ref={experience.ref}
-          className={`reveal max-w-[1400px] mx-auto px-6 md:px-10 ${experience.isVisible ? 'visible' : ''}`}
-        >
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="relative aspect-[4/3] rounded-[3rem] overflow-hidden shadow-2xl order-2 lg:order-1">
-              <Image
-                src={themeImages.experience || getPh(1000, 750, 'Studio Atmosphere')}
-                alt={stripJpSentinel(localizedCopy.ui.themeDetail.atmosphereImageAlt)}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-              <div className="absolute inset-0 bg-artbar-navy/10" />
-              <div className="absolute bottom-6 right-6 bg-white/90 backdrop-blur px-6 py-3 rounded-2xl shadow-lg border border-white/50">
-                <div className="flex items-center gap-3">
-                  <div className="flex text-yellow-400">
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                    <Star size={14} fill="currentColor" />
-                  </div>
-                  <span className="text-xs md:text-sm font-bold text-artbar-navy uppercase tracking-widest">
-                    <JpText>{ui.guestFavorite}</JpText>
+      {!hideSchedule && (
+        <section className="relative bg-[#F3F3ED] py-16 md:py-24">
+          <div className={WRAP}>
+            <div className="mb-10 grid gap-6 md:mb-12 md:grid-cols-12 md:items-end">
+              <div className="md:col-span-8">
+                <p className="flex items-center gap-3 text-[12px] font-medium tracking-[0.16em] text-artbar-taupe md:text-[13px]">
+                  <span className="relative flex h-2 w-2" aria-hidden>
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-artbar-taupe opacity-60 motion-reduce:animate-none" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-artbar-taupe" />
                   </span>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-8 order-1 lg:order-2">
-              <div className="flex flex-col gap-5 md:gap-6">
-                <span className="block w-fit text-artbar-taupe font-heading font-bold tracking-widest text-xs uppercase border-b border-artbar-taupe/30 pb-2.5">
-                  <JpText>{ui.theExperience}</JpText>
-                </span>
-                <h3 className="text-3xl md:text-5xl font-heading font-heavy text-artbar-navy leading-tight">
-                  <JpText>{localizedTheme.expectTitle}</JpText>
-                </h3>
-              </div>
-              <p className="text-artbar-gray text-lg md:text-xl leading-relaxed font-light">
-                <JpText>{localizedTheme.expectDesc}</JpText>
-              </p>
-              <div className="grid grid-cols-2 gap-6 pt-4">
-                <div className="flex items-center gap-3 text-artbar-navy font-bold text-sm">
-                  <Users size={20} className="text-artbar-taupe" />
-                  <span className="uppercase tracking-widest"><JpText>{ui.bilingualSessions}</JpText></span>
-                </div>
-                <div className="flex items-center gap-3 text-artbar-navy font-bold text-sm">
-                  <Lightbulb size={20} className="text-artbar-taupe" />
-                  <span className="uppercase tracking-widest"><JpText>{ui.expertGuidance}</JpText></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-12 border-t border-artbar-navy/10 pt-10 md:mt-16 md:pt-12">
-            <div className="mb-7 text-center">
-              <p className="font-heading text-xs font-bold uppercase tracking-widest text-artbar-taupe">
-                <JpText>{lang === 'jp' ? '体験に含まれるもの' : "What's included"}</JpText>
-              </p>
-            </div>
-            <div className="mx-auto grid max-w-6xl gap-12 sm:grid-cols-2 xl:grid-cols-4">
-              {localizedTheme.whatYouGet.map(({ icon: Icon, text, sub }) => (
-                <div
-                  key={text}
-                  className="flex flex-col items-center gap-4 text-center"
-                >
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-artbar-bg text-artbar-taupe shadow-sm">
-                    {Icon ? <Icon size={28} aria-hidden /> : null}
-                  </div>
-                  <div>
-                    <h4 className="mb-2 font-heading text-xl font-bold tracking-tight text-artbar-navy">
-                      <JpText>{text}</JpText>
-                    </h4>
-                    <p className="mx-auto max-w-[240px] text-sm leading-relaxed text-artbar-gray md:text-base">
-                      <JpText>{sub}</JpText>
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Visual Gallery */}
-      <section className="grain relative py-16 md:py-24 bg-artbar-bg">
-        <div
-          ref={gallery.ref}
-          className={`reveal max-w-[1400px] mx-auto px-6 md:px-10 ${gallery.isVisible ? 'visible' : ''}`}
-        >
-          <div className="text-center mb-16">
-            <span className="text-artbar-taupe font-heading font-bold tracking-widest text-xs uppercase mb-3 block">
-              <JpText>{ui.inspiration}</JpText>
-            </span>
-            <h2 className="text-3xl md:text-5xl font-heading font-heavy text-artbar-navy mb-4">
-              <JpText>{ui.examplePaintings}</JpText>
-            </h2>
-            <p className="text-artbar-gray text-lg md:text-xl font-light">
-              <JpText>{ui.exampleBlurb(stripTitleForGallery(localizedTheme.title))}</JpText>
-            </p>
-          </div>
-
-          <div
-            className={`grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 reveal-stagger ${gallery.isVisible ? 'visible' : ''}`}
-          >
-            {localizedTheme.examples.map((ex, i) => (
-              <div key={i} className="group flex flex-col items-center">
-                <div className="relative aspect-square w-full rounded-[2.5rem] overflow-hidden shadow-lg border-4 border-white mb-6 group-hover:shadow-2xl transition-all duration-500">
-                  <Image
-                    src={
-                      themeImages.examples[i] ||
-                      ex.image ||
-                      getPh(400, 400, stripJpSentinel(ex.title))
-                    }
-                    alt={stripJpSentinel(ex.title)}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-artbar-navy/0 group-hover:bg-artbar-navy/20 transition-colors" />
-                </div>
-                <h4 className="text-center font-heading font-bold text-artbar-navy text-sm md:text-base group-hover:text-artbar-taupe transition-colors px-2">
-                  <JpText>{ex.title}</JpText>
-                </h4>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Audience Identification */}
-      <section className="grain relative py-16 md:py-24 bg-artbar-bg">
-        <div
-          ref={perfect.ref}
-          className={`reveal max-w-[1400px] mx-auto px-6 md:px-10 ${perfect.isVisible ? 'visible' : ''}`}
-        >
-          <div className="text-center mb-16">
-            <span className="text-artbar-taupe font-heading font-bold tracking-widest text-xs uppercase mb-3 block">
-              <JpText>{ui.community}</JpText>
-            </span>
-            <h2 className="text-3xl md:text-5xl font-heading font-heavy text-artbar-navy">
-              <JpText>{localizedTheme.perfectTitle}</JpText>
-            </h2>
-          </div>
-
-          <div
-            className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-8 reveal-stagger ${perfect.isVisible ? 'visible' : ''}`}
-          >
-            {localizedTheme.perfectFor.map((item, i) => (
-              <div
-                key={i}
-                className="p-10 rounded-[2.5rem] bg-white shadow-sm flex flex-col items-center text-center group hover:bg-artbar-navy transition-colors duration-500"
-              >
-                <div className="w-14 h-14 rounded-full bg-artbar-bg flex items-center justify-center text-artbar-taupe mb-8 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                  <Heart size={24} />
-                </div>
-                <p className="text-artbar-navy font-heading font-bold leading-relaxed group-hover:text-white transition-colors">
-                  <JpText>{item}</JpText>
+                  <JpText>{ui.viewUpcoming}</JpText>
                 </p>
+                <h2 className={`mt-4 ${h2}`}><JpText>{ui.upcomingClassesTitle}</JpText></h2>
+                <p className="mt-4 max-w-2xl text-[15px] leading-[1.95] text-artbar-gray md:text-base"><JpText>{ui.upcomingClassesSub}</JpText></p>
               </div>
+            </div>
+            <div className="-mx-7 sm:-mx-8 md:-mx-12">
+              <ThemeScheduleEmbed
+                key={resolvedSlug}
+                themeSlug={resolvedSlug}
+                locale={lang === 'jp' ? 'ja' : 'en'}
+                title={ui.upcomingClassesTitle}
+                onEmptyChange={(isEmpty) => setEmptyScheduleSlug(isEmpty ? resolvedSlug : null)}
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── The experience: mounted photo with a museum label ──────────── */}
+      <section className="relative py-20 md:py-28">
+        <div ref={experience.ref} className={`${WRAP} reveal ${experience.isVisible ? 'visible' : ''}`}>
+          <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-20">
+            <div className="relative lg:col-span-6">
+              <DecoSplat seed={511} color={PAINT.taupe} className="-left-10 -top-10 h-40 w-40 md:-left-16 md:-top-14 md:h-56 md:w-56" opacity={0.85} />
+              <Tilt max={4} className="relative">
+                <div className="relative aspect-[4/5] overflow-hidden bg-artbar-light-taupe/40 sm:aspect-[4/3] lg:aspect-[4/5]">
+                  <Image
+                    src={themeImages.experience || getPh(1000, 750, 'Studio Atmosphere')}
+                    alt={stripJpSentinel(localizedCopy.ui.themeDetail.atmosphereImageAlt)}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                  <Hairline className="inset-3 md:inset-4" />
+                </div>
+              </Tilt>
+              {/* Museum label */}
+              <div className="relative z-[3] -mt-10 ml-auto mr-4 w-fit bg-white px-5 py-4 shadow-[0_24px_50px_-28px_rgba(5,55,97,0.45)] md:-mt-12 md:mr-8">
+                <Stars />
+                <p className="mt-2 text-[12px] font-semibold tracking-[0.12em] text-artbar-navy"><JpText>{ui.guestFavorite}</JpText></p>
+              </div>
+            </div>
+            <div className="lg:col-span-6">
+              {stripJpSentinel(ui.theExperience).trim() && <Eyebrow className="mb-5"><JpText>{ui.theExperience}</JpText></Eyebrow>}
+              <h2 className={h2}><JpText>{localizedTheme.expectTitle}</JpText></h2>
+              <p className="mt-6 text-[15px] leading-[2] text-artbar-gray md:text-[17px]"><JpText>{localizedTheme.expectDesc}</JpText></p>
+              <dl className="mt-10 grid grid-cols-2 border-t border-artbar-navy/15">
+                {[{ Icon: Users, t: ui.bilingualSessions }, { Icon: Lightbulb, t: ui.expertGuidance }].map(({ Icon, t }, i) => (
+                  <div key={i} className={`flex items-start gap-3 pt-6 ${i ? 'border-l border-artbar-navy/10 pl-5' : 'pr-5'}`}>
+                    <Icon size={18} strokeWidth={1.7} className="mt-0.5 shrink-0 text-artbar-taupe" aria-hidden />
+                    <dt className="text-[14px] font-semibold leading-snug tracking-[0.03em]"><JpText>{t}</JpText></dt>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+
+          {/* What's included */}
+          <div className="mt-20 md:mt-28">
+            <Eyebrow><JpText>{jp ? '体験に含まれるもの' : "What's included"}</JpText></Eyebrow>
+            <ul className={`mt-8 grid grid-cols-2 border-t border-artbar-navy/15 xl:grid-cols-4 reveal-stagger ${experience.isVisible ? 'visible' : ''}`}>
+              {localizedTheme.whatYouGet.map(({ icon: Icon, text, sub }, i) => (
+                <li key={text} className={`border-b border-artbar-navy/10 py-7 pr-4 md:py-9 md:pr-8 xl:border-b-0 ${i % 2 ? 'border-l pl-4 md:pl-8' : ''} ${i >= 2 ? 'xl:border-l xl:pl-8' : ''}`}>
+                  {Icon ? <Icon size={22} strokeWidth={1.6} className="text-artbar-taupe" aria-hidden /> : null}
+                  <h3 className={`mt-4 ${h3}`}><JpText>{text}</JpText></h3>
+                  <p className="mt-2 text-[13px] leading-[1.85] text-artbar-gray md:text-[15px]"><JpText>{sub}</JpText></p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Example paintings: a salon wall of matted canvases ─────────── */}
+      <section className="relative overflow-hidden bg-artbar-navy py-20 text-white md:py-28">
+        <Hairline className="inset-3 md:inset-6" />
+        <DecoSplat seed={88} color={PAINT.blue} className="-left-20 bottom-10 h-72 w-72" opacity={0.5} />
+        <div ref={gallery.ref} className={`${WRAP} relative reveal ${gallery.isVisible ? 'visible' : ''}`}>
+          <div className="max-w-2xl">
+            {stripJpSentinel(ui.inspiration).trim() && <Eyebrow tone="light" className="mb-5"><JpText>{ui.inspiration}</JpText></Eyebrow>}
+            <h2 className={`text-white ${h2}`}><JpText>{ui.examplePaintings}</JpText></h2>
+            <p className="mt-5 text-[15px] leading-[1.95] text-white/70 md:text-base"><JpText>{ui.exampleBlurb(stripTitleForGallery(localizedTheme.title))}</JpText></p>
+          </div>
+          <div className={`mt-14 grid grid-cols-2 gap-x-5 gap-y-12 md:mt-20 lg:grid-cols-4 lg:gap-x-10 reveal-stagger ${gallery.isVisible ? 'visible' : ''}`}>
+            {themeImages.examples.map((ex, i, all) => (
+              <figure key={ex.src + i} className={`group ${i % 2 ? 'mt-10 lg:mt-16' : ''}`}>
+                <Tilt max={6}>
+                  <div className="bg-white p-2.5 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)] md:p-3.5">
+                    <div className="relative aspect-square overflow-hidden bg-artbar-light-taupe/40">
+                      <Image
+                        src={ex.src}
+                        alt={ex.caption || `${titleAsText}: ${jp ? '参加者の作品' : 'a guest painting'}`}
+                        fill
+                        className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-[1.05]"
+                        sizes="(max-width: 1024px) 50vw, 25vw"
+                      />
+                    </div>
+                  </div>
+                </Tilt>
+                {ex.caption && ex.caption !== all.slice(0, i).reverse().find((p) => p.caption)?.caption && (
+                  <figcaption className="mt-4 flex items-start gap-3 text-[13px] font-semibold leading-snug tracking-[0.04em] text-white/90 md:text-[15px]">
+                    <span className="mt-[0.55em] h-px w-5 shrink-0 bg-artbar-taupe" aria-hidden />
+                    <JpText>{ex.caption}</JpText>
+                  </figcaption>
+                )}
+              </figure>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Bottom Conversion */}
-      <section className="py-16 md:py-24 px-4 md:px-10 bg-artbar-bg">
-        <div className="max-w-[1400px] mx-auto bg-artbar-navy rounded-[3rem] p-12 md:p-24 text-center shadow-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-artbar-taupe/20 to-transparent" />
-          <div className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-heading font-bold text-white mb-6 tracking-tight">
-              <JpText>{localizedTheme.ctaTitle}</JpText>
-            </h2>
-            <p className="text-white/80 text-lg md:text-2xl mb-12 font-light max-w-xl mx-auto leading-relaxed">
-              <JpText>{localizedTheme.ctaSub}</JpText>
-            </p>
-            <div className="flex justify-center items-center w-full px-4 sm:px-0">
-              <Button
-                variant="taupe"
-                size="cta"
-                onClick={() => {
-                  trackBookingClick('theme_bottom', { theme: resolvedSlug });
-                  window.location.href = withBrowserAcquisition(filteredBookingUrl);
-                }}
-                className="shadow-[0_10px_40px_-10px_rgba(163,147,132,0.6)] transition-all hover:scale-105 hover:bg-white hover:text-artbar-navy hover:shadow-[0_15px_50px_-10px_rgba(255,255,255,0.2)] active:scale-95"
-              >
-                <JpText>{ui.viewUpcoming}</JpText>
-              </Button>
+      {/* ── Who it suits: an editorial list, not cards ─────────────────── */}
+      <section className="relative py-20 md:py-28">
+        <div ref={perfect.ref} className={`${WRAP} reveal ${perfect.isVisible ? 'visible' : ''}`}>
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-5">
+              {stripJpSentinel(ui.community).trim() && <Eyebrow className="mb-5"><JpText>{ui.community}</JpText></Eyebrow>}
+              <h2 className={h2}><JpText>{localizedTheme.perfectTitle}</JpText></h2>
             </div>
+            <ul className={`border-t border-artbar-navy/15 lg:col-span-7 reveal-stagger ${perfect.isVisible ? 'visible' : ''}`}>
+              {localizedTheme.perfectFor.map((item, i) => (
+                <li key={i} className="group relative flex items-center gap-5 border-b border-artbar-navy/10 py-6 md:py-7">
+                  <span className="relative h-7 w-7 shrink-0" aria-hidden>
+                    <Splat seed={700 + i * 13} color={[PAINT.taupe, PAINT.lightTaupe, PAINT.blue][i % 3]} className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:rotate-45 group-hover:scale-125" />
+                  </span>
+                  <p className={`${jp ? 'text-[16px] font-semibold leading-[1.7] tracking-[0.04em] md:text-lg' : 'font-heading text-lg font-semibold leading-snug md:text-[22px]'}`}><JpText>{item}</JpText></p>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* Discovery Cross-Sell */}
-      <section className={`py-16 md:py-24 bg-white md:mx-6 md:rounded-[3rem] ${PANEL_SHADOW} mb-12`}>
-        <div className="max-w-[1400px] mx-auto px-6 md:px-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
+      {/* ── Closing CTA: paint the panel ───────────────────────────────── */}
+      <ClosingCta
+        lang={lang}
+        title={<JpText>{localizedTheme.ctaTitle}</JpText>}
+        body={<JpText>{localizedTheme.ctaSub}</JpText>}
+        actions={<PrimaryAction onClick={() => goBook('theme_bottom')}><JpText>{ui.viewUpcoming}</JpText></PrimaryAction>}
+      />
+
+      {/* ── Discover more themes ───────────────────────────────────────── */}
+      <section className="py-20 md:py-28">
+        <div className={WRAP}>
+          <div className="mb-12 flex flex-col gap-6 md:mb-16 md:flex-row md:items-end md:justify-between">
             <div>
-              <h2 className="text-3xl md:text-5xl font-heading font-heavy text-artbar-navy mb-4 tracking-tight leading-none">
-                <JpText>{ui.discoverMore}</JpText>
-              </h2>
-              <p className="text-artbar-gray text-lg font-light max-w-lg"><JpText>{ui.discoverSub}</JpText></p>
+              <h2 className={h2}><JpText>{ui.discoverMore}</JpText></h2>
+              <p className="mt-4 max-w-lg text-[15px] leading-[1.95] text-artbar-gray md:text-base"><JpText>{ui.discoverSub}</JpText></p>
             </div>
-            <Button
-              onClick={() => router.push(localizeHrefForLanguage('/#popular-themes', lang))}
-              variant="outline"
-              size="cta"
-              className="w-full uppercase tracking-widest text-xs md:w-auto"
+            <TextLink
+              href={localizeHrefForLanguage('/#popular-themes', lang)}
+              onClick={(e) => { e.preventDefault(); router.push(localizeHrefForLanguage('/#popular-themes', lang)); }}
             >
               <JpText>{ui.allCategories}</JpText>
-            </Button>
+            </TextLink>
           </div>
-
-          <PopularThemesGrid items={discoveryThemes} />
+          <div className="grid grid-cols-2 gap-x-4 gap-y-12 md:grid-cols-4 md:gap-x-8 reveal-stagger visible">
+            {discoveryThemes.map((item, i) => (
+              <ThemeCard key={themeSlugFromItem(item)} item={item} index={i} lang={lang} sizes="(max-width: 768px) 50vw, 25vw" />
+            ))}
+          </div>
         </div>
       </section>
     </div>
