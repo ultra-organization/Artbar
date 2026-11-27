@@ -41,7 +41,7 @@ export const Navbar: React.FC = () => {
     setIsOpen(false);
   }, [pathname]);
 
-  const isHome = barePathname === '/' || barePathname === '/preview/home';
+  const isHome = barePathname === '/';
   const inquiryType = barePathname === '/private-parties' ? 'private_party' : barePathname === '/team-building' ? 'team_building' : null;
   const ActionIcon = inquiryType ? MessageCircle : CalendarDays;
   const actionLabel = inquiryType === 'private_party'
